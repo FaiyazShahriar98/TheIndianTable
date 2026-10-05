@@ -32,28 +32,28 @@ export const CATEGORIES = [
 ]
 
 export const SIGNATURES: Dish[] = [
-  { id: 'butter', name: 'The Indian Table Butter Chicken', cat: 'House Signatures', img: 'butter' },
-  { id: 'rajasthani', name: 'Rajasthani Chicken', cat: 'House Signatures', img: 'curry' },
-  { id: 'srilankan', name: 'Sri Lankan Mango', cat: 'House Signatures', img: 'tikka' },
-  { id: 'garlic', name: 'Garlic Chilli', cat: 'House Signatures', img: 'street' },
-  { id: 'shashlik', name: 'Chicken Shashlik', cat: 'House Signatures', img: 'tandoori' },
+  { id: 'butter', name: 'The Indian Table Butter Chicken', cat: 'House Signatures', img: 'spread' },
+  { id: 'rajasthani', name: 'Rajasthani Chicken', cat: 'House Signatures', img: 'tikka' },
+  { id: 'srilankan', name: 'Sri Lankan Mango', cat: 'House Signatures', img: 'curry' },
+  { id: 'garlic', name: 'Garlic Chilli', cat: 'House Signatures', img: 'biryani' },
+  { id: 'shashlik', name: 'Chicken Shashlik', cat: 'House Signatures', img: 'biryani' },
   { id: 'naga', name: 'Chicken Naga', cat: 'House Signatures', img: 'curry' },
-  { id: 'makhani', name: 'Paneer Makhani', cat: 'House Signatures', img: 'paneer' },
-  { id: 'balti', name: 'Balti Minzira', cat: 'House Signatures', img: 'spread' },
-  { id: 'railway', name: 'Railway Lamb Curry', cat: 'House Signatures', img: 'curry' },
-  { id: 'shaheen', name: 'Lamb Shaheen', cat: 'House Signatures', img: 'biryani' },
+  { id: 'makhani', name: 'Paneer Makhani', cat: 'House Signatures', img: 'butter' },
+  { id: 'balti', name: 'Balti Minzira', cat: 'House Signatures', img: 'curry' },
+  { id: 'railway', name: 'Railway Lamb Curry', cat: 'House Signatures', img: 'tikka' },
+  { id: 'shaheen', name: 'Lamb Shaheen', cat: 'House Signatures', img: 'tikka' },
 ]
 export const GRAND: Dish[] = [
-  { id: 'prawn', name: 'King Prawn Bangla', cat: 'Grand Dishes', img: 'tikka' },
-  { id: 'mixedgrill', name: 'Tandoori Mixed Grill', cat: 'Grand Dishes', img: 'tandoori' },
+  { id: 'prawn', name: 'King Prawn Bangla', cat: 'Grand Dishes', img: 'butter' },
+  { id: 'mixedgrill', name: 'Tandoori Mixed Grill', cat: 'Grand Dishes', img: 'paneer' },
 ]
 
 export const COOLERS = ['Classic Mint Cooler', 'Strawberry Breeze', 'Passion Fruit Crush', 'Mango Madness']
 export const DRINK_GROUPS = ['Cooler Pitchers', 'Lassi and Any Lassi Jug', 'Milkshakes', '0.0% Lagers', 'Hot Drinks', 'Bottled Soft Drinks']
 
 export const ORDER_DISHES: Dish[] = [
-  { id: 'ffb', name: 'Family Feast Box', cat: 'Complete Meals and Boxes', price: 29.95, img: 'spread', badge: 'Direct-order exclusive' },
-  { id: 'lt', name: 'Little Table', cat: 'Little Table and English Favourites', price: 9.95, img: 'naan' },
+  { id: 'ffb', name: 'Family Feast Box', cat: 'Complete Meals and Boxes', price: 29.95, img: 'paneer', badge: 'Direct-order exclusive' },
+  { id: 'lt', name: 'Little Table', cat: 'Little Table and English Favourites', price: 9.95, img: 'tikka' },
   ...SIGNATURES.map(d => ({ ...d })),
   ...GRAND.map(d => ({ ...d, cat: 'Tandoor' })),
   ...COOLERS.map((n, i) => ({ id: `c${i}`, name: n, cat: 'Drinks', price: 4.95, img: 'drink' as const })),

@@ -1,12 +1,27 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { m, Reveal, Stagger, Item } from '../lib/motion'
+import { m, Reveal, Stagger, Item, useReducedMotion } from '../lib/motion'
 import { submitEnquiry } from '../lib/supabase'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { BookBtn, Diamond, OrderBtn, PageHero, Photo, Placeholder, SplitCTA } from '../components/ui'
 import { openCookiePrefs } from '../components/CookieBanner'
+
+function RoadCar() {
+  const reduce = useReducedMotion()
+  return (
+    <div aria-hidden="true" className="relative mt-16 h-16 overflow-hidden">
+      <div className="absolute inset-x-0 bottom-2 border-b border-dashed border-gold" />
+      <m.svg viewBox="0 0 120 48" className="absolute bottom-2 h-12 w-32 text-brand" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round"
+        initial={reduce ? false : { left: '-20%' }} whileInView={{ left: '52%' }} viewport={{ once: true }} transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }} style={{ left: '52%' }}>
+        <path d="M6 36V26l12-3 14-12h36l14 12 22 3v10z" fill="rgb(var(--page))" />
+        <path d="M34 24l10-9h22l12 9z" />
+        <circle cx="32" cy="38" r="7" fill="rgb(var(--gold))" /><circle cx="92" cy="38" r="7" fill="rgb(var(--gold))" />
+      </m.svg>
+    </div>
+  )
+}
 
 export function BringToCar() {
   useSEO('Bring to Car', 'Order online, stay comfortable and we will bring your Indian takeaway out to your car. The Indian Table, Higher Walton, Preston.')
@@ -26,6 +41,7 @@ export function BringToCar() {
               <Item key={t}><div className="card h-full"><span className="font-display text-price text-gold">{i + 1}</span><h3 className="uppercase">{t}</h3><p className="mt-2">{c}</p></div></Item>
             ))}
           </Stagger>
+          <RoadCar />
           <Reveal className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {['Families', 'Customers with limited mobility', 'Busy collections', 'Poor weather'].map(x => <div key={x} className="flex items-center gap-4 rounded-card border border-line p-4 font-bold text-brand"><Diamond className="text-gold" />{x}</div>)}
           </Reveal>

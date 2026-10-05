@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { img, PHOTOS } from '../config'
 import { JOURNEY, TIERS } from '../data/menu'
@@ -60,17 +61,85 @@ export const OrderBtn = ({ label = 'Order Takeaway', from = 'page', light = fals
 
 /** Five-part feast as one connected path, not five boxed cards. */
 export function Journey({ dark = false }: { dark?: boolean }) {
+  const reduce = useReducedMotion()
+  const go = reduce ? {} : { initial: 'off', whileInView: 'on', viewport: { once: true, margin: '0px 0px -15% 0px' } }
   return (
     <ol className="relative grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-4">
-      <span aria-hidden="true" className="absolute left-6 top-6 hidden h-px w-[calc(100%-3rem)] bg-gold/60 md:block" />
+      <m.span aria-hidden="true" {...go} variants={{ off: { scaleX: 0 }, on: { scaleX: 1, transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] } } }}
+        className="absolute left-6 top-6 hidden h-px w-[calc(100%-3rem)] origin-left bg-gold/60 md:block" />
       {JOURNEY.map((s, i) => (
         <li key={s} className="relative flex items-center gap-4 md:flex-col md:items-start md:gap-4">
-          <span className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-gold font-display text-title ${dark ? 'bg-brand text-gold' : 'bg-sunken text-gold-text'}`}>{i + 1}</span>
-          <span className={`text-small font-bold uppercase tracking-wider ${dark ? 'text-page' : 'text-brand'}`}>{s}</span>
+          <m.span {...go} variants={{ off: { scale: 0.6, opacity: 0 }, on: { scale: 1, opacity: 1, transition: { duration: 0.3, delay: 0.1 + i * 0.14 } } }}
+            className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-gold font-display text-title ${dark ? 'bg-brand text-gold' : 'bg-sunken text-gold-text'}`}>{i + 1}</m.span>
+          <m.span {...go} variants={{ off: { opacity: 0, y: 6 }, on: { opacity: 1, y: 0, transition: { duration: 0.3, delay: 0.2 + i * 0.14 } } }}
+            className={`text-small font-bold uppercase tracking-wider ${dark ? 'text-page' : 'text-brand'}`}>{s}</m.span>
         </li>
       ))}
     </ol>
   )
+}
+
+/** Pauses any ambient CSS animation inside while the element is off-screen. */
+function usePauseOffscreen<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([e]) => el.setAttribute('data-paused', e.isIntersecting ? 'false' : 'true'))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  return ref
+}
+
+/** Rising steam: soft wisps that drift up and fade. Pure CSS, three staggered paths. */
+export function Steam() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 120 80" className="pointer-events-none absolute -top-16 left-1/2 h-20 w-32 -translate-x-1/2 text-page">
+      {[[30, 0], [60, 1.6], [90, 3.2]].map(([x, d]) => (
+        <path key={x} className="steam-wisp" style={{ animationDelay: `${d}s` }} d={`M${x} 76c-10-12 10-20 0-32s10-20 0-32`} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      ))}
+    </svg>
+  )
+}
+
+/** Circular "plate" photo that rocks a few degrees clockwise then back, like a wok being worked. */
+export function Plate({ k, alt, w = 600, dir = 'cw', steam = false, priority = false, className = '' }: {
+  k: PhotoKey; alt: string; w?: number; dir?: 'cw' | 'ccw'; steam?: boolean; priority?: boolean; className?: string
+}) {
+  const ref = usePauseOffscreen<HTMLDivElement>()
+  return (
+    <div ref={ref} className={`relative mx-auto aspect-square w-full max-w-md ${className}`}>
+      <span aria-hidden="true" className="spin-slow absolute -inset-4 rounded-full border border-dashed border-gold/50" />
+      <span aria-hidden="true" className="absolute -inset-2 rounded-full border border-gold/60" />
+      <div className="relative h-full w-full overflow-hidden rounded-full bg-sunken">
+        <div className={`h-full w-full ${dir === 'cw' ? 'rock' : 'rock rock-rev'}`}>
+          <Photo k={k} w={w} ratio="1/1" alt={alt} priority={priority} />
+        </div>
+      </div>
+      {steam && <Steam />}
+    </div>
+  )
+}
+
+/** Number that counts up once when scrolled into view. Screen readers get the final value immediately. */
+export function CountUp({ to, prefix = '£', decimals = 2 }: { to: number; prefix?: string; decimals?: number }) {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLSpanElement>(null)
+  const [v, setV] = useState(reduce ? to : 0)
+  useEffect(() => {
+    if (reduce || !ref.current) return
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return
+      io.disconnect()
+      const t0 = performance.now()
+      const tick = (t: number) => { const p = Math.min(1, (t - t0) / 900); setV(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick) }
+      requestAnimationFrame(tick)
+    }, { threshold: 0.6 })
+    io.observe(ref.current)
+    return () => io.disconnect()
+  }, [to, reduce])
+  return (<><span ref={ref} aria-hidden="true" style={{ fontVariantNumeric: 'tabular-nums' }}>{prefix}{v.toFixed(decimals)}</span><span className="sr-only">{prefix}{to.toFixed(decimals)}</span></>)
 }
 
 /** Cursor-following glow for hover (React Bits SpotlightCard idea). JS only sets two CSS variables. */
@@ -102,9 +171,9 @@ export function TableCards() {
       {TIERS.map(t => (
         <Item key={t.id} className={t.featured ? 'order-none md:z-10 md:scale-[1.07]' : ''}>
           <article onPointerMove={spotMove}
-            className={`spot relative h-full rounded-card p-8 md:p-8 ${t.featured
+            className={`relative h-full rounded-card p-8 md:p-8 ${t.featured
               ? 'tier-featured on-dark text-page md:py-12'
-              : 'border border-line-strong bg-page'}`}
+              : 'spot border border-line-strong bg-page'}`}
           >
             {t.featured && <p className="eyebrow mb-4">Chef's Recommendation</p>}
             <h3 className={t.featured ? '!text-page' : ''}>{t.name}</h3>

@@ -69,15 +69,34 @@
   .navlink:hover::after, .navlink[aria-current='page']::after { transform: scaleX(1); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-}
 
 @layer components {
-  /* Signature Table: emerald fill, gold outer keyline and a fine inner keyline (spec section 5). No drop shadow. */
-  .tier-featured { @apply rounded-card bg-brand p-8 outline outline-1 outline-gold; box-shadow: inset 0 0 0 6px rgb(var(--brand)), inset 0 0 0 7px rgb(var(--gold) / 0.55); }
-}
+  }
 
 /* Large serif prices read better with proportional lining figures than tabular ones. */
 .price.font-display { font-variant-numeric: lining-nums proportional-nums; }
+
+/* ---- Ambient "kitchen" motion. Transform and opacity only, paused off-screen, off for reduced-motion. ---- */
+@keyframes rock-cw  { from { transform: rotate(-7deg) scale(1.3); } to { transform: rotate(7deg) scale(1.3); } }
+@keyframes rock-ccw { from { transform: rotate(7deg) scale(1.3); } to { transform: rotate(-7deg) scale(1.3); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes steam { 0% { transform: translateY(12px) scaleY(.9); opacity: 0; } 30% { opacity: .5; } 100% { transform: translateY(-64px) scaleY(1.15); opacity: 0; } }
+.rock { animation: rock-cw 9s ease-in-out infinite alternate; will-change: transform; }
+.rock-rev { animation-name: rock-ccw; }
+.spin-slow { animation: spin 90s linear infinite; }
+.steam-wisp { animation: steam 5s ease-out infinite; }
+[data-paused='true'] .rock, [data-paused='true'] .spin-slow, [data-paused='true'] .steam-wisp { animation-play-state: paused; }
+
+/* Signature Table: emerald panel with a slow gold light travelling round the edge, plus a fine inner keyline. */
+.tier-featured { position: relative; overflow: hidden; isolation: isolate; border-radius: 18px; background: rgb(var(--brand)); }
+.tier-featured::before { content: ''; position: absolute; z-index: -2; left: 50%; top: 50%; width: 720px; height: 720px; margin: -360px 0 0 -360px;
+  background: conic-gradient(from 0deg, rgb(var(--gold) / .35) 0 60%, rgb(var(--gold)) 78%, rgb(var(--gold) / .35) 92%); animation: spin 7s linear infinite; }
+.tier-featured::after { content: ''; position: absolute; z-index: -1; inset: 2px; border-radius: 16px; background: rgb(var(--brand));
+  box-shadow: inset 0 0 0 5px rgb(var(--brand)), inset 0 0 0 6px rgb(var(--gold) / .45); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+  .rock, .spin-slow, .steam-wisp, .tier-featured::before { animation: none !important; }
+  .steam-wisp { display: none; }
+}

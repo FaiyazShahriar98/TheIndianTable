@@ -9,7 +9,7 @@ import CookieBanner, { openCookiePrefs } from './CookieBanner'
 // Neutral text wordmark. EXACT LOGO ASSET REQUIRED: replace with the supplied logo/icon files (do not redraw).
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" className="flex items-center gap-2">
-    <span className={`font-display text-lead font-semibold uppercase leading-none tracking-wide ${light ? 'text-page' : 'text-brand'}`}>
+    <span className={`whitespace-nowrap font-display text-lead font-semibold uppercase leading-none tracking-wide ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>

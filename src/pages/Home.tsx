@@ -3,7 +3,7 @@ import { m, Reveal, Stagger, Item, useReducedMotion } from '../lib/motion'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
-import { BookBtn, Headline, Journey, OrderBtn, Photo, Placeholder, SplitCTA, TableCards, spotMove } from '../components/ui'
+import { BookBtn, Headline, Journey, OrderBtn, CountUp, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -38,13 +38,9 @@ export default function Home() {
             </p>
             <p className="mt-2 text-small text-page/70">Alcohol-free drinks · Family Table £59.95 · 350 Higher Walton Road, Preston</p>
           </div>
-          <m.div {...(reduce ? {} : { initial: { scale: 1.03 }, animate: { scale: 1 }, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } })} className="lg:col-span-5">
-            <div className="overflow-hidden rounded-[24px] border border-gold/50 p-2">
-              <div className="overflow-hidden rounded-[18px]">
-                <Photo k="hero" w={720} ratio="4/5" priority alt="Indian curry bowls and breads shared at a dining table" />
-              </div>
-            </div>
-          </m.div>
+          <div className="lg:col-span-5">
+            <Plate k="curry" w={640} dir="cw" steam priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
+          </div>
         </div>
       </section>
 
@@ -58,7 +54,7 @@ export default function Home() {
           ].map(([to, t, c, p]) => (
             <Item key={to}>
               <Link to={to} onPointerMove={spotMove} className="spot group block overflow-hidden rounded-card border border-line bg-white/40 transition-colors duration-200 hover:border-gold">
-                <div className="aspect-[16/9] overflow-hidden"><Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:scale-105" /></div>
+                <div className="aspect-[16/9] overflow-hidden"><Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" /></div>
                 <div className="flex items-center justify-between p-6">
                   <div><h3>{t}</h3><p className="text-small">{c}</p></div>
                   <span aria-hidden="true" className="text-title text-gold transition-transform group-hover:translate-x-1">→</span>
@@ -114,13 +110,13 @@ export default function Home() {
           <Reveal>
             <p className="eyebrow mb-4">Family Table</p>
             <h2>Different favourites. One table. One clear family price.</h2>
-            <p className="price mt-4 font-display text-price text-gold">£59.95</p>
+            <p className="price mt-4 font-display text-price text-gold"><CountUp to={59.95} /></p>
             <ul className="dash mt-6 space-y-2">
               {['Two Signature Table feasts', 'Two Little Table feasts', 'One family fruit-cooler pitcher'].map(p => <li key={p}>{p}</li>)}
             </ul>
             <div className="mt-8 flex flex-wrap gap-4"><Link to="/family" className="btn-gold">See Family Options</Link><BookBtn label="Book a Family Table" light from="family-home" /></div>
           </Reveal>
-          <Reveal delay={0.1}><div className="overflow-hidden rounded-card border border-gold/50 p-2"><div className="overflow-hidden rounded-[14px]"><Photo k="spread" w={760} ratio="4/3" alt="A table of shared Indian dishes" /></div></div></Reveal>
+          <Reveal delay={0.1}><div className="py-4"><Plate k="spread" w={600} dir="ccw" alt="Creamy butter chicken served for the table" /></div></Reveal>
         </div>
       </section>
 
@@ -145,7 +141,7 @@ export default function Home() {
         <div className="wrap">
           <Reveal className="mb-10 max-w-xl"><p className="eyebrow mb-4">From our kitchen</p><h2>House signatures</h2></Reveal>
           <Stagger className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {(['butter', 'tandoori', 'biryani', 'paneer'] as const).map((k, i) => (
+            {(['spread', 'butter', 'biryani', 'paneer'] as const).map((k, i) => (
               <Item key={k} className={i % 2 ? 'md:mt-10' : ''}><div className="overflow-hidden rounded-card"><Photo k={k} w={520} ratio="3/4" alt="Signature dish" className="transition-transform duration-200 hover:scale-105" /></div></Item>
             ))}
           </Stagger>
