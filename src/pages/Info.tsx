@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { m, Reveal, Stagger, Item } from '../lib/motion'
+import { submitEnquiry } from '../lib/supabase'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
@@ -91,12 +92,28 @@ export function Family() {
       </section>
       <section className="section pt-0">
         <div className="wrap grid items-center gap-10 lg:grid-cols-2">
-          <Reveal><div className="overflow-hidden rounded-card"><Photo k="dining" w={760} ratio="4/3" alt="Family sharing a meal (placeholder photograph)" /></div></Reveal>
+          <Reveal><div className="overflow-hidden rounded-card"><Photo k="dining" w={760} ratio="4/3" alt="Family sharing a meal" /></div></Reveal>
           <Reveal delay={0.1}>
             <h2>Highchairs, allergies and booking notes</h2>
             <p className="mt-4">Tell us how many highchairs you need and any allergies or dietary requirements when you book. For urgent allergy questions, please call us.</p>
             <div className="mt-6 flex flex-wrap gap-4"><BookBtn label="Book a Family Table" from="family-mid" /><Link to="/allergens" className="btn-outline">Ask About Allergies</Link></div>
           </Reveal>
+        </div>
+      </section>
+      <section className="section pt-0">
+        <div className="wrap grid gap-12 lg:grid-cols-2">
+          <div>
+            <h2>Verified family reviews</h2>
+            <div className="mt-6 grid gap-4"><Placeholder label="ADD VERIFIED REVIEW (platform, customer name and date required)" /><Placeholder label="ADD VERIFIED REVIEW (platform, customer name and date required)" /></div>
+          </div>
+          <div>
+            <h2>Family questions</h2>
+            <dl className="mt-6 divide-y divide-line border-y border-line">
+              {[['Can I book without an account?', 'Yes. Choose your date, time and party size, then enter your name, mobile and email. No account is needed.'], ['Can I request highchairs?', 'Yes. Add the number of highchairs you need when you book.'], ['What about allergies?', 'Please tell us when you book and tell your server on the day. For urgent questions, call us.'], ['What is the Little Table?', 'A complete choice for children aged 11 and under at £9.95.']].map(([q, a]) => (
+                <div key={q} className="py-4"><dt className="font-bold text-brand">{q}</dt><dd className="mt-2 text-small">{a}</dd></div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
       <SplitCTA />
@@ -118,11 +135,42 @@ export function OurStory() {
       <section className="section">
         <div className="wrap grid gap-12 lg:grid-cols-2">
           <Stagger className="space-y-8">{blocks.map(([t, c]) => <Item key={t}><h2 className="!text-head">{t}</h2><p className="mt-2">{c}</p></Item>)}</Stagger>
-          <div className="space-y-6"><Photo k="room" w={700} ratio="4/3" alt="Restaurant interior (placeholder photograph)" className="rounded-card" /><Placeholder label="REAL TEAM PHOTOGRAPHS AND BIOGRAPHIES TO BE SUPPLIED BY THE OWNER" /></div>
+          <div className="space-y-6"><Photo k="room" w={700} ratio="4/3" alt="Restaurant interior" className="rounded-card" /><Placeholder label="REAL TEAM PHOTOGRAPHS AND BIOGRAPHIES TO BE SUPPLIED BY THE OWNER" /></div>
         </div>
       </section>
       <SplitCTA />
     </>
+  )
+}
+
+function EnquiryForm() {
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [f, setF] = useState({ name: '', email: '', message: '', website: '' })
+  const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF(p => ({ ...p, [k]: e.target.value }))
+  const send = async (e: FormEvent) => {
+    e.preventDefault(); setState('sending')
+    const r = await submitEnquiry(f)
+    setState(r.ok ? 'sent' : 'error')
+    if (r.ok) setF({ name: '', email: '', message: '', website: '' })
+  }
+  if (state === 'sent') return (
+    <div role="status" className="card mt-6 text-center">
+      <h2 className="!text-head">Message sent</h2>
+      <p className="mt-2">Thank you. We will get back to you soon. For anything urgent, please call <a className="font-bold underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>
+      <button className="btn-outline mt-6" onClick={() => setState('idle')}>Send another message</button>
+    </div>
+  )
+  return (
+    <form className="card mt-6 space-y-4" onSubmit={send}>
+      <h2 className="!text-title">General enquiry</h2>
+      <p className="text-small">For urgent booking changes or allergy orders, please call us instead.</p>
+      <div><label className="label" htmlFor="cn">Name</label><input id="cn" required maxLength={100} autoComplete="name" className="field" value={f.name} onChange={set('name')} /></div>
+      <div><label className="label" htmlFor="ce">Email</label><input id="ce" type="email" required maxLength={200} autoComplete="email" className="field" value={f.email} onChange={set('email')} /></div>
+      <div><label className="label" htmlFor="cm">Message</label><textarea id="cm" rows={4} required maxLength={2000} className="field" value={f.message} onChange={set('message')} /></div>
+      <div aria-hidden="true" className="absolute -left-[9999px]"><label>Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={set('website')} /></label></div>
+      {state === 'error' && <p role="alert" className="err">We could not send that just now. Please call <a className="underline" href={SITE.phoneHref}>{SITE.phone}</a> or try again.</p>}
+      <button className="btn-primary" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : 'Send Message'}</button>
+    </form>
   )
 }
 
@@ -149,16 +197,8 @@ export function Contact() {
             <div className="card text-small"><p>Dining, collection, local delivery and Bring to Car are all available. <Link to="/order" className="font-bold underline">Order Takeaway</Link></p><div className="mt-4"><Placeholder label="ACCESS AND PARKING: CONFIRM BEFORE LAUNCH" /></div></div>
           </Reveal>
           <Reveal delay={0.1}>
-            <iframe title="Map of The Indian Table" loading="lazy" className="h-80 w-full rounded-card border border-line" src="https://www.openstreetmap.org/export/embed.html?bbox=-2.7120%2C53.7230%2C-2.6520%2C53.7530&layer=mapnik" />
-            <form className="card mt-6 space-y-4" onSubmit={e => { e.preventDefault(); setSent(true) }}>
-              <h2 className="!text-title">General enquiry</h2>
-              <p className="text-small">For urgent booking changes or allergy orders, please call us instead.</p>
-              <div><label className="label" htmlFor="cn">Name</label><input id="cn" required className="field" /></div>
-              <div><label className="label" htmlFor="ce">Email</label><input id="ce" type="email" required className="field" /></div>
-              <div><label className="label" htmlFor="cm">Message</label><textarea id="cm" rows={4} required className="field" /></div>
-              <button className="btn-primary" type="submit">Send Message</button>
-              {sent && <p role="status" className="text-small font-bold text-brand">Prototype only: enquiry form is not yet connected. Please call {SITE.phone}.</p>}
-            </form>
+            <iframe title="Map of The Indian Table" loading="lazy" className="h-80 w-full rounded-card border border-line" src="https://www.google.com/maps?q=350+Higher+Walton+Road+Preston+PR5+4HU&output=embed" />
+            <EnquiryForm />
           </Reveal>
         </div>
       </section>

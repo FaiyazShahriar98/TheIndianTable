@@ -6,14 +6,9 @@ import { SITE, openStatus } from '../config'
 import { track } from '../lib/analytics'
 import CookieBanner, { openCookiePrefs } from './CookieBanner'
 
-// Placeholder wordmark. Replace with the exact logo and icon assets supplied by the owner.
+// Neutral text wordmark. EXACT LOGO ASSET REQUIRED: replace with the supplied logo/icon files (do not redraw).
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" className="flex items-center gap-2">
-    <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden="true" className={light ? 'text-gold' : 'text-brand'}>
-      <path d="M12 30h40a20 20 0 0 1-40 0z" fill="none" stroke="currentColor" strokeWidth="3.5" />
-      <path d="M32 6l3.5 7-3.5 7-3.5-7z" className="fill-gold" />
-      <path d="M18 54h28" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" />
-    </svg>
     <span className={`font-display text-lead font-semibold uppercase leading-none tracking-wide ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
@@ -42,6 +37,12 @@ function Header() {
   const { pathname } = useLocation()
   useEffect(() => setOpen(false), [pathname])
   useEffect(() => { document.body.style.overflow = open ? 'hidden' : '' }, [open])
+  useEffect(() => {
+    if (!open) return
+    const f = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', f)
+    return () => window.removeEventListener('keydown', f)
+  }, [open])
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-page">

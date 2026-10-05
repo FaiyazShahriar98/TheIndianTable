@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, m } from '../lib/motion'
-import { SITE } from '../config'
+import { SITE, londonNow } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
@@ -16,7 +16,9 @@ function slotsFor(iso: string) {
   const [o, c] = SITE.hoursByDay[new Date(`${iso}T12:00:00`).getDay()]
   const out: string[] = []
   for (let h = o; h <= c - 1; h += 0.5) out.push(`${pad(Math.floor(h))}:${h % 1 ? '30' : '00'}`)
-  return out
+  const t = londonNow()
+  if (iso !== t.iso) return out
+  return out.filter(s => { const [h, m] = s.split(':').map(Number); return h * 60 + m >= t.minutes + 30 }) // allow 30 min notice
 }
 
 type Errors = Partial<Record<'name' | 'phone' | 'email' | 'date' | 'time', string>>
@@ -30,7 +32,7 @@ export default function Book() {
   const [serverErr, setServerErr] = useState('')
   const [demo, setDemo] = useState(false)
   const started = useRef(false)
-  const today = useMemo(() => toISO(new Date()), [])
+  const today = useMemo(() => londonNow().iso, [])
   const maxDate = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 90); return toISO(d) }, [])
   const slots = useMemo(() => slotsFor(f.date), [f.date])
 
@@ -105,7 +107,7 @@ export default function Book() {
                   <div>
                     <label className="label" htmlFor="time">Time</label>
                     <select id="time" className="field" value={f.time} disabled={!f.date} onChange={e => set('time', e.target.value)} {...aria('time')}>
-                      <option value="">{f.date ? 'Choose a time' : 'Pick a date first'}</option>
+                      <option value="">{f.date ? (slots.length ? 'Choose a time' : 'No times left today') : 'Pick a date first'}</option>
                       {slots.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                     {err('time')}

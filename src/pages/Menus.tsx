@@ -78,9 +78,9 @@ export function ALaCarte() {
       </PageHero>
       <section className="section pt-8 md:pt-12">
         <div className="wrap">
-          <div role="tablist" aria-label="Menu categories" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-4 md:mx-0 md:flex-wrap md:px-0">
+          <div role="group" aria-label="Menu categories" className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-4 md:mx-0 md:flex-wrap md:px-0">
             {TABS.map(t => (
-              <button key={t} role="tab" aria-selected={tab === t} onClick={() => { setTab(t); track('menu_category_view', { category: t }) }}
+              <button key={t} aria-pressed={tab === t} onClick={() => { setTab(t); track('menu_category_view', { category: t }) }}
                 className={`min-h-12 shrink-0 rounded-full border px-5 text-small font-bold transition-colors ${tab === t ? 'border-brand bg-brand text-page' : 'border-line-strong text-brand hover:border-gold'}`}>{t}</button>
             ))}
           </div>
@@ -94,7 +94,7 @@ export function ALaCarte() {
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
                     {SIGNATURES.map(d => (
                       <div key={d.id} className="overflow-hidden rounded-card border border-line bg-white/40">
-                        <Photo k={'curry'} w={420} ratio="1/1" alt="" />
+                        <Photo k={d.img ?? 'curry'} w={420} ratio="1/1" alt="" />
                         <p className="p-4 font-display text-lead font-semibold uppercase leading-tight text-brand">{d.name}</p>
                       </div>
                     ))}
@@ -123,6 +123,7 @@ export function ALaCarte() {
           <div className="mt-14 flex flex-wrap items-center gap-4 rounded-card bg-brand p-6 text-page md:p-8">
             <p className="mr-auto font-display text-title">Prefer a complete five-part feast?</p>
             <Link to="/fixed-price-menu" className="btn-gold">View Fixed-Price Tables</Link>
+            <Link to="/allergens" className="btn-outline-light">Ask About Allergens</Link>
             <button className="btn-outline-light" disabled title="Print menu PDF to be supplied">Download Print Menu</button>
           </div>
         </div>
@@ -148,7 +149,7 @@ export function Drinks() {
               {COOLERS.map(c => <Item key={c}><div className="flex min-h-16 items-center gap-4 rounded-card border border-line bg-white/40 px-5 font-display text-lead font-semibold text-brand"><Diamond className="text-gold" />{c}</div></Item>)}
             </Stagger>
           </Reveal>
-          <Reveal delay={0.1}><div className="overflow-hidden rounded-card"><Photo k="drink" w={720} ratio="4/3" alt="Refreshing alcohol-free cooler (placeholder photograph)" /></div></Reveal>
+          <Reveal delay={0.1}><div className="overflow-hidden rounded-card"><Photo k="drink" w={720} ratio="4/3" alt="Refreshing alcohol-free cooler" /></div></Reveal>
         </div>
       </section>
       <section className="section bg-sunken pt-16">

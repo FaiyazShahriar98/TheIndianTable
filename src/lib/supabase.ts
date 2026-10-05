@@ -35,3 +35,16 @@ export async function submitBooking(b: BookingInput): Promise<{ ok: boolean; dem
     return { ok: false, error: 'We could not reach the booking service.' }
   }
 }
+
+export async function submitEnquiry(e: { name: string; email: string; message: string; website?: string }): Promise<{ ok: boolean }> {
+  if (e.website) return { ok: true } // bot
+  if (!url || !key) { await new Promise(r => setTimeout(r, 600)); return { ok: true } } // demo mode
+  try {
+    const res = await fetch(`${url}/rest/v1/enquiries`, {
+      method: 'POST',
+      headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ name: e.name.trim(), email: e.email.trim(), message: e.message.trim() }),
+    })
+    return { ok: res.ok }
+  } catch { return { ok: false } }
+}

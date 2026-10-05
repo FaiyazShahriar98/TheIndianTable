@@ -36,11 +36,12 @@ export default function Home() {
             <p className="mt-8 text-small font-semibold text-page/80 price">
               Classic £14.95 <span className="mx-2 text-gold">|</span> Signature £18.95 <span className="mx-2 text-gold">|</span> Grand £25.95 <span className="mx-2 text-gold">|</span> Little Table £9.95
             </p>
+            <p className="mt-2 text-small text-page/70">Alcohol-free drinks · Family Table £59.95 · 350 Higher Walton Road, Preston</p>
           </div>
           <m.div {...(reduce ? {} : { initial: { scale: 1.03 }, animate: { scale: 1 }, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } })} className="lg:col-span-5">
             <div className="overflow-hidden rounded-[24px] border border-gold/50 p-2">
               <div className="overflow-hidden rounded-[18px]">
-                <Photo k="hero" w={720} ratio="4/5" priority alt="Indian curry bowls and breads shared at a dining table (placeholder photograph)" />
+                <Photo k="hero" w={720} ratio="4/5" priority alt="Indian curry bowls and breads shared at a dining table" />
               </div>
             </div>
           </m.div>
@@ -95,7 +96,7 @@ export default function Home() {
       {/* 5 Why */}
       <section className="section">
         <div className="wrap grid items-center gap-12 lg:grid-cols-2">
-          <Reveal><div className="overflow-hidden rounded-card"><Photo k="room" w={760} ratio="4/3" alt="Warm, welcoming restaurant dining room (placeholder photograph)" /></div></Reveal>
+          <Reveal><div className="overflow-hidden rounded-card"><Photo k="room" w={760} ratio="4/3" alt="Warm, welcoming restaurant dining room" /></div></Reveal>
           <div>
             <Reveal><p className="eyebrow mb-4">Our Table, Your Table</p><Headline>Why families choose The Indian Table</Headline></Reveal>
             <Stagger className="mt-8 divide-y divide-line border-y border-line">
@@ -119,7 +120,7 @@ export default function Home() {
             </ul>
             <div className="mt-8 flex flex-wrap gap-4"><Link to="/family" className="btn-gold">See Family Options</Link><BookBtn label="Book a Family Table" light from="family-home" /></div>
           </Reveal>
-          <Reveal delay={0.1}><div className="overflow-hidden rounded-card border border-gold/50 p-2"><div className="overflow-hidden rounded-[14px]"><Photo k="spread" w={760} ratio="4/3" alt="A table of shared Indian dishes (placeholder photograph)" /></div></div></Reveal>
+          <Reveal delay={0.1}><div className="overflow-hidden rounded-card border border-gold/50 p-2"><div className="overflow-hidden rounded-[14px]"><Photo k="spread" w={760} ratio="4/3" alt="A table of shared Indian dishes" /></div></div></Reveal>
         </div>
       </section>
 
@@ -135,17 +136,17 @@ export default function Home() {
             <div className="mt-6 flex flex-wrap gap-2">{['Collection', 'Delivery', 'Bring to Car'].map(x => <span key={x} className="rounded-full border border-line-strong px-4 py-2 text-small font-bold text-brand">{x}</span>)}</div>
             <div className="mt-8"><OrderBtn label="Order Takeaway" from="home-box" /></div>
           </Reveal>
-          <Reveal><div className="overflow-hidden rounded-card"><Photo k="street" w={760} ratio="4/3" alt="Takeaway Indian street food (placeholder photograph)" /></div></Reveal>
+          <Reveal><div className="overflow-hidden rounded-card"><Photo k="street" w={760} ratio="4/3" alt="Takeaway Indian street food" /></div></Reveal>
         </div>
       </section>
 
       {/* 8 Signature photography */}
       <section className="section bg-sunken pt-16">
         <div className="wrap">
-          <Reveal className="mb-10 max-w-xl"><p className="eyebrow mb-4">House Signatures</p><h2>Dishes we are known for</h2></Reveal>
+          <Reveal className="mb-10 max-w-xl"><p className="eyebrow mb-4">From our kitchen</p><h2>House signatures</h2></Reveal>
           <Stagger className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {(['butter', 'tandoori', 'biryani', 'paneer'] as const).map((k, i) => (
-              <Item key={k} className={i % 2 ? 'md:mt-10' : ''}><div className="overflow-hidden rounded-card"><Photo k={k} w={520} ratio="3/4" alt="Signature dish (placeholder photograph)" className="transition-transform duration-200 hover:scale-105" /></div></Item>
+              <Item key={k} className={i % 2 ? 'md:mt-10' : ''}><div className="overflow-hidden rounded-card"><Photo k={k} w={520} ratio="3/4" alt="Signature dish" className="transition-transform duration-200 hover:scale-105" /></div></Item>
             ))}
           </Stagger>
           <p className="mt-8"><Link to="/a-la-carte" className="btn-outline">Dine Your Way</Link></p>
@@ -175,7 +176,7 @@ export default function Home() {
                 <a href={SITE.phoneHref} onClick={() => track('phone_click')} className="btn-outline">Call Us</a>
               </div>
             </div>
-            <iframe title="Map of The Indian Table" loading="lazy" className="min-h-80 w-full border-0" src="https://www.openstreetmap.org/export/embed.html?bbox=-2.7120%2C53.7230%2C-2.6520%2C53.7530&layer=mapnik" />
+            <iframe title="Map of The Indian Table" loading="lazy" className="min-h-80 w-full border-0" src="https://www.google.com/maps?q=350+Higher+Walton+Road+Preston+PR5+4HU&output=embed" />
           </div>
         </div>
       </section>

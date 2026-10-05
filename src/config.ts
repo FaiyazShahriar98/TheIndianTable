@@ -41,8 +41,14 @@ export const PHOTOS = {
   street: '1574653853027-5382a3d23a15',
 }
 
+/** Current time in the restaurant's timezone, whatever the visitor's device says. */
+export function londonNow(now = new Date()) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(now).map(x => [x.type, x.value]))
+  return { iso: `${p.year}-${p.month}-${p.day}`, day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(p.weekday), minutes: +p.hour * 60 + +p.minute }
+}
+
 export function openStatus(now = new Date()) {
-  const [o, c] = SITE.hoursByDay[now.getDay()]
-  const h = now.getHours() + now.getMinutes() / 60
-  return h >= o && h < c
+  const t = londonNow(now)
+  const [o, c] = SITE.hoursByDay[t.day]
+  return t.minutes >= o * 60 && t.minutes < c * 60
 }

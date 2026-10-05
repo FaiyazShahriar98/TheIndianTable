@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AnimatePresence, m } from '../lib/motion'
 import { SITE } from '../config'
 import { useSEO } from '../lib/seo'
@@ -20,6 +21,13 @@ export default function Order() {
   const [cart, setCart] = useState<Record<string, number>>({})
   const [open, setOpen] = useState(false)
   const [done, setDone] = useState(false)
+  const [needMode, setNeedMode] = useState(false)
+  useEffect(() => {
+    if (!open && !done) return
+    const f = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); setDone(false) } }
+    window.addEventListener('keydown', f)
+    return () => window.removeEventListener('keydown', f)
+  }, [open, done])
 
   const lines = useMemo(() => ORDER_DISHES.filter(d => cart[d.id]).map(d => ({ d, q: cart[d.id] })), [cart])
   const total = lines.reduce((s, l) => s + (l.d.price ?? 0) * l.q, 0)
@@ -30,7 +38,7 @@ export default function Order() {
     if (delta > 0) track('add_to_basket', { item: id })
     setCart(c => { const q = (c[id] || 0) + delta; const n = { ...c }; if (q <= 0) delete n[id]; else n[id] = q; return n })
   }
-  const pick = (x: Mode) => { setMode(x); track('fulfilment_selected', { method: x }) }
+  const pick = (x: Mode) => { setMode(x); setNeedMode(false); track('fulfilment_selected', { method: x }) }
 
   const cats = CATEGORIES.map(c => ({ c, items: ORDER_DISHES.filter(d => d.cat === c) }))
   const suggest = ORDER_DISHES.filter(d => d.cat === 'Drinks').slice(0, 2)
@@ -56,8 +64,9 @@ export default function Order() {
           </ul>
           <p className="mt-4 flex justify-between font-bold text-brand"><span>Total</span><span className="price">{gbp(total)}</span></p>
           {hasUnpriced && <p className="mt-2 text-micro text-gold-text font-semibold">Some dishes are awaiting approved prices.</p>}
-          <p className="mt-4 text-micro">Please <a className="font-bold underline" href="/allergens">check allergen information</a> before you pay.</p>
-          <button className="btn-primary mt-4 w-full" onClick={() => { setOpen(false); setDone(true); track('purchase', { value: total, method: mode }) }}>Place Demo Order</button>
+          <p className="mt-4 text-micro">Please <Link className="font-bold underline" to="/allergens">check allergen information</Link> before you pay.</p>
+          {needMode && !mode && <p role="alert" className="err">Please choose Collection, Delivery or Bring to Car first.</p>}
+          <button className="btn-primary mt-4 w-full" onClick={() => { if (!mode) { setNeedMode(true); return } setOpen(false); setDone(true); track('purchase', { value: total, method: mode }) }}>Place Demo Order</button>
         </>
       )}
     </div>
@@ -69,11 +78,11 @@ export default function Order() {
       <section className="section pb-8 md:pb-10">
         <div className="wrap">
           <h2 className="mb-6 !text-head">How would you like it?</h2>
-          <div role="radiogroup" aria-label="Fulfilment method" className="grid gap-4 md:grid-cols-3">
+          <div role="group" aria-label="Fulfilment method" className="grid gap-4 md:grid-cols-3">
             {MODES.map(x => (
-              <button key={x.m} role="radio" aria-checked={mode === x.m} onClick={() => pick(x.m)}
+              <button key={x.m} aria-pressed={mode === x.m} onClick={() => pick(x.m)}
                 className={`relative min-h-24 rounded-card border p-6 text-left transition-colors ${mode === x.m ? 'border-brand bg-brand text-page' : 'border-line-strong bg-white/40 hover:border-gold'}`}>
-                <span className={`block font-display text-title font-semibold uppercase ${mode === x.m ? 'text-page' : 'text-brand'}`}>{x.m}</span>
+                <span className={`block font-display text-title font-semibold uppercase ${mode === x.m ? 'text-page' : 'text-brand'}`}>Select {x.m}</span>
                 <span className="mt-2 block text-small">{x.d}</span>
                 {mode === x.m && <m.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-4 text-gold" aria-hidden="true">✓</m.span>}
               </button>
@@ -95,7 +104,7 @@ export default function Order() {
                 <p className="price mt-2 font-display text-price text-gold">£29.95</p>
                 <button className="btn-gold mt-6" onClick={() => add('ffb', 1)}>Add to Order</button>
               </div>
-              <div className="md:col-span-2"><Photo k="spread" w={560} ratio="4/3" alt="Family feast box (placeholder photograph)" /></div>
+              <div className="md:col-span-2"><Photo k="spread" w={560} ratio="4/3" alt="Family feast box" /></div>
             </div>
 
             {cats.map(({ c, items }) => (
@@ -107,7 +116,7 @@ export default function Order() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     {items.map(d => (
                       <div key={d.id} className="flex items-center gap-4 rounded-card border border-line bg-white/40 p-4">
-                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[12px]"><Photo k="curry" w={128} ratio="1/1" alt="" /></div>
+                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[12px]"><Photo k={d.img ?? 'curry'} w={128} ratio="1/1" alt="" /></div>
                         <div className="min-w-0 flex-1"><p className="font-bold leading-tight text-brand">{d.name}</p><p className="price text-small">{d.price !== undefined ? gbp(d.price) : 'Price to be added'}</p></div>
                         <m.button whileTap={{ scale: 0.92 }} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand text-lead text-page" aria-label={`Add ${d.name}`} onClick={() => add(d.id, 1)}>+</m.button>
                       </div>
@@ -138,14 +147,14 @@ export default function Order() {
       <AnimatePresence>
         {open && (
           <m.div className="fixed inset-0 z-50 flex items-end bg-ink/60 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)}>
-            <m.div role="dialog" aria-label="Basket" onClick={e => e.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'tween', duration: 0.25 }} className="max-h-[85dvh] w-full overflow-y-auto rounded-t-[24px] bg-page p-4">
+            <m.div role="dialog" aria-modal="true" aria-label="Basket" onClick={e => e.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'tween', duration: 0.25 }} className="max-h-[85dvh] w-full overflow-y-auto rounded-t-[24px] bg-page p-4">
               {Basket}<button className="btn-outline mt-4 w-full" onClick={() => setOpen(false)}>Keep browsing</button>
             </m.div>
           </m.div>
         )}
         {done && (
           <m.div className="fixed inset-0 z-50 grid place-items-center bg-ink/60 p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <m.div role="dialog" aria-label="Order confirmation" initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="card max-w-md bg-page text-center">
+            <m.div role="dialog" aria-modal="true" aria-label="Order confirmation" initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="card max-w-md bg-page text-center">
               <h3>Prototype order placed</h3>
               <p className="mt-2 text-small">This is a demo basket. No payment was taken. Live ordering will connect to the provider via ORDER_URL.</p>
               <button className="btn-primary mt-6" onClick={() => { setDone(false); setCart({}) }}>Done</button>
