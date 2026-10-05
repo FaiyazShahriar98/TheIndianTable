@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { img, PHOTOS } from '../config'
 import { JOURNEY, TIERS } from '../data/menu'
-import { Item, Reveal, Stagger } from '../lib/motion'
+import { Item, Reveal, Stagger, m, useReducedMotion } from '../lib/motion'
 import { track } from '../lib/analytics'
 
 type PhotoKey = keyof typeof PHOTOS
@@ -36,15 +36,15 @@ export const Rule = () => <div className="rule" aria-hidden="true"><Diamond /></
 
 export function PageHero({ eyebrow, title, copy, children, dark = true }: { eyebrow?: string; title: string; copy?: string; children?: ReactNode; dark?: boolean }) {
   return (
-    <section className={`relative overflow-hidden ${dark ? 'on-dark bg-emerald text-cream' : ''}`}>
-      <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full border border-brass/20" />
-      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full border border-brass/15" />
+    <section className={`relative overflow-hidden ${dark ? 'on-dark bg-brand text-page' : ''}`}>
+      <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full border border-gold/20" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full border border-gold/15" />
       <div className="wrap relative py-14 md:py-24">
         <Reveal className="max-w-3xl">
           {eyebrow && <p className="eyebrow mb-4">{eyebrow}</p>}
           <h1>{title}</h1>
-          {copy && <p className={`mt-5 max-w-2xl text-lg ${dark ? 'text-cream/85' : ''}`}>{copy}</p>}
-          {children && <div className="mt-8 flex flex-wrap gap-3">{children}</div>}
+          {copy && <p className={`mt-6 max-w-2xl text-lead ${dark ? 'text-page/85' : ''}`}>{copy}</p>}
+          {children && <div className="mt-8 flex flex-wrap gap-4">{children}</div>}
         </Reveal>
       </div>
     </section>
@@ -58,38 +58,62 @@ export const OrderBtn = ({ label = 'Order Takeaway', from = 'page', light = fals
   <Link to="/order" onClick={() => track('order_start', { from })} className={light ? 'btn-outline-light' : 'btn-outline'}>{label}</Link>
 )
 
+/** Five-part feast as one connected path, not five boxed cards. */
 export function Journey({ dark = false }: { dark?: boolean }) {
   return (
-    <Stagger className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <ol className="relative grid grid-cols-1 gap-6 md:grid-cols-5 md:gap-4">
+      <span aria-hidden="true" className="absolute left-6 top-6 hidden h-px w-[calc(100%-3rem)] bg-gold/60 md:block" />
       {JOURNEY.map((s, i) => (
-        <Item key={s} className={`rounded-card border p-4 text-center ${dark ? 'border-brass/40' : 'border-emerald/25 bg-white/40'}`}>
-          <span className="font-display text-4xl text-brass">{i + 1}</span>
-          <span className={`mt-1 block text-sm font-bold uppercase tracking-wider ${dark ? 'text-cream' : 'text-emerald'}`}>{s}</span>
-        </Item>
+        <li key={s} className="relative flex items-center gap-4 md:flex-col md:items-start md:gap-4">
+          <span className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-gold font-display text-title ${dark ? 'bg-brand text-gold' : 'bg-sunken text-gold-text'}`}>{i + 1}</span>
+          <span className={`text-small font-bold uppercase tracking-wider ${dark ? 'text-page' : 'text-brand'}`}>{s}</span>
+        </li>
       ))}
-    </Stagger>
+    </ol>
+  )
+}
+
+/** Cursor-following glow for hover (React Bits SpotlightCard idea). JS only sets two CSS variables. */
+export const spotMove = (e: React.PointerEvent<HTMLElement>) => {
+  const r = e.currentTarget.getBoundingClientRect()
+  e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+  e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+}
+
+/** Heading whose words rise in one after another (React Bits SplitText idea). ~300ms total, text stays in the DOM. */
+export function Headline({ children, as: Tag = 'h2', className = '' }: { children: string; as?: 'h1' | 'h2' | 'h3'; className?: string }) {
+  const reduce = useReducedMotion()
+  if (reduce) return <Tag className={className}>{children}</Tag>
+  return (
+    <Tag className={className} aria-label={children}>
+      {children.split(' ').map((w, i) => (
+        <span key={i} aria-hidden="true" className="inline-block overflow-hidden align-bottom">
+          <m.span className="inline-block" initial={{ y: '100%' }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}>{w}&nbsp;</m.span>
+        </span>
+      ))}
+    </Tag>
   )
 }
 
 /** Classic / Signature / Grand. Signature sits in the middle, emphasised with scale, fill and double keyline. */
 export function TableCards() {
   return (
-    <Stagger className="grid items-center gap-5 md:grid-cols-3">
+    <Stagger className="grid items-center gap-6 md:grid-cols-3">
       {TIERS.map(t => (
         <Item key={t.id} className={t.featured ? 'order-none md:z-10 md:scale-[1.07]' : ''}>
-          <article
-            className={`relative h-full rounded-card p-7 md:p-8 ${t.featured
-              ? 'on-dark bg-emerald text-cream outline outline-1 outline-offset-0 outline-brass ring-1 ring-inset ring-brass/50 [box-shadow:inset_0_0_0_6px_#12382E,inset_0_0_0_7px_rgba(199,162,74,.55)] md:py-12'
-              : 'border border-emerald/40 bg-cream'}`}
+          <article onPointerMove={spotMove}
+            className={`spot relative h-full rounded-card p-8 md:p-8 ${t.featured
+              ? 'tier-featured on-dark text-page md:py-12'
+              : 'border border-line-strong bg-page'}`}
           >
-            {t.featured && <p className="eyebrow mb-3">Chef's Recommendation</p>}
-            <h3 className={t.featured ? '!text-cream' : ''}>{t.name}</h3>
-            <p className="mt-2 flex items-baseline gap-2"><span className={`price font-display text-5xl ${t.featured ? 'text-brass' : 'text-emerald'}`}>{t.price}</span><span className="text-sm opacity-80">per person</span></p>
-            <p className={`mt-2 text-sm font-semibold ${t.featured ? 'text-cream/90' : 'text-brass-600'}`}>{t.tag}</p>
-            <ul className="mt-5 space-y-2.5 text-[15px]">
-              {t.points.map(p => <li key={p} className="flex gap-2.5"><Diamond className="mt-[9px] shrink-0 text-brass" />{p}</li>)}
+            {t.featured && <p className="eyebrow mb-4">Chef's Recommendation</p>}
+            <h3 className={t.featured ? '!text-page' : ''}>{t.name}</h3>
+            <p className="mt-2 flex items-baseline gap-2"><span className={`price font-display text-price ${t.featured ? 'text-gold' : 'text-brand'}`}>{t.price}</span><span className="text-small opacity-80">per person</span></p>
+            <p className={`mt-2 text-small font-semibold ${t.featured ? 'text-page/90' : 'text-gold-text'}`}>{t.tag}</p>
+            <ul className="dash mt-6 space-y-2 text-small">
+              {t.points.map(p => <li key={p}>{p}</li>)}
             </ul>
-            <Link to="/book" onClick={() => { track('book_start', { from: t.id }) }} className={`mt-7 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</Link>
+            <Link to="/book" onClick={() => { track('book_start', { from: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</Link>
           </article>
         </Item>
       ))}
@@ -99,12 +123,12 @@ export function TableCards() {
 
 export function SplitCTA() {
   return (
-    <section className="on-dark bg-emerald py-16 text-center text-cream md:py-24">
+    <section className="on-dark bg-brand py-16 text-center text-page md:py-24">
       <div className="wrap">
         <Reveal>
-          <p className="eyebrow mb-3">Tonight at The Indian Table</p>
+          <p className="eyebrow mb-4">Tonight at The Indian Table</p>
           <h2 className="mx-auto max-w-2xl">Book tonight. Or order tonight.</h2>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
             <BookBtn light from="final" />
             <OrderBtn light from="final" />
           </div>
@@ -115,5 +139,5 @@ export function SplitCTA() {
 }
 
 export function Placeholder({ label }: { label: string }) {
-  return <p className="rounded-btn border border-dashed border-brass-600/60 bg-white/40 p-4 text-sm font-semibold text-brass-600">{label}</p>
+  return <p className="rounded-btn border border-dashed border-gold-text/60 bg-white/40 p-4 text-small font-semibold text-gold-text">{label}</p>
 }

@@ -20,38 +20,38 @@ export function BringToCar() {
       </PageHero>
       <section className="section">
         <div className="wrap">
-          <Stagger className="grid gap-5 md:grid-cols-3">
+          <Stagger className="grid gap-6 md:grid-cols-3">
             {[['Order', 'Choose Bring to Car, select a time and pay online.'], ['Arrive', 'Park at the confirmed collection point.'], ['Enjoy', 'Tell us you are here and we will bring out the order.']].map(([t, c], i) => (
-              <Item key={t}><div className="card h-full"><span className="font-display text-6xl text-brass">{i + 1}</span><h3 className="uppercase">{t}</h3><p className="mt-2">{c}</p></div></Item>
+              <Item key={t}><div className="card h-full"><span className="font-display text-price text-gold">{i + 1}</span><h3 className="uppercase">{t}</h3><p className="mt-2">{c}</p></div></Item>
             ))}
           </Stagger>
-          <Reveal className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {['Families', 'Customers with limited mobility', 'Busy collections', 'Poor weather'].map(x => <div key={x} className="flex items-center gap-3 rounded-card border border-emerald/20 p-4 font-bold text-emerald"><Diamond className="text-brass" />{x}</div>)}
+          <Reveal className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {['Families', 'Customers with limited mobility', 'Busy collections', 'Poor weather'].map(x => <div key={x} className="flex items-center gap-4 rounded-card border border-line p-4 font-bold text-brand"><Diamond className="text-gold" />{x}</div>)}
           </Reveal>
         </div>
       </section>
-      <section id="start" className="section bg-cream-200/60 pt-16">
+      <section id="start" className="section bg-sunken pt-16">
         <div className="wrap grid gap-10 lg:grid-cols-2">
           <form onSubmit={submit} className="card space-y-4">
-            <h2 className="!text-[32px]">Prototype details</h2>
-            <p className="rounded-btn border border-dashed border-brass-600/60 p-3 text-sm font-semibold text-brass-600">PROTOTYPE: these fields appear at checkout in the live ordering flow.</p>
+            <h2 className="!text-head">Prototype details</h2>
+            <p className="rounded-btn border border-dashed border-gold-text/60 p-4 text-small font-semibold text-gold-text">PROTOTYPE: these fields appear at checkout in the live ordering flow.</p>
             {[['time', 'Collection time', 'time'], ['reg', 'Car registration', 'text'], ['colour', 'Car colour', 'text'], ['mob', 'Mobile number', 'tel']].map(([id, l, t]) => (
               <div key={id}><label className="label" htmlFor={id}>{l}</label><input id={id} type={t} required className="field" /></div>
             ))}
             <button className="btn-primary w-full" type="submit">Save Details</button>
             {sent && (
-              <m.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-btn bg-emerald p-4 text-cream">
+              <m.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-btn bg-brand p-4 text-page">
                 <p className="font-bold">Details saved (demo).</p>
-                <button type="button" className="btn-gold mt-3 w-full" onClick={() => setHere(true)}>I'm Here</button>
-                {here && <p role="status" className="mt-3 text-sm">Prototype notification only: in the live flow this alerts our team. You can also call <a className="underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>}
+                <button type="button" className="btn-gold mt-4 w-full" onClick={() => setHere(true)}>I'm Here</button>
+                {here && <p role="status" className="mt-4 text-small">Prototype notification only: in the live flow this alerts our team. You can also call <a className="underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>}
               </m.div>
             )}
           </form>
           <div>
-            <h2 className="!text-[32px]">Good to know</h2>
-            <ul className="mt-5 space-y-3">
-              <li><strong>Where do I park?</strong><br /><span className="text-[15px]">Collection point to be confirmed before launch.</span></li>
-              <li><strong>How long will it take?</strong><br /><span className="text-[15px]">We will bring it out as soon as you let us know you are here.</span></li>
+            <h2 className="!text-head">Good to know</h2>
+            <ul className="mt-6 space-y-4">
+              <li><strong>Where do I park?</strong><br /><span className="text-small">Collection point to be confirmed before launch.</span></li>
+              <li><strong>How long will it take?</strong><br /><span className="text-small">We will bring it out as soon as you let us know you are here.</span></li>
               <li><strong>Prefer to phone?</strong><br /><a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></li>
             </ul>
             <div className="mt-8"><OrderBtn label="Order Takeaway" from="btc" /></div>
@@ -72,19 +72,19 @@ export function Family() {
       <section className="section">
         <div className="wrap grid gap-6 lg:grid-cols-2">
           <Reveal>
-            <article className="on-dark h-full rounded-card bg-emerald p-8 text-cream md:p-10">
+            <article className="on-dark h-full rounded-card bg-brand p-8 text-page md:p-10">
               <p className="eyebrow mb-2">Family Table</p>
-              <p className="price font-display text-6xl text-brass">£59.95</p>
-              <ul className="mt-5 space-y-2.5">{['Two Signature Table feasts', 'Two Little Table feasts', 'One family fruit-cooler pitcher'].map(p => <li key={p} className="flex gap-3"><Diamond className="mt-[9px] shrink-0 text-brass" />{p}</li>)}</ul>
-              <p className="mt-5 text-cream/85">Different favourites. One table. One clear family price.</p>
+              <p className="price font-display text-price text-gold">£59.95</p>
+              <ul className="dash mt-6 space-y-2">{['Two Signature Table feasts', 'Two Little Table feasts', 'One family fruit-cooler pitcher'].map(p => <li key={p}>{p}</li>)}</ul>
+              <p className="mt-6 text-page/85">Different favourites. One table. One clear family price.</p>
             </article>
           </Reveal>
           <Reveal delay={0.1}>
             <article className="card h-full">
               <p className="eyebrow mb-2">Little Table</p>
-              <p className="price font-display text-6xl text-emerald">£9.95</p>
+              <p className="price font-display text-price text-brand">£9.95</p>
               <p className="mt-2 font-semibold">For children aged 11 and under.</p>
-              <div className="mt-5 grid gap-3">{['One Starter', 'One Main', 'One Accompaniment'].map(x => <Placeholder key={x} label={`${x.toUpperCase()}: approved choices to be added.`} />)}</div>
+              <div className="mt-6 grid gap-4">{['One Starter', 'One Main', 'One Accompaniment'].map(x => <Placeholder key={x} label={`${x.toUpperCase()}: approved choices to be added.`} />)}</div>
             </article>
           </Reveal>
         </div>
@@ -95,7 +95,7 @@ export function Family() {
           <Reveal delay={0.1}>
             <h2>Highchairs, allergies and booking notes</h2>
             <p className="mt-4">Tell us how many highchairs you need and any allergies or dietary requirements when you book. For urgent allergy questions, please call us.</p>
-            <div className="mt-6 flex flex-wrap gap-3"><BookBtn label="Book a Family Table" from="family-mid" /><Link to="/allergens" className="btn-outline">Ask About Allergies</Link></div>
+            <div className="mt-6 flex flex-wrap gap-4"><BookBtn label="Book a Family Table" from="family-mid" /><Link to="/allergens" className="btn-outline">Ask About Allergies</Link></div>
           </Reveal>
         </div>
       </section>
@@ -117,8 +117,8 @@ export function OurStory() {
       <PageHero eyebrow="Our story" title="A local table, built for families" copy="The Indian Table is a family-led restaurant built around a simple idea - curry night should feel generous, relaxed and easy to understand." />
       <section className="section">
         <div className="wrap grid gap-12 lg:grid-cols-2">
-          <Stagger className="space-y-8">{blocks.map(([t, c]) => <Item key={t}><h2 className="!text-[30px]">{t}</h2><p className="mt-2">{c}</p></Item>)}</Stagger>
-          <div className="space-y-5"><Photo k="room" w={700} ratio="4/3" alt="Restaurant interior (placeholder photograph)" className="rounded-card" /><Placeholder label="REAL TEAM PHOTOGRAPHS AND BIOGRAPHIES TO BE SUPPLIED BY THE OWNER" /></div>
+          <Stagger className="space-y-8">{blocks.map(([t, c]) => <Item key={t}><h2 className="!text-head">{t}</h2><p className="mt-2">{c}</p></Item>)}</Stagger>
+          <div className="space-y-6"><Photo k="room" w={700} ratio="4/3" alt="Restaurant interior (placeholder photograph)" className="rounded-card" /><Placeholder label="REAL TEAM PHOTOGRAPHS AND BIOGRAPHIES TO BE SUPPLIED BY THE OWNER" /></div>
         </div>
       </section>
       <SplitCTA />
@@ -141,23 +141,23 @@ export function Contact() {
         <div className="wrap grid gap-8 lg:grid-cols-2">
           <Reveal className="space-y-6">
             <div className="card">
-              <p className="font-bold"><span className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${open ? 'bg-green-600' : 'bg-brass'}`} />{open ? 'Open now' : 'Currently closed'}</p>
-              <p className="mt-3">{SITE.address}</p>
-              <p className="mt-1"><a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></p>
-              <ul className="mt-4 space-y-1 text-[15px]">{SITE.hours.map(h => <li key={h.days}><strong>{h.days}:</strong> {h.open} to {h.close}</li>)}</ul>
+              <p className="font-bold"><span className={`mr-2 inline-block h-2 w-2 rounded-full ${open ? 'bg-success' : 'bg-gold'}`} />{open ? 'Open now' : 'Currently closed'}</p>
+              <p className="mt-4">{SITE.address}</p>
+              <p className="mt-2"><a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></p>
+              <ul className="mt-4 space-y-2 text-small">{SITE.hours.map(h => <li key={h.days}><strong>{h.days}:</strong> {h.open} to {h.close}</li>)}</ul>
             </div>
-            <div className="card text-[15px]"><p>Dining, collection, local delivery and Bring to Car are all available. <Link to="/order" className="font-bold underline">Order Takeaway</Link></p><div className="mt-3"><Placeholder label="ACCESS AND PARKING: CONFIRM BEFORE LAUNCH" /></div></div>
+            <div className="card text-small"><p>Dining, collection, local delivery and Bring to Car are all available. <Link to="/order" className="font-bold underline">Order Takeaway</Link></p><div className="mt-4"><Placeholder label="ACCESS AND PARKING: CONFIRM BEFORE LAUNCH" /></div></div>
           </Reveal>
           <Reveal delay={0.1}>
-            <iframe title="Map of The Indian Table" loading="lazy" className="h-[340px] w-full rounded-card border border-emerald/25" src="https://www.openstreetmap.org/export/embed.html?bbox=-2.7120%2C53.7230%2C-2.6520%2C53.7530&layer=mapnik" />
+            <iframe title="Map of The Indian Table" loading="lazy" className="h-80 w-full rounded-card border border-line" src="https://www.openstreetmap.org/export/embed.html?bbox=-2.7120%2C53.7230%2C-2.6520%2C53.7530&layer=mapnik" />
             <form className="card mt-6 space-y-4" onSubmit={e => { e.preventDefault(); setSent(true) }}>
-              <h2 className="!text-[28px]">General enquiry</h2>
-              <p className="text-sm">For urgent booking changes or allergy orders, please call us instead.</p>
+              <h2 className="!text-title">General enquiry</h2>
+              <p className="text-small">For urgent booking changes or allergy orders, please call us instead.</p>
               <div><label className="label" htmlFor="cn">Name</label><input id="cn" required className="field" /></div>
               <div><label className="label" htmlFor="ce">Email</label><input id="ce" type="email" required className="field" /></div>
               <div><label className="label" htmlFor="cm">Message</label><textarea id="cm" rows={4} required className="field" /></div>
               <button className="btn-primary" type="submit">Send Message</button>
-              {sent && <p role="status" className="text-sm font-bold text-emerald">Prototype only: enquiry form is not yet connected. Please call {SITE.phone}.</p>}
+              {sent && <p role="status" className="text-small font-bold text-brand">Prototype only: enquiry form is not yet connected. Please call {SITE.phone}.</p>}
             </form>
           </Reveal>
         </div>
@@ -177,11 +177,11 @@ export function Allergens() {
       </PageHero>
       <section className="section">
         <div className="wrap space-y-10">
-          <div id="matrix"><h2 className="!text-[32px]">Allergen matrix</h2><div className="mt-4"><Placeholder label="ACCESSIBLE ALLERGEN MATRIX: to be added from the approved menu data." /></div></div>
-          <div><h2 className="!text-[32px]">The 14 regulated allergens</h2><ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{list.map(a => <li key={a} className="flex gap-2.5"><Diamond className="mt-[9px] shrink-0 text-brass" />{a}</li>)}</ul></div>
+          <div id="matrix"><h2 className="!text-head">Allergen matrix</h2><div className="mt-4"><Placeholder label="ACCESSIBLE ALLERGEN MATRIX: to be added from the approved menu data." /></div></div>
+          <div><h2 className="!text-head">The 14 regulated allergens</h2><ul className="dash mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{list.map(a => <li key={a}>{a}</li>)}</ul></div>
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="card"><h3>Dining in and by phone</h3><p className="mt-2 text-[15px]">Tell your server or the team on the phone about any requirement before you order.</p></div>
-            <div className="card"><h3>Online orders</h3><p className="mt-2 text-[15px]">Allergen information is available before you pay and again at delivery or collection.</p></div>
+            <div className="card"><h3>Dining in and by phone</h3><p className="mt-2 text-small">Tell your server or the team on the phone about any requirement before you order.</p></div>
+            <div className="card"><h3>Online orders</h3><p className="mt-2 text-small">Allergen information is available before you pay and again at delivery or collection.</p></div>
           </div>
           <Placeholder label="APPROVED CROSS-CONTAMINATION STATEMENT AND LAST-REVIEWED DATE TO BE ADDED." />
         </div>
@@ -224,9 +224,9 @@ export function NotFound() {
   useSEO('Page not found', 'This page could not be found.')
   return (
     <section className="section"><div className="wrap text-center">
-      <p className="eyebrow">404</p><h1 className="mt-3">This table is empty</h1>
+      <p className="eyebrow">404</p><h1 className="mt-4">This table is empty</h1>
       <p className="mt-4">We could not find that page. Let's get you somewhere useful.</p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3"><BookBtn from="404" /><OrderBtn from="404" /></div>
+      <div className="mt-8 flex flex-wrap justify-center gap-4"><BookBtn from="404" /><OrderBtn from="404" /></div>
     </div></section>
   )
 }

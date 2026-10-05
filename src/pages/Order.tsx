@@ -36,27 +36,27 @@ export default function Order() {
   const suggest = ORDER_DISHES.filter(d => d.cat === 'Drinks').slice(0, 2)
 
   const Basket = (
-    <div className="card !p-5">
-      <div className="flex items-center justify-between"><h3 className="!text-2xl">Your order</h3>{mode && <span className="rounded-full bg-emerald px-3 py-1 text-xs font-bold text-cream">{mode}</span>}</div>
+    <div className="card !p-6">
+      <div className="flex items-center justify-between"><h3 className="!text-title">Your order</h3>{mode && <span className="rounded-full bg-brand px-4 py-2 text-micro font-bold text-page">{mode}</span>}</div>
       {lines.length === 0 ? (
-        <p className="mt-4 text-[15px]">Your basket is empty. Add a dish to get started.</p>
+        <p className="mt-4 text-small">Your basket is empty. Add a dish to get started.</p>
       ) : (
         <>
-          <ul className="mt-4 divide-y divide-emerald/10">
+          <ul className="mt-4 divide-y divide-line">
             {lines.map(({ d, q }) => (
-              <li key={d.id} className="flex items-center justify-between gap-3 py-2.5 text-[15px]">
+              <li key={d.id} className="flex items-center justify-between gap-4 py-2 text-small">
                 <span className="font-semibold">{d.name}</span>
                 <span className="flex items-center gap-2">
-                  <button aria-label={`Remove one ${d.name}`} className="h-9 w-9 rounded-full border border-emerald/30 font-bold" onClick={() => add(d.id, -1)}>−</button>
+                  <button aria-label={`Remove one ${d.name}`} className="h-12 w-12 rounded-full border border-line-strong font-bold" onClick={() => add(d.id, -1)}>−</button>
                   <span className="w-4 text-center">{q}</span>
-                  <button aria-label={`Add one ${d.name}`} className="h-9 w-9 rounded-full border border-emerald/30 font-bold" onClick={() => add(d.id, 1)}>+</button>
+                  <button aria-label={`Add one ${d.name}`} className="h-12 w-12 rounded-full border border-line-strong font-bold" onClick={() => add(d.id, 1)}>+</button>
                 </span>
               </li>
             ))}
           </ul>
-          <p className="mt-3 flex justify-between font-bold text-emerald"><span>Total</span><span className="price">{gbp(total)}</span></p>
-          {hasUnpriced && <p className="mt-1 text-xs text-brass-600 font-semibold">Some dishes are awaiting approved prices.</p>}
-          <p className="mt-3 text-xs">Please <a className="font-bold underline" href="/allergens">check allergen information</a> before you pay.</p>
+          <p className="mt-4 flex justify-between font-bold text-brand"><span>Total</span><span className="price">{gbp(total)}</span></p>
+          {hasUnpriced && <p className="mt-2 text-micro text-gold-text font-semibold">Some dishes are awaiting approved prices.</p>}
+          <p className="mt-4 text-micro">Please <a className="font-bold underline" href="/allergens">check allergen information</a> before you pay.</p>
           <button className="btn-primary mt-4 w-full" onClick={() => { setOpen(false); setDone(true); track('purchase', { value: total, method: mode }) }}>Place Demo Order</button>
         </>
       )}
@@ -68,31 +68,31 @@ export default function Order() {
       <PageHero eyebrow="Takeaway" title="Restaurant food. Your way." copy="Order direct for collection, local delivery or Bring to Car." />
       <section className="section pb-8 md:pb-10">
         <div className="wrap">
-          <h2 className="mb-6 !text-[32px]">How would you like it?</h2>
-          <div role="radiogroup" aria-label="Fulfilment method" className="grid gap-3 md:grid-cols-3">
+          <h2 className="mb-6 !text-head">How would you like it?</h2>
+          <div role="radiogroup" aria-label="Fulfilment method" className="grid gap-4 md:grid-cols-3">
             {MODES.map(x => (
               <button key={x.m} role="radio" aria-checked={mode === x.m} onClick={() => pick(x.m)}
-                className={`relative min-h-[96px] rounded-card border p-5 text-left transition-colors ${mode === x.m ? 'border-emerald bg-emerald text-cream' : 'border-emerald/30 bg-white/40 hover:border-brass'}`}>
-                <span className={`block font-display text-2xl font-semibold uppercase ${mode === x.m ? 'text-cream' : 'text-emerald'}`}>{x.m}</span>
-                <span className="mt-1 block text-sm">{x.d}</span>
-                {mode === x.m && <m.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-4 text-brass" aria-hidden="true">✓</m.span>}
+                className={`relative min-h-24 rounded-card border p-6 text-left transition-colors ${mode === x.m ? 'border-brand bg-brand text-page' : 'border-line-strong bg-white/40 hover:border-gold'}`}>
+                <span className={`block font-display text-title font-semibold uppercase ${mode === x.m ? 'text-page' : 'text-brand'}`}>{x.m}</span>
+                <span className="mt-2 block text-small">{x.d}</span>
+                {mode === x.m && <m.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-4 text-gold" aria-hidden="true">✓</m.span>}
               </button>
             ))}
           </div>
-          {mode === 'Bring to Car' && <p className="mt-4 text-sm">You will be asked for your collection time, car registration and colour at checkout. <a href="/bring-to-car" className="font-bold underline">How it works</a></p>}
-          {mode === 'Delivery' && <p className="mt-4 text-sm">Delivery area and estimated times are supplied by the ordering provider. Delivery postcode is checked at checkout.</p>}
-          <p className="mt-4 text-sm">Estimated times: confirmed by the ordering provider. {SITE.ORDER_URL ? '' : 'Live ordering link to be connected.'} Prefer to phone? <a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></p>
+          {mode === 'Bring to Car' && <p className="mt-4 text-small">You will be asked for your collection time, car registration and colour at checkout. <a href="/bring-to-car" className="font-bold underline">How it works</a></p>}
+          {mode === 'Delivery' && <p className="mt-4 text-small">Delivery area and estimated times are supplied by the ordering provider. Delivery postcode is checked at checkout.</p>}
+          <p className="mt-4 text-small">Estimated times: confirmed by the ordering provider. {SITE.ORDER_URL ? '' : 'Live ordering link to be connected.'} Prefer to phone? <a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></p>
         </div>
       </section>
 
       <section className="section pt-4 md:pt-6">
         <div className="wrap grid items-start gap-8 lg:grid-cols-[1fr_340px]">
           <div className="space-y-12">
-            <div className="on-dark overflow-hidden rounded-card bg-emerald text-cream md:grid md:grid-cols-5">
-              <div className="p-7 md:col-span-3 md:p-10">
+            <div className="on-dark overflow-hidden rounded-card bg-brand text-page md:grid md:grid-cols-5">
+              <div className="p-8 md:col-span-3 md:p-10">
                 <p className="eyebrow mb-2">Direct-order exclusive · Designed for 3 to 4</p>
                 <h2>Family Feast Box</h2>
-                <p className="price mt-2 font-display text-5xl text-brass">£29.95</p>
+                <p className="price mt-2 font-display text-price text-gold">£29.95</p>
                 <button className="btn-gold mt-6" onClick={() => add('ffb', 1)}>Add to Order</button>
               </div>
               <div className="md:col-span-2"><Photo k="spread" w={560} ratio="4/3" alt="Family feast box (placeholder photograph)" /></div>
@@ -100,16 +100,16 @@ export default function Order() {
 
             {cats.map(({ c, items }) => (
               <div key={c}>
-                <h2 className="mb-4 !text-[30px]">{c}</h2>
+                <h2 className="mb-4 !text-head">{c}</h2>
                 {items.length === 0 ? (
-                  <p className="rounded-btn border border-dashed border-brass-600/60 bg-white/40 p-4 text-sm font-semibold text-brass-600">Approved items and prices to be added.</p>
+                  <p className="rounded-btn border border-dashed border-gold-text/60 bg-white/40 p-4 text-small font-semibold text-gold-text">Approved items and prices to be added.</p>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     {items.map(d => (
-                      <div key={d.id} className="flex items-center gap-3 rounded-card border border-emerald/20 bg-white/40 p-3">
+                      <div key={d.id} className="flex items-center gap-4 rounded-card border border-line bg-white/40 p-4">
                         <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[12px]"><Photo k="curry" w={128} ratio="1/1" alt="" /></div>
-                        <div className="min-w-0 flex-1"><p className="font-bold leading-tight text-emerald">{d.name}</p><p className="price text-sm">{d.price !== undefined ? gbp(d.price) : 'Price to be added'}</p></div>
-                        <m.button whileTap={{ scale: 0.92 }} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald text-xl text-cream" aria-label={`Add ${d.name}`} onClick={() => add(d.id, 1)}>+</m.button>
+                        <div className="min-w-0 flex-1"><p className="font-bold leading-tight text-brand">{d.name}</p><p className="price text-small">{d.price !== undefined ? gbp(d.price) : 'Price to be added'}</p></div>
+                        <m.button whileTap={{ scale: 0.92 }} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand text-lead text-page" aria-label={`Add ${d.name}`} onClick={() => add(d.id, 1)}>+</m.button>
                       </div>
                     ))}
                   </div>
@@ -120,8 +120,8 @@ export default function Order() {
             {count > 0 && (
               <div className="card">
                 <h3>Complete your order</h3>
-                <p className="mt-1 text-sm">Optional extras that go well with your choice.</p>
-                <div className="mt-4 flex flex-wrap gap-2">{suggest.map(d => <button key={d.id} className="btn-outline min-h-[44px]" onClick={() => add(d.id, 1)}>+ {d.name} {gbp(d.price!)}</button>)}</div>
+                <p className="mt-2 text-small">Optional extras that go well with your choice.</p>
+                <div className="mt-4 flex flex-wrap gap-2">{suggest.map(d => <button key={d.id} className="btn-outline min-h-12" onClick={() => add(d.id, 1)}>+ {d.name} {gbp(d.price!)}</button>)}</div>
               </div>
             )}
           </div>
@@ -131,24 +131,24 @@ export default function Order() {
 
       {/* Mobile sticky basket */}
       {count > 0 && (
-        <m.button initial={{ y: 80 }} animate={{ y: 0 }} onClick={() => setOpen(true)} className="fixed inset-x-3 bottom-3 z-30 flex min-h-[56px] items-center justify-between rounded-btn bg-emerald px-5 font-bold text-cream shadow-lg lg:hidden">
+        <m.button initial={{ y: 80 }} animate={{ y: 0 }} onClick={() => setOpen(true)} className="fixed inset-x-4 bottom-4 z-30 flex min-h-14 items-center justify-between rounded-btn bg-brand px-5 font-bold text-page lg:hidden">
           <span>{mode ?? 'Choose method'} · {count} {count === 1 ? 'item' : 'items'}</span><span className="price">{gbp(total)} · View</span>
         </m.button>
       )}
       <AnimatePresence>
         {open && (
-          <m.div className="fixed inset-0 z-50 flex items-end bg-charcoal/60 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)}>
-            <m.div role="dialog" aria-label="Basket" onClick={e => e.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'tween', duration: 0.25 }} className="max-h-[85dvh] w-full overflow-y-auto rounded-t-[24px] bg-cream p-4">
-              {Basket}<button className="btn-outline mt-3 w-full" onClick={() => setOpen(false)}>Keep browsing</button>
+          <m.div className="fixed inset-0 z-50 flex items-end bg-ink/60 lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)}>
+            <m.div role="dialog" aria-label="Basket" onClick={e => e.stopPropagation()} initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'tween', duration: 0.25 }} className="max-h-[85dvh] w-full overflow-y-auto rounded-t-[24px] bg-page p-4">
+              {Basket}<button className="btn-outline mt-4 w-full" onClick={() => setOpen(false)}>Keep browsing</button>
             </m.div>
           </m.div>
         )}
         {done && (
-          <m.div className="fixed inset-0 z-50 grid place-items-center bg-charcoal/60 p-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <m.div role="dialog" aria-label="Order confirmation" initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="card max-w-md bg-cream text-center">
+          <m.div className="fixed inset-0 z-50 grid place-items-center bg-ink/60 p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <m.div role="dialog" aria-label="Order confirmation" initial={{ scale: 0.94, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="card max-w-md bg-page text-center">
               <h3>Prototype order placed</h3>
-              <p className="mt-2 text-[15px]">This is a demo basket. No payment was taken. Live ordering will connect to the provider via ORDER_URL.</p>
-              <button className="btn-primary mt-5" onClick={() => { setDone(false); setCart({}) }}>Done</button>
+              <p className="mt-2 text-small">This is a demo basket. No payment was taken. Live ordering will connect to the provider via ORDER_URL.</p>
+              <button className="btn-primary mt-6" onClick={() => { setDone(false); setCart({}) }}>Done</button>
             </m.div>
           </m.div>
         )}

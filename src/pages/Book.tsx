@@ -72,14 +72,14 @@ export default function Book() {
 
   return (
     <>
-      <section className="on-dark bg-emerald text-cream">
+      <section className="on-dark bg-brand text-page">
         <div className="wrap py-10 md:py-14">
-          <p className="eyebrow mb-3">Book a table</p>
-          <h1 className="!text-[40px] md:!text-[60px]">Your table is ready</h1>
-          <p className="mt-3 max-w-xl text-cream/85">Choose your date, time and party size. We will take care of the rest.</p>
-          <ol className="mt-6 flex gap-2 text-xs font-bold uppercase tracking-wider" aria-label="Progress">
+          <p className="eyebrow mb-4">Book a table</p>
+          <h1 className="!text-big md:!text-price">Your table is ready</h1>
+          <p className="mt-4 max-w-xl text-page/85">Choose your date, time and party size. We will take care of the rest.</p>
+          <ol className="mt-6 flex gap-2 text-micro font-bold uppercase tracking-wider" aria-label="Progress">
             {['Details', 'Review', 'Confirmed'].map((s, i) => (
-              <li key={s} className={`flex-1 border-t-2 pt-2 ${i < stepNo ? 'border-brass text-brass' : 'border-cream/25 text-cream/50'}`}>{i + 1}. {s}</li>
+              <li key={s} className={`flex-1 border-t-2 pt-2 ${i < stepNo ? 'border-gold text-gold' : 'border-page/25 text-page/50'}`}>{i + 1}. {s}</li>
             ))}
           </ol>
         </div>
@@ -90,7 +90,7 @@ export default function Book() {
           <AnimatePresence mode="wait" initial={false}>
             {step === 'form' && (
               <m.form key="form" onSubmit={onReview} noValidate initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="card space-y-6">
-                <div className="grid gap-5 sm:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-3">
                   <div>
                     <label className="label" htmlFor="party">Party size</label>
                     <select id="party" className="field" value={f.party_size} onChange={e => set('party_size', +e.target.value)}>
@@ -112,7 +112,7 @@ export default function Book() {
                   </div>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <label className="label" htmlFor="name">Full name</label>
                     <input id="name" autoComplete="name" className="field" value={f.name} onChange={e => set('name', e.target.value)} {...aria('name')} />
@@ -130,7 +130,7 @@ export default function Book() {
                   </div>
                 </div>
 
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <label className="label" htmlFor="hc">Highchairs <span className="font-normal">(optional)</span></label>
                     <select id="hc" className="field" value={f.highchairs} onChange={e => set('highchairs', +e.target.value)}>
@@ -153,12 +153,12 @@ export default function Book() {
                 {/* Honeypot: hidden from people, tempting to bots */}
                 <div aria-hidden="true" className="absolute -left-[9999px]"><label>Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={e => set('website', e.target.value)} /></label></div>
 
-                <label className="flex items-start gap-3 text-[15px]">
-                  <input type="checkbox" className="mt-1 h-5 w-5 accent-emerald" checked={f.marketing_consent} onChange={e => set('marketing_consent', e.target.checked)} />
+                <label className="flex items-start gap-4 text-small">
+                  <input type="checkbox" className="mt-2 h-6 w-6 accent-brand" checked={f.marketing_consent} onChange={e => set('marketing_consent', e.target.checked)} />
                   <span>Optional: email me news and offers from The Indian Table. You can unsubscribe at any time.</span>
                 </label>
 
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-4">
                   <button type="submit" className="btn-primary">Review Your Booking</button>
                   <a href={SITE.phoneHref} className="btn-outline" onClick={() => track('phone_click', { from: 'book' })}>Call to Book</a>
                 </div>
@@ -167,18 +167,18 @@ export default function Book() {
 
             {(step === 'review' || step === 'sending') && (
               <m.div key="review" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="card">
-                <h2 className="!text-[32px]">Check your booking</h2>
-                <dl className="mt-6 divide-y divide-emerald/10">
+                <h2 className="!text-head">Check your booking</h2>
+                <dl className="mt-6 divide-y divide-line">
                   {([['Guests', `${f.party_size}`], ['Date', prettyDate], ['Time', f.time], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email], ['Highchairs', `${f.highchairs}`], ['Occasion', f.occasion || '-'], ['Allergies / dietary', f.notes || 'None given']] as const).map(([k, v]) => (
-                    <div key={k} className="flex justify-between gap-6 py-3"><dt className="font-bold text-emerald">{k}</dt><dd className="text-right">{v}</dd></div>
+                    <div key={k} className="flex justify-between gap-6 py-4"><dt className="font-bold text-brand">{k}</dt><dd className="text-right">{v}</dd></div>
                   ))}
                 </dl>
                 {serverErr && (
-                  <div role="alert" className="mt-5 rounded-btn border border-red-700 bg-red-50 p-4 text-sm font-semibold text-red-900">
+                  <div role="alert" className="mt-6 rounded-btn border border-danger bg-danger/10 p-4 text-small font-semibold text-danger">
                     {serverErr} <a href={SITE.phoneHref} className="underline">Call {SITE.phone}</a> to book by phone.
                   </div>
                 )}
-                <div className="mt-7 flex flex-wrap gap-3">
+                <div className="mt-8 flex flex-wrap gap-4">
                   <button className="btn-primary" onClick={confirm} disabled={step === 'sending'}>{step === 'sending' ? 'Sending…' : 'Confirm My Table'}</button>
                   <button className="btn-outline" onClick={() => setStep('form')} disabled={step === 'sending'}>Edit Details</button>
                 </div>
@@ -188,13 +188,13 @@ export default function Book() {
             {step === 'done' && (
               <m.div key="done" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35 }} className="card text-center">
                 <m.svg initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.1 }} width="64" height="64" viewBox="0 0 64 64" className="mx-auto" aria-hidden="true">
-                  <circle cx="32" cy="32" r="30" fill="#12382E" /><path d="M19 33l9 9 17-19" fill="none" stroke="#C7A24A" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="32" cy="32" r="30" className="fill-brand" /><path d="M19 33l9 9 17-19" fill="none" className="stroke-gold" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
                 </m.svg>
-                <h2 className="mt-5 !text-[34px]">Thank you, {f.name.split(' ')[0]}</h2>
-                <p className="mx-auto mt-3 max-w-md">We have received your request for <strong>{f.party_size}</strong> on <strong>{prettyDate}</strong> at <strong>{f.time}</strong>. The restaurant will confirm with you shortly.</p>
-                {demo && <p className="mx-auto mt-3 max-w-md rounded-btn border border-dashed border-brass-600/60 p-3 text-sm font-semibold text-brass-600">Demo mode: Supabase is not connected yet, so no email was sent.</p>}
-                <p className="mt-5 text-sm">{SITE.address}<br />Need to change something? Call <a className="font-bold underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>
-                <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <h2 className="mt-6 !text-head">Thank you, {f.name.split(' ')[0]}</h2>
+                <p className="mx-auto mt-4 max-w-md">We have received your request for <strong>{f.party_size}</strong> on <strong>{prettyDate}</strong> at <strong>{f.time}</strong>. The restaurant will confirm with you shortly.</p>
+                {demo && <p className="mx-auto mt-4 max-w-md rounded-btn border border-dashed border-gold-text/60 p-4 text-small font-semibold text-gold-text">Demo mode: Supabase is not connected yet, so no email was sent.</p>}
+                <p className="mt-6 text-small">{SITE.address}<br />Need to change something? Call <a className="font-bold underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>
+                <div className="mt-6 flex flex-wrap justify-center gap-4">
                   <a href={SITE.MAP_URL} target="_blank" rel="noopener" className="btn-primary" onClick={() => track('directions_click')}>Get Directions</a>
                   <Link to="/fixed-price-menu" className="btn-outline">Preview the Menu</Link>
                 </div>
@@ -204,13 +204,13 @@ export default function Book() {
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <div className="card !p-6">
-              <h3 className="!text-xl">Opening hours</h3>
-              <ul className="mt-3 space-y-1.5 text-[15px]">{SITE.hours.map(h => <li key={h.days}><strong>{h.days}</strong><br />{h.open} to {h.close}</li>)}</ul>
+              <h3 className="!text-lead">Opening hours</h3>
+              <ul className="mt-4 space-y-2 text-small">{SITE.hours.map(h => <li key={h.days}><strong>{h.days}</strong><br />{h.open} to {h.close}</li>)}</ul>
             </div>
-            <div className="card !p-6 text-[15px]">
-              <h3 className="!text-xl">Prefer to call?</h3>
+            <div className="card !p-6 text-small">
+              <h3 className="!text-lead">Prefer to call?</h3>
               <p className="mt-2">Large party or urgent change? Speak to us directly.</p>
-              <a href={SITE.phoneHref} className="mt-1 inline-block font-bold text-emerald underline">{SITE.phone}</a>
+              <a href={SITE.phoneHref} className="mt-2 inline-block font-bold text-brand underline">{SITE.phone}</a>
             </div>
           </aside>
         </div>

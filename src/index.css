@@ -2,39 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Colour primitives as RGB triplets, referenced by the role tokens in tailwind.config.js. */
+:root {
+  --page: 246 241 230;        /* #F6F1E6 warm cream */
+  --sunken: 236 229 212;
+  --brand: 18 56 46;          /* #12382E deep emerald */
+  --brand-hover: 26 74 61;
+  --brand-deep: 12 39 32;
+  --ink: 32 36 33;            /* #202421 charcoal */
+  --gold: 199 162 74;         /* #C7A24A muted brass */
+  --gold-hover: 212 178 92;
+  --gold-text: 122 94 22;     /* AA on cream for small labels */
+  --danger: 155 28 28;
+  --success: 31 122 77;
+  --mark: 251 243 220;
+}
+
 @layer base {
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  body { @apply bg-cream font-sans text-charcoal text-[16px] md:text-[17px] leading-relaxed antialiased; }
-  h1, h2, h3 { @apply font-display font-semibold text-emerald tracking-tight; }
-  h1 { @apply text-[44px] leading-[0.98] md:text-[72px] md:leading-[0.95] uppercase; }
-  h2 { @apply text-[32px] leading-tight md:text-[46px]; }
-  h3 { @apply text-2xl; }
-  :focus-visible { @apply outline outline-[3px] outline-offset-2 outline-brass; }
-  ::selection { background: #C7A24A55; }
+  body { @apply bg-page font-sans text-body text-ink antialiased md:text-bodylg; }
+  h1, h2, h3 { @apply font-display font-semibold tracking-tight text-brand; }
+  h1 { @apply text-big uppercase md:text-hero; }
+  h2 { @apply text-head md:text-big; }
+  h3 { @apply text-title; }
+  :focus-visible { @apply outline outline-[3px] outline-offset-2 outline-gold; }
+  ::selection { background: rgb(var(--gold) / 0.35); }
 }
 
 @layer components {
   .wrap { @apply mx-auto w-full max-w-content px-5 md:px-8; }
   .section { @apply py-16 md:py-24; }
-  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-btn px-6 text-[15px] font-bold transition-colors duration-200 disabled:opacity-60; }
-  .btn-primary { @apply btn bg-emerald text-cream hover:bg-emerald-700; }
-  .btn-gold { @apply btn bg-brass text-emerald-900 hover:bg-[#d4b25c]; }
-  .btn-outline { @apply btn border border-emerald text-emerald hover:bg-emerald hover:text-cream; }
-  .btn-outline-light { @apply btn border border-cream/60 text-cream hover:bg-cream hover:text-emerald; }
-  .card { @apply rounded-card border border-emerald/20 bg-white/40 p-6 md:p-8; }
-  .eyebrow { @apply text-xs font-bold uppercase tracking-[0.16em] text-brass-600; }
-  .on-dark .eyebrow { @apply text-brass; }
-  .on-dark h1, .on-dark h2, .on-dark h3 { @apply text-cream; }
-  .rule { @apply flex items-center gap-3 text-brass; }
-  .rule::before, .rule::after { content: ''; @apply h-px flex-1 bg-brass/60; }
-  .field { @apply w-full min-h-[48px] rounded-btn border border-emerald/30 bg-white px-4 py-2.5 text-charcoal placeholder:text-charcoal/40; }
-  .field[aria-invalid='true'] { @apply border-red-700; }
-  .label { @apply mb-1.5 block text-sm font-bold text-emerald; }
-  .err { @apply mt-1 text-sm font-semibold text-red-800; }
+  /* 150-250ms feedback only; press state gives instant tactile response. */
+  .btn { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-btn px-6 text-body font-bold transition duration-200 active:scale-[0.98] disabled:opacity-60; }
+  .btn-primary { @apply btn bg-brand text-page hover:bg-brand-hover; }
+  .btn-gold { @apply btn bg-gold text-brand-deep hover:bg-gold-hover; }
+  .btn-outline { @apply btn border border-brand text-brand hover:bg-brand hover:text-page; }
+  .btn-outline-light { @apply btn border border-page/60 text-page hover:bg-page hover:text-brand; }
+  .card { @apply rounded-card border border-line bg-white/40 p-6 md:p-8; }
+  .eyebrow { @apply text-micro font-bold uppercase tracking-[0.16em] text-gold-text; }
+  .on-dark { @apply bg-brand text-page; }
+  .on-dark .eyebrow { @apply text-gold; }
+  .on-dark h1, .on-dark h2, .on-dark h3 { @apply text-page; }
+  .on-dark .eyebrow + h1, .on-dark .eyebrow + h2 { @apply mt-0; }
+  .rule { @apply flex items-center gap-4 text-gold; }
+  .rule::before, .rule::after { content: ''; @apply h-px flex-1 bg-gold/60; }
+  .field { @apply min-h-12 w-full rounded-btn border border-line-strong bg-white px-4 py-2 text-ink transition-colors duration-200 placeholder:text-ink/40; }
+  .field[aria-invalid='true'] { @apply border-danger; }
+  .label { @apply mb-2 block text-small font-bold text-brand; }
+  .err { @apply mt-2 text-small font-semibold text-danger; }
   .price { font-variant-numeric: tabular-nums; @apply font-bold; }
+  /* Short gold dash bullets instead of icons on every list. */
+  .dash li { @apply relative pl-6; }
+  .dash li::before { content: ''; @apply absolute left-0 top-3 h-px w-4 bg-gold; }
+  /* Static film grain on dark panels: zero runtime cost. */
+  .grain { position: relative; isolation: isolate; }
+  .grain::after { content: ''; position: absolute; inset: 0; z-index: -1; opacity: .05; pointer-events: none; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  /* Cursor spotlight (port of the React Bits SpotlightCard idea): CSS-only paint, JS only sets two variables. */
+  .spot { position: relative; }
+  .spot::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 200ms;
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--gold) / 0.18), transparent 70%); }
+  .spot:hover::before { opacity: 1; }
+  /* Nav underline grows from the left. */
+  .navlink { position: relative; }
+  .navlink::after { content: ''; position: absolute; left: 16px; right: 16px; bottom: 4px; height: 2px; background: rgb(var(--gold)); transform: scaleX(0); transform-origin: left; transition: transform 200ms; }
+  .navlink:hover::after, .navlink[aria-current='page']::after { transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+@layer components {
+  /* Signature Table: emerald fill, gold outer keyline and a fine inner keyline (spec section 5). No drop shadow. */
+  .tier-featured { @apply rounded-card bg-brand p-8 outline outline-1 outline-gold; box-shadow: inset 0 0 0 6px rgb(var(--brand)), inset 0 0 0 7px rgb(var(--gold) / 0.55); }
+}
+
+/* Large serif prices read better with proportional lining figures than tabular ones. */
+.price.font-display { font-variant-numeric: lining-nums proportional-nums; }

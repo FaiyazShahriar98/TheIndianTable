@@ -28,15 +28,15 @@ export default function CookieBanner() {
         <m.div
           role="dialog" aria-label="Cookie preferences"
           initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }} transition={{ duration: 0.25 }}
-          className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-card border border-emerald/25 bg-cream p-5 shadow-lg lg:bottom-5"
+          className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-xl rounded-card border border-line bg-page p-6 lg:bottom-6"
         >
-          <p className="font-bold text-emerald">Your cookie choices</p>
-          <p className="mt-1 text-sm">We only use strictly necessary cookies unless you say otherwise. Analytics and marketing stay off until you accept.</p>
+          <p className="font-bold text-brand">Your cookie choices</p>
+          <p className="mt-2 text-small">We only use strictly necessary cookies unless you say otherwise. Analytics and marketing stay off until you accept.</p>
           {manage && (
-            <div className="mt-3 space-y-2 text-sm">
-              <label className="flex items-center gap-3"><input type="checkbox" checked disabled className="h-5 w-5 accent-emerald" /> Strictly necessary (always on)</label>
-              <label className="flex items-center gap-3"><input type="checkbox" checked={analytics} onChange={e => setAnalytics(e.target.checked)} className="h-5 w-5 accent-emerald" /> Analytics</label>
-              <label className="flex items-center gap-3"><input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)} className="h-5 w-5 accent-emerald" /> Marketing</label>
+            <div className="mt-4 space-y-2 text-small">
+              <label className="flex items-center gap-4"><input type="checkbox" checked disabled className="h-6 w-6 accent-brand" /> Strictly necessary (always on)</label>
+              <label className="flex items-center gap-4"><input type="checkbox" checked={analytics} onChange={e => setAnalytics(e.target.checked)} className="h-6 w-6 accent-brand" /> Analytics</label>
+              <label className="flex items-center gap-4"><input type="checkbox" checked={marketing} onChange={e => setMarketing(e.target.checked)} className="h-6 w-6 accent-brand" /> Marketing</label>
             </div>
           )}
           <div className="mt-4 grid grid-cols-2 gap-2">
@@ -44,7 +44,7 @@ export default function CookieBanner() {
             <button className="btn-primary" onClick={() => save(true, true)}>Accept All</button>
             {manage
               ? <button className="btn-outline col-span-2" onClick={() => save(analytics, marketing)}>Save Preferences</button>
-              : <button className="col-span-2 min-h-[44px] text-sm font-bold text-emerald underline underline-offset-4" onClick={() => setManage(true)}>Manage Preferences</button>}
+              : <button className="col-span-2 min-h-12 text-small font-bold text-brand underline underline-offset-4" onClick={() => setManage(true)}>Manage Preferences</button>}
           </div>
         </m.div>
       )}

@@ -25,3 +25,7 @@ Push to GitHub, import the repo in Vercel (framework preset: Vite). `vercel.json
 ## Before launch
 
 Replace placeholders: logo/icon (`Logo` in `src/components/Layout.tsx`), Unsplash photos (`PHOTOS` in `src/config.ts`), `ORDER_URL` / `INSTAGRAM_URL` in `src/config.ts`, approved menu data (`src/data/menu.ts`), reviews, allergen matrix, legal copy.
+
+## Design guardrails
+
+`npm run lint:grid` fails on off-grid spacing (8pt scale), raw hex or non-token colours, and type outside the 9-step scale. Colour roles and the scale live in `tailwind.config.js`; primitives in `src/index.css`.
