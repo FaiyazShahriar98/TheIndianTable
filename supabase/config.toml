@@ -1,0 +1,4 @@
+project_id = "the-indian-table"
+
+[functions.send-booking]
+verify_jwt = false

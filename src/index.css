@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { @apply bg-cream font-sans text-charcoal text-[16px] md:text-[17px] leading-relaxed antialiased; }
+  h1, h2, h3 { @apply font-display font-semibold text-emerald tracking-tight; }
+  h1 { @apply text-[44px] leading-[0.98] md:text-[72px] md:leading-[0.95] uppercase; }
+  h2 { @apply text-[32px] leading-tight md:text-[46px]; }
+  h3 { @apply text-2xl; }
+  :focus-visible { @apply outline outline-[3px] outline-offset-2 outline-brass; }
+  ::selection { background: #C7A24A55; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-content px-5 md:px-8; }
+  .section { @apply py-16 md:py-24; }
+  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-btn px-6 text-[15px] font-bold transition-colors duration-200 disabled:opacity-60; }
+  .btn-primary { @apply btn bg-emerald text-cream hover:bg-emerald-700; }
+  .btn-gold { @apply btn bg-brass text-emerald-900 hover:bg-[#d4b25c]; }
+  .btn-outline { @apply btn border border-emerald text-emerald hover:bg-emerald hover:text-cream; }
+  .btn-outline-light { @apply btn border border-cream/60 text-cream hover:bg-cream hover:text-emerald; }
+  .card { @apply rounded-card border border-emerald/20 bg-white/40 p-6 md:p-8; }
+  .eyebrow { @apply text-xs font-bold uppercase tracking-[0.16em] text-brass-600; }
+  .on-dark .eyebrow { @apply text-brass; }
+  .on-dark h1, .on-dark h2, .on-dark h3 { @apply text-cream; }
+  .rule { @apply flex items-center gap-3 text-brass; }
+  .rule::before, .rule::after { content: ''; @apply h-px flex-1 bg-brass/60; }
+  .field { @apply w-full min-h-[48px] rounded-btn border border-emerald/30 bg-white px-4 py-2.5 text-charcoal placeholder:text-charcoal/40; }
+  .field[aria-invalid='true'] { @apply border-red-700; }
+  .label { @apply mb-1.5 block text-sm font-bold text-emerald; }
+  .err { @apply mt-1 text-sm font-semibold text-red-800; }
+  .price { font-variant-numeric: tabular-nums; @apply font-bold; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
