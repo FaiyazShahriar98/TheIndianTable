@@ -13,10 +13,22 @@ export type BookingInput = {
   website?: string // honeypot, must stay empty
 }
 
-/** Sends the booking to the `send-booking` Edge Function (stores it and emails the owner). */
+/**
+ * Inserts the booking (anon role is insert-only via RLS). A database trigger then emails the owner.
+ * See supabase/setup.sql.
+ */
 export async function submitBooking(b: BookingInput): Promise<{ ok: boolean; demo?: boolean; error?: string }> {
+  if (b.website) return { ok: true } // bot: pretend success, store nothing
   if (!supabase) { await new Promise(r => setTimeout(r, 700)); return { ok: true, demo: true } }
-  const { data, error } = await supabase.functions.invoke('send-booking', { body: b })
-  if (error || !data?.ok) return { ok: false, error: data?.error || error?.message || 'Booking failed' }
+  const { error } = await supabase.from('bookings').insert(
+    {
+      name: b.name.trim(), phone: b.phone.trim(), email: b.email.trim(),
+      party_size: b.party_size, booking_date: b.date, booking_time: b.time,
+      highchairs: b.highchairs, occasion: b.occasion || null, notes: b.notes.trim() || null,
+      marketing_consent: b.marketing_consent,
+    },
+    { count: undefined },
+  )
+  if (error) return { ok: false, error: 'We could not save your booking just now.' }
   return { ok: true }
 }

@@ -10,21 +10,13 @@ npm run dev
 
 Without `.env` the booking form runs in **demo mode** (no email is sent).
 
-## Booking emails (Supabase)
+## Booking backend (Supabase + Resend)
 
-1. Create a Supabase project. Run `supabase/migrations/0001_bookings.sql` in the SQL editor.
-2. Create a free [Resend](https://resend.com) API key.
-3. Deploy the function and set secrets:
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref YOUR_REF
-   npx supabase secrets set RESEND_API_KEY=re_xxx OWNER_EMAIL=owner@example.com
-   # after verifying a domain in Resend: FROM_EMAIL="The Indian Table <bookings@yourdomain.co.uk>"
-   npx supabase functions deploy send-booking --no-verify-jwt
-   ```
-4. Put `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env` (and in Vercel project env vars).
+1. Create a free [Resend](https://resend.com) API key.
+2. Open `supabase/setup.sql`, replace the two values at the bottom (Resend key, owner email), paste it into Supabase > SQL Editor and Run.
+3. `.env` already holds the project URL and anon key (also add them as Vercel env vars).
 
-Notes: the `bookings` table has RLS on with no public policies, so only the function (service role) can write. Resend's default sender can only deliver to the Resend account owner's email until a domain is verified, so use the owner's Resend sign-up email as `OWNER_EMAIL` while testing.
+The website inserts into `bookings` with the anon key (RLS: insert-only, nothing readable). A trigger emails the owner via Resend. Until a domain is verified in Resend, it only delivers to the email the Resend account was created with, so use that as `owner_email` while testing. View bookings in Supabase > Table Editor.
 
 ## Deploy
 
