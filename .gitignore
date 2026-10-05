@@ -9,3 +9,4 @@ supabase/.branches
 .vite.log
 .history
 .qodo
+supabase/setup.local.sql
