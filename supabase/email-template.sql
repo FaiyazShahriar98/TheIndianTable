@@ -1,38 +1,3 @@
--- The Indian Table: booking backend. Paste into Supabase > SQL Editor > Run (safe to re-run).
--- Flow: website inserts a row (anon, insert-only) -> trigger emails the owner via Resend (pg_net).
-
-create extension if not exists pg_net with schema extensions;
-
-create table if not exists public.bookings (
-  id uuid primary key default gen_random_uuid(),
-  created_at timestamptz not null default now(),
-  name text not null check (char_length(name) between 1 and 100),
-  phone text not null check (char_length(phone) between 6 and 30),
-  email text not null check (char_length(email) between 5 and 200 and email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
-  party_size int not null check (party_size between 1 and 30),
-  booking_date date not null check (booking_date >= current_date - 1),
-  booking_time text not null check (booking_time ~ '^\d{2}:\d{2}$'),
-  highchairs int not null default 0 check (highchairs between 0 and 6),
-  occasion text check (char_length(occasion) <= 60),
-  notes text check (char_length(notes) <= 800),
-  marketing_consent boolean not null default false,
-  status text not null default 'new',
-  email_sent boolean not null default false
-);
-create index if not exists bookings_date_idx on public.bookings (booking_date, booking_time);
-
--- Public visitors may ONLY insert. They can never read, update or delete bookings.
-alter table public.bookings enable row level security;
-drop policy if exists "anyone can request a booking" on public.bookings;
-create policy "anyone can request a booking" on public.bookings for insert to anon, authenticated with check (status = 'new' and email_sent = false);
-revoke all on public.bookings from anon, authenticated;
-grant insert on public.bookings to anon, authenticated;
-
--- Private settings (no policies and no grants: unreachable from the website).
-create table if not exists public.app_secrets (key text primary key, value text not null);
-alter table public.app_secrets enable row level security;
-revoke all on public.app_secrets from anon, authenticated;
-
 -- >>> EMAIL (branded templates; safe to re-run on its own, contains no secrets)
 create or replace function public.esc(t text) returns text language sql immutable as $$
   select replace(replace(replace(replace(coalesce(t,''),'&','&amp;'),'<','&lt;'),'>','&gt;'),'"','&quot;')
@@ -120,14 +85,3 @@ exception when others then
   return new; -- never block a booking because email failed
 end $$;
 -- <<< EMAIL
-
-drop trigger if exists booking_notify on public.bookings;
-create trigger booking_notify after insert on public.bookings for each row execute function public.notify_booking();
-
--- ===== EDIT THESE TWO VALUES, THEN RUN =====
-insert into public.app_secrets (key, value) values
-  ('resend_api_key', 're_PASTE_YOUR_RESEND_KEY'),
-  ('owner_email',    'owner@example.com')
-on conflict (key) do update set value = excluded.value;
--- Optional once a domain is verified in Resend:
--- insert into public.app_secrets values ('from_email', 'The Indian Table <bookings@yourdomain.co.uk>') on conflict (key) do update set value = excluded.value;
