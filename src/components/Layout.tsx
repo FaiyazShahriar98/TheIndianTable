@@ -9,7 +9,7 @@ import CookieBanner, { openCookiePrefs } from './CookieBanner'
 // Neutral text wordmark. EXACT LOGO ASSET REQUIRED: replace with the supplied logo/icon files (do not redraw).
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" className="flex items-center gap-2">
-    <span className={`font-display text-body font-semibold uppercase leading-tight tracking-wide sm:whitespace-nowrap sm:text-lead sm:leading-none ${light ? 'text-page' : 'text-brand'}`}>
+    <span className={`whitespace-nowrap font-display text-body font-semibold uppercase leading-none tracking-wide min-[360px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>
@@ -64,8 +64,6 @@ function Header() {
           <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</Link>
         </div>
         <div className="flex shrink-0 items-center gap-2 xl:hidden">
-          <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary min-h-12 px-4 !text-small">Book</Link>
-          <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline min-h-12 px-4 !text-small">Order</Link>
           <button
             className="grid h-12 w-12 place-items-center rounded-btn border border-line-strong text-brand"
             aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}
@@ -85,6 +83,10 @@ function Header() {
             transition={{ duration: 0.2 }}
             className="absolute inset-x-0 top-full h-[calc(100dvh-64px)] overflow-y-auto bg-page px-5 pb-24 pt-4 xl:hidden"
           >
+            <div className="grid gap-4 pb-4">
+              <Link to="/book" onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</Link>
+              <Link to="/order" onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</Link>
+            </div>
             {[...links.slice(0, 1), ...dining, ...links.slice(1)].map(l => (
               <NavLink key={l.to} to={l.to} className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
                 {l.label}

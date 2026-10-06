@@ -38,7 +38,7 @@ export default function Home() {
             </p>
             <p className="mt-2 text-small text-page/70">Alcohol-free drinks · Family Table £59.95 · 350 Higher Walton Road, Preston</p>
           </div>
-          <div className="lg:col-span-5">
+          <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Plate k="curry" w={640} dir="cw" steam priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
           </div>
         </div>
