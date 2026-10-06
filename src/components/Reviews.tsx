@@ -18,7 +18,8 @@ function useIsMobile() {
 }
 
 /** Types the text out character by character while `run` is true; resets when it turns false. */
-function useTyped(text: string, run: boolean, delay: number, reduce: boolean, speed = 22) {
+const TYPE_MS = 14 // milliseconds per character (was 22): lower is faster
+function useTyped(text: string, run: boolean, delay: number, reduce: boolean, speed = TYPE_MS) {
   const [n, setN] = useState(reduce ? text.length : 0)
   useEffect(() => {
     if (reduce) return
@@ -31,18 +32,6 @@ function useTyped(text: string, run: boolean, delay: number, reduce: boolean, sp
     return () => { window.clearTimeout(t); window.clearInterval(id) }
   }, [run, text, delay, reduce, speed])
   return n
-}
-
-/** Lights the stars one after another while `run` is true; resets when it turns false. */
-function useLit(target: number, run: boolean, reduce: boolean) {
-  const [lit, setLit] = useState(reduce ? target : 0)
-  useEffect(() => {
-    if (reduce) return
-    if (!run) { setLit(0); return }
-    const id = window.setInterval(() => setLit(l => { if (l >= target) { window.clearInterval(id); return l } return l + 1 }), 170)
-    return () => window.clearInterval(id)
-  }, [run, target, reduce])
-  return lit
 }
 
 function Stars({ lit }: { lit: number }) {
@@ -68,7 +57,8 @@ function Card({ r, i, mobile, active }: { r: Review; i: number; mobile: boolean;
   const run = mobile ? active : seen // desktop: type once when scrolled into view. Mobile: type whenever this slide is the active one
   const n = useTyped(r.quote, run, mobile ? 500 : 400 + i * 600, reduce)
   const typing = run && n < r.quote.length
-  const lit = useLit(r.rating, n >= r.quote.length && n > 0, reduce)
+  // Stars follow the typing: the first lights with the first letter, the last as the final letter lands.
+  const lit = reduce ? r.rating : Math.ceil((n / r.quote.length) * r.rating)
 
   return (
     <m.figure
