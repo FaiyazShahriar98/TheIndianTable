@@ -5,12 +5,25 @@ import { BgPhoto, Headline, spotMove } from './ui'
 
 const ease = [0.22, 1, 0.36, 1] as const
 const STAR = 'M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z'
+const SLIDE_MS = 9000 // long enough to type, light the stars and read the review
 
-/** Types the text out character by character once `run` turns true. */
+function useIsMobile() {
+  const [mob, setMob] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
+  useEffect(() => {
+    const q = window.matchMedia('(max-width: 767px)')
+    const f = () => setMob(q.matches)
+    q.addEventListener('change', f)
+    return () => q.removeEventListener('change', f)
+  }, [])
+  return mob
+}
+
+/** Types the text out character by character while `run` is true; resets when it turns false. */
 function useTyped(text: string, run: boolean, delay: number, reduce: boolean, speed = 22) {
   const [n, setN] = useState(reduce ? text.length : 0)
   useEffect(() => {
-    if (reduce || !run) return
+    if (reduce) return
+    if (!run) { setN(0); return }
     let i = 0
     let id = 0
     const t = window.setTimeout(() => {
@@ -21,11 +34,12 @@ function useTyped(text: string, run: boolean, delay: number, reduce: boolean, sp
   return n
 }
 
-/** Lights the stars one after another once `run` is true. */
+/** Lights the stars one after another while `run` is true; resets when it turns false. */
 function useLit(target: number, run: boolean, reduce: boolean) {
   const [lit, setLit] = useState(reduce ? target : 0)
   useEffect(() => {
-    if (reduce || !run) return
+    if (reduce) return
+    if (!run) { setLit(0); return }
     const id = window.setInterval(() => setLit(l => { if (l >= target) { window.clearInterval(id); return l } return l + 1 }), 170)
     return () => window.clearInterval(id)
   }, [run, target, reduce])
@@ -48,24 +62,25 @@ function Stars({ lit }: { lit: number }) {
   )
 }
 
-function Card({ r, i }: { r: Review; i: number }) {
+function Card({ r, i, mobile, active }: { r: Review; i: number; mobile: boolean; active: boolean }) {
   const reduce = !!useReducedMotion()
   const ref = useRef<HTMLElement>(null)
   const seen = useInView(ref, { once: true, margin: '0px 0px -15% 0px' })
-  const n = useTyped(r.quote, seen, 400 + i * 600, reduce)
-  const typing = seen && n < r.quote.length
-  const lit = useLit(r.rating, n >= r.quote.length, reduce)
+  const run = mobile ? active : seen // desktop: type once when scrolled into view. Mobile: type whenever this slide is the active one
+  const n = useTyped(r.quote, run, mobile ? 500 : 400 + i * 600, reduce)
+  const typing = run && n < r.quote.length
+  const lit = useLit(r.rating, n >= r.quote.length && n > 0, reduce)
 
   return (
     <m.figure
-      ref={ref}
-      className={i === 1 ? 'md:mt-8' : ''}
-      initial={reduce ? false : { opacity: 0, y: 32 }} animate={seen ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.5, delay: i * 0.12, ease }}
+      ref={ref} data-i={i}
+      className={`flex w-[calc(100%-2rem)] shrink-0 snap-center flex-col md:w-auto md:shrink ${i === 1 ? 'md:mt-8' : ''}`}
+      initial={reduce || mobile ? false : { opacity: 0, y: 32 }} animate={!mobile && seen ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.5, delay: i * 0.12, ease }}
     >
-      <div onPointerMove={spotMove} className="spot relative flex h-full flex-col rounded-card border border-gold/40 bg-page p-8 text-ink transition duration-200 hover:-translate-y-1 hover:border-gold">
+      <div onPointerMove={spotMove} className="spot relative flex flex-1 flex-col rounded-card border border-gold/40 bg-page p-8 text-ink transition duration-200 hover:-translate-y-1 hover:border-gold">
         {!r.verified && <span className="absolute right-6 top-6 rounded-full border border-gold-text px-2 text-micro font-bold uppercase tracking-wider text-gold-text">Sample</span>}
 
-        <figcaption className="flex items-center gap-4">
+        <figcaption className="flex items-center gap-4 pr-24">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand text-page" aria-hidden="true">
             <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="8" r="3.5" /><path d="M5 20c1.2-4 4-5.5 7-5.5s5.8 1.5 7 5.5" /></svg>
           </span>
@@ -86,7 +101,7 @@ function Card({ r, i }: { r: Review; i: number }) {
           <p aria-hidden="true" className="invisible">{r.quote}</p>
           <p aria-hidden="true" className="absolute inset-0">
             {r.quote.slice(0, n)}
-            {(typing || (!seen && !reduce)) && <span className="caret ml-px inline-block h-6 w-px bg-gold-text align-bottom" />}
+            {(typing || (!run && !seen && !reduce && !mobile)) && <span className="caret ml-px inline-block h-6 w-px bg-gold-text align-bottom" />}
           </p>
         </blockquote>
       </div>
@@ -95,9 +110,46 @@ function Card({ r, i }: { r: Review; i: number }) {
 }
 
 export default function Reviews() {
-  const anySample = REVIEWS.some(r => !r.verified)
+  const reviews = REVIEWS.slice(0, 3)
+  const anySample = reviews.some(r => !r.verified)
+  const reduce = !!useReducedMotion()
+  const mobile = useIsMobile()
+  const section = useRef<HTMLElement>(null)
+  const track = useRef<HTMLDivElement>(null)
+  const hold = useRef(0) // timestamp until which autoplay stays paused after a touch
+  const visible = useInView(section, { margin: '-20% 0px -20% 0px' })
+  const [index, setIndex] = useState(0)
+  const [auto, setAuto] = useState(true)
+  const [tick, setTick] = useState(0)
+
+  const go = (i: number) => {
+    const root = track.current
+    const card = root?.querySelector<HTMLElement>(`[data-i="${i}"]`)
+    if (root && card) root.scrollTo({ left: card.offsetLeft - (root.clientWidth - card.clientWidth) / 2, behavior: reduce ? 'auto' : 'smooth' })
+  }
+
+  // Which slide is centred? (mobile slider)
+  useEffect(() => {
+    const root = track.current
+    if (!root || !mobile) return
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setIndex(Number((e.target as HTMLElement).dataset.i)) }), { root, threshold: 0.6 })
+    root.querySelectorAll('[data-i]').forEach(el => io.observe(el))
+    return () => io.disconnect()
+  }, [mobile])
+
+  // Gentle autoplay: only on phones, only while on screen, never for reduced-motion, pauses after a touch.
+  useEffect(() => {
+    if (!mobile || !auto || !visible || reduce) return
+    const t = window.setTimeout(() => {
+      if (Date.now() < hold.current) { setTick(x => x + 1); return }
+      go((index + 1) % reviews.length)
+    }, SLIDE_MS)
+    return () => window.clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobile, auto, visible, reduce, index, tick])
+
   return (
-    <section className="on-dark grain section relative isolate">
+    <section ref={section} className="on-dark grain section relative isolate">
       <BgPhoto k="table" side="full" />
       <div className="wrap">
         <div className="mb-12 max-w-xl">
@@ -105,8 +157,35 @@ export default function Reviews() {
           <Headline as="h2">What our guests say</Headline>
           {anySample && <p className="mt-4 text-small text-page/70">Sample text and ratings shown for layout. Verified reviews (platform, name and date) replace these before launch.</p>}
         </div>
-        <div className="grid items-stretch gap-6 md:grid-cols-3">
-          {REVIEWS.slice(0, 3).map((r, i) => <Card key={i} r={r} i={i} />)}
+
+        <div
+          ref={track}
+          role="group" aria-roledescription="carousel" aria-label="Guest reviews"
+          onTouchStart={() => { hold.current = Date.now() + 12000 }}
+          onFocus={() => { hold.current = Date.now() + 12000 }}
+          className="relative -mx-5 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        >
+          {reviews.map((r, i) => <Card key={i} r={r} i={i} mobile={mobile} active={visible && index === i} />)}
+        </div>
+
+        {/* Slider controls: phones only */}
+        <div className="mt-6 flex items-center justify-center gap-4 md:hidden">
+          {!reduce && (
+            <button type="button" aria-pressed={!auto} aria-label={auto ? 'Pause automatic sliding' : 'Resume automatic sliding'} onClick={() => setAuto(a => !a)}
+              className="grid h-12 w-12 place-items-center rounded-full border border-gold/60 text-gold transition-colors duration-200 hover:bg-gold hover:text-brand-deep">
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
+                {auto ? <><rect x="7" y="5" width="3.5" height="14" rx="1" /><rect x="13.5" y="5" width="3.5" height="14" rx="1" /></> : <path d="M8 5.5v13l11-6.5z" />}
+              </svg>
+            </button>
+          )}
+          <div className="flex items-center">
+            {reviews.map((_, i) => (
+              <button key={i} type="button" aria-label={`Show review ${i + 1} of ${reviews.length}`} aria-current={index === i} onClick={() => { hold.current = Date.now() + 12000; go(i) }}
+                className="grid h-12 w-8 place-items-center">
+                <span className={`block h-2 rounded-full transition-all duration-200 ${index === i ? 'w-6 bg-gold' : 'w-2 bg-page/40'}`} />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
