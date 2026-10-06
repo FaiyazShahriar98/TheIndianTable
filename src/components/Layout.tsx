@@ -9,7 +9,7 @@ import CookieBanner, { openCookiePrefs } from './CookieBanner'
 // Neutral text wordmark. EXACT LOGO ASSET REQUIRED: replace with the supplied logo/icon files (do not redraw).
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" className="flex items-center gap-2">
-    <span className={`whitespace-nowrap font-display text-lead font-semibold uppercase leading-none tracking-wide ${light ? 'text-page' : 'text-brand'}`}>
+    <span className={`font-display text-body font-semibold uppercase leading-tight tracking-wide sm:whitespace-nowrap sm:text-lead sm:leading-none ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>
@@ -63,8 +63,9 @@ function Header() {
           <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary whitespace-nowrap">Book a Table</Link>
           <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</Link>
         </div>
-        <div className="flex items-center gap-2 xl:hidden">
-          <Link to="/order" className="btn-gold min-h-12 px-4">Order</Link>
+        <div className="flex shrink-0 items-center gap-2 xl:hidden">
+          <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary min-h-12 px-4 !text-small">Book</Link>
+          <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline min-h-12 px-4 !text-small">Order</Link>
           <button
             className="grid h-12 w-12 place-items-center rounded-btn border border-line-strong text-brand"
             aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}
