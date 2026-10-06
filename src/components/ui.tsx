@@ -35,9 +35,10 @@ export const Diamond = ({ className = '' }: { className?: string }) => (
 
 export const Rule = () => <div className="rule" aria-hidden="true"><Diamond /></div>
 
-export function PageHero({ eyebrow, title, copy, children, dark = true }: { eyebrow?: string; title: string; copy?: string; children?: ReactNode; dark?: boolean }) {
+export function PageHero({ eyebrow, title, copy, children, dark = true, bg }: { eyebrow?: string; title: string; copy?: string; children?: ReactNode; dark?: boolean; bg?: PhotoKey }) {
   return (
-    <section className={`relative overflow-hidden ${dark ? 'on-dark bg-brand text-page' : ''}`}>
+    <section className={`relative isolate overflow-hidden ${dark ? 'on-dark bg-brand text-page' : ''}`}>
+      {bg && <BgPhoto k={bg} side="right" />}
       <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[520px] w-[520px] rounded-full border border-gold/20" />
       <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full border border-gold/15" />
       <div className="wrap relative py-14 md:py-24">
@@ -90,6 +91,24 @@ function usePauseOffscreen<T extends HTMLElement>() {
     return () => io.disconnect()
   }, [])
   return ref
+}
+
+/**
+ * Photograph that melts into a section: ghosted, faded toward the text side, tinted by the brand colours.
+ * Parent section must be `relative isolate`. Lazy, responsive, decorative (hidden from assistive tech).
+ */
+export function BgPhoto({ k, tone = 'dark', side = 'right' }: { k: PhotoKey; tone?: 'dark' | 'light'; side?: 'left' | 'right' | 'full' }) {
+  const ref = usePauseOffscreen<HTMLDivElement>()
+  const dark = tone === 'dark'
+  const fade = side === 'full' ? 'bg-brand/70' : side === 'right' ? 'bg-gradient-to-r from-brand via-brand/85 to-brand/20' : 'bg-gradient-to-l from-brand via-brand/85 to-brand/20'
+  const src = (w: number) => img(PHOTOS[k], w, 55)
+  return (
+    <div ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <img src={src(1280)} srcSet={`${src(640)} 640w, ${src(1280)} 1280w`} sizes="100vw" width={1280} height={720} alt="" loading="lazy" decoding="async"
+        className={`kb h-full w-full object-cover ${dark ? 'opacity-30 grayscale' : 'opacity-[0.12] sepia'}`} />
+      <div className={`absolute inset-0 ${dark ? fade : 'bg-gradient-to-b from-page via-page/40 to-page'}`} />
+    </div>
+  )
 }
 
 /** Rising steam: soft wisps that drift up and fade. Pure CSS, three staggered paths. */
@@ -192,7 +211,8 @@ export function TableCards() {
 
 export function SplitCTA() {
   return (
-    <section className="on-dark bg-brand py-16 text-center text-page md:py-24">
+    <section className="on-dark relative isolate bg-brand py-16 text-center text-page md:py-24">
+      <BgPhoto k="curry" side="full" />
       <div className="wrap">
         <Reveal>
           <p className="eyebrow mb-4">Tonight at The Indian Table</p>

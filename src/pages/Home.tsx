@@ -3,7 +3,7 @@ import { m, Reveal, Stagger, Item, useReducedMotion } from '../lib/motion'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
-import { BookBtn, Headline, Journey, OrderBtn, CountUp, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
+import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -20,7 +20,8 @@ export default function Home() {
   return (
     <>
       {/* 1 Hero */}
-      <section className="on-dark grain relative overflow-hidden">
+      <section className="on-dark grain relative isolate overflow-hidden">
+        <BgPhoto k="interior" side="full" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-52 top-2/3 h-[560px] w-[560px] rounded-full border border-gold/15" />
         <div className="wrap relative grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12">
           <div className="lg:col-span-7">
@@ -66,7 +67,8 @@ export default function Home() {
       </section>
 
       {/* 3 Choose your table */}
-      <section className="section">
+      <section className="section relative isolate">
+        <BgPhoto k="spread" tone="light" />
         <div className="wrap">
           <Reveal className="mx-auto mb-12 max-w-2xl text-center">
             <p className="eyebrow mb-4">Choose Your Table</p>
@@ -105,7 +107,8 @@ export default function Home() {
       </section>
 
       {/* 6 Family Table */}
-      <section className="on-dark grain section">
+      <section className="on-dark grain section relative isolate">
+        <BgPhoto k="dining" side="right" />
         <div className="wrap grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
             <p className="eyebrow mb-4">Family Table</p>

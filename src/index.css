@@ -100,3 +100,9 @@
   .rock, .spin-slow, .steam-wisp, .tier-featured::before { animation: none !important; }
   .steam-wisp { display: none; }
 }
+
+/* Section background photography: ghosted, monochrome on dark, drifting very slowly (transform only). */
+@keyframes kb { from { transform: scale(1.04); } to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); } }
+.kb { animation: kb 40s ease-in-out infinite alternate; will-change: transform; }
+[data-paused='true'] .kb { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .kb { animation: none !important; } }

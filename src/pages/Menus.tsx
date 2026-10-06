@@ -31,7 +31,7 @@ export function FixedPrice() {
   useSEO('Fixed-Price Indian Menu', 'Choose Your Table: Classic, Signature or Grand. A complete five-part Indian feast at one clear price in Higher Walton, Preston.')
   return (
     <>
-      <PageHero eyebrow="Fixed-price dining" title="Choose your table" copy="Every adult Table begins with one Poppadom and our Chutney Selection. Then choose one item from each part of your five-part feast.">
+      <PageHero bg="tikka" eyebrow="Fixed-price dining" title="Choose your table" copy="Every adult Table begins with one Poppadom and our Chutney Selection. Then choose one item from each part of your five-part feast.">
         <BookBtn light from="fixed" />
       </PageHero>
       <section className="section pb-0 md:pb-0"><div className="wrap"><Journey /></div></section>
@@ -72,7 +72,7 @@ export function ALaCarte() {
   const show = (t: string) => tab === 'All' || tab === t
   return (
     <>
-      <PageHero eyebrow="À la carte" title="Dine your way" copy="Choose familiar curries, house signatures, premium grills, rice, breads and desserts at your own pace.">
+      <PageHero bg="butter" eyebrow="À la carte" title="Dine your way" copy="Choose familiar curries, house signatures, premium grills, rice, breads and desserts at your own pace.">
         <BookBtn light from="alacarte" />
         <Link to="/fixed-price-menu" className="btn-outline-light">View Fixed-Price Tables</Link>
       </PageHero>
@@ -136,7 +136,7 @@ export function Drinks() {
   useSEO('Alcohol-Free Drinks & Mocktails', 'Signature Coolers, lassi, milkshakes and 0.0% lagers. Bold, refreshing and completely alcohol-free at The Indian Table, Higher Walton.')
   return (
     <>
-      <PageHero eyebrow="Drinks" title="Raise a glass to the table" copy="Bold, refreshing and completely alcohol-free.">
+      <PageHero bg="drink" eyebrow="Drinks" title="Raise a glass to the table" copy="Bold, refreshing and completely alcohol-free.">
         <BookBtn light from="drinks" />
         <Link to="/fixed-price-menu" className="btn-outline-light">View Dining Menus</Link>
       </PageHero>

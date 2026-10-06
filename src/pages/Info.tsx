@@ -30,7 +30,7 @@ export function BringToCar() {
   const submit = (e: FormEvent) => { e.preventDefault(); setSent(true); track('order_start', { method: 'bring_to_car' }) }
   return (
     <>
-      <PageHero eyebrow="Bring to Car" title="Order online. Stay comfortable. We'll bring it out." copy="Choose Bring to Car at checkout, tell us what you are driving, then let us know when you arrive.">
+      <PageHero bg="naan" eyebrow="Bring to Car" title="Order online. Stay comfortable. We'll bring it out." copy="Choose Bring to Car at checkout, tell us what you are driving, then let us know when you arrive.">
         <a href="#start" className="btn-gold">Start a Bring to Car Order</a>
         <a href={SITE.phoneHref} className="btn-outline-light" onClick={() => track('phone_click')}>Call When You Arrive</a>
       </PageHero>
@@ -83,7 +83,7 @@ export function Family() {
   useSEO('Family Indian Restaurant Preston', 'Everyone has a place at our table. Family Table £59.95 and Little Table £9.95 at The Indian Table, Higher Walton, Preston.')
   return (
     <>
-      <PageHero eyebrow="Family dining" title="Everyone has a place at our table" copy="Familiar choices for children, broader choices for adults and one relaxed table for the whole family.">
+      <PageHero bg="dining" eyebrow="Family dining" title="Everyone has a place at our table" copy="Familiar choices for children, broader choices for adults and one relaxed table for the whole family.">
         <BookBtn light label="Book a Family Table" from="family" />
       </PageHero>
       <section className="section">
@@ -147,7 +147,7 @@ export function OurStory() {
   ]
   return (
     <>
-      <PageHero eyebrow="Our story" title="A local table, built for families" copy="The Indian Table is a family-led restaurant built around a simple idea - curry night should feel generous, relaxed and easy to understand." />
+      <PageHero bg="room" eyebrow="Our story" title="A local table, built for families" copy="The Indian Table is a family-led restaurant built around a simple idea - curry night should feel generous, relaxed and easy to understand." />
       <section className="section">
         <div className="wrap grid gap-12 lg:grid-cols-2">
           <Stagger className="space-y-8">{blocks.map(([t, c]) => <Item key={t}><h2 className="!text-head">{t}</h2><p className="mt-2">{c}</p></Item>)}</Stagger>
@@ -196,7 +196,7 @@ export function Contact() {
   const [sent, setSent] = useState(false)
   return (
     <>
-      <PageHero eyebrow="Contact" title="Find your table">
+      <PageHero bg="interior" eyebrow="Contact" title="Find your table">
         <a href={SITE.MAP_URL} target="_blank" rel="noopener" className="btn-gold" onClick={() => track('directions_click')}>Get Directions</a>
         <a href={SITE.phoneHref} className="btn-outline-light" onClick={() => track('phone_click')}>Call Us</a>
         <BookBtn label="Book a Table" light from="contact" />

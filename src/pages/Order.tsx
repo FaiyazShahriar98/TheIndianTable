@@ -85,7 +85,7 @@ export default function Order() {
 
   return (
     <>
-      <PageHero eyebrow="Takeaway" title="Restaurant food. Your way." copy="Order direct for collection, local delivery or Bring to Car." />
+      <PageHero bg="street" eyebrow="Takeaway" title="Restaurant food. Your way." copy="Order direct for collection, local delivery or Bring to Car." />
       <section className="section pb-8 md:pb-10">
         <div className="wrap">
           <p className="eyebrow mb-2">Step 1</p>
