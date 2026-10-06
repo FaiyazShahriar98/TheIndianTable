@@ -15,6 +15,17 @@ const MODES: { m: Mode; d: string }[] = [
 ]
 const gbp = (n: number) => `£${n.toFixed(2)}`
 
+function ModeIcon({ mode }: { mode: Mode }) {
+  const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true" {...p}>
+      {mode === 'Collection' && <><path d="M6 8h12l-1 12H7z" /><path d="M9 8a3 3 0 0 1 6 0" /></>}
+      {mode === 'Delivery' && <><circle cx="6" cy="17" r="2.5" /><circle cx="18" cy="17" r="2.5" /><path d="M8.5 17H14l2.5-8H19M11 9H7M14 9l-1.5 5" /></>}
+      {mode === 'Bring to Car' && <><path d="M4 16v-4l2-5h12l2 5v4z" /><path d="M4 12h16" /><circle cx="8" cy="16.5" r="1.5" /><circle cx="16" cy="16.5" r="1.5" /></>}
+    </svg>
+  )
+}
+
 export default function Order() {
   useSEO('Indian Takeaway Higher Walton', 'Restaurant food, your way. Order direct for collection, local delivery or Bring to Car from The Indian Table, Higher Walton, Preston.')
   const [mode, setMode] = useState<Mode | null>(null)
@@ -77,16 +88,33 @@ export default function Order() {
       <PageHero eyebrow="Takeaway" title="Restaurant food. Your way." copy="Order direct for collection, local delivery or Bring to Car." />
       <section className="section pb-8 md:pb-10">
         <div className="wrap">
-          <h2 className="mb-6 !text-head">How would you like it?</h2>
+          <p className="eyebrow mb-2">Step 1</p>
+          <h2 className="!text-head">How would you like it?</h2>
+          <p className="mb-6 mt-2 text-small">{mode ? 'Change your choice any time.' : 'Tap one to choose. You can change it later.'}</p>
           <div role="group" aria-label="Fulfilment method" className="grid gap-4 md:grid-cols-3">
-            {MODES.map(x => (
-              <button key={x.m} aria-pressed={mode === x.m} onClick={() => pick(x.m)}
-                className={`relative min-h-24 rounded-card border p-6 text-left transition-colors ${mode === x.m ? 'border-brand bg-brand text-page' : 'border-line-strong bg-white/40 hover:border-gold'}`}>
-                <span className={`block font-display text-title font-semibold uppercase ${mode === x.m ? 'text-page' : 'text-brand'}`}>Select {x.m}</span>
-                <span className="mt-2 block text-small">{x.d}</span>
-                {mode === x.m && <m.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-4 text-gold" aria-hidden="true">✓</m.span>}
-              </button>
-            ))}
+            {MODES.map(x => {
+              const on = mode === x.m
+              return (
+                <button key={x.m} type="button" aria-pressed={on} onClick={() => pick(x.m)}
+                  className={`group relative flex flex-col gap-4 rounded-card border-2 p-6 text-left transition duration-200 active:scale-[0.98] md:hover:-translate-y-1 ${on ? 'border-brand bg-brand text-page' : 'border-line-strong bg-white hover:border-gold'}`}>
+                  <span className="flex items-start justify-between gap-4">
+                    <span className={`grid h-12 w-12 place-items-center rounded-full ${on ? 'bg-gold text-brand-deep' : 'bg-sunken text-brand'}`}><ModeIcon mode={x.m} /></span>
+                    {/* radio-style indicator: empty ring until chosen */}
+                    <span aria-hidden="true" className={`grid h-8 w-8 place-items-center rounded-full border-2 transition-colors duration-200 ${on ? 'border-gold bg-gold text-brand-deep' : 'border-line-strong text-transparent group-hover:border-gold'}`}>
+                      <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3.2 3L13 4.5" /></svg>
+                    </span>
+                  </span>
+                  <span>
+                    <span className={`block font-display text-title font-semibold uppercase ${on ? 'text-page' : 'text-brand'}`}>{x.m}</span>
+                    <span className={`mt-2 block text-small ${on ? 'text-page/85' : ''}`}>{x.d}</span>
+                  </span>
+                  <span className={`mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-btn px-6 text-body font-bold transition-colors duration-200 ${on ? 'bg-gold text-brand-deep' : 'bg-brand text-page group-hover:bg-brand-hover'}`}>
+                    {on ? 'Selected' : `Select ${x.m}`}
+                    {!on && <span aria-hidden="true">→</span>}
+                  </span>
+                </button>
+              )
+            })}
           </div>
           {mode === 'Bring to Car' && <p className="mt-4 text-small">You will be asked for your collection time, car registration and colour at checkout. <a href="/bring-to-car" className="font-bold underline">How it works</a></p>}
           {mode === 'Delivery' && <p className="mt-4 text-small">Delivery area and estimated times are supplied by the ordering provider. Delivery postcode is checked at checkout.</p>}
