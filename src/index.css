@@ -20,7 +20,7 @@
 
 @layer base {
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  body { @apply bg-page font-sans text-body text-ink antialiased md:text-bodylg; }
+  body { @apply bg-page font-sans text-body text-ink antialiased md:text-bodylg; overflow-x: clip; }
   h1, h2, h3 { @apply font-display font-semibold tracking-tight text-brand; }
   h1 { @apply text-big uppercase md:text-hero; }
   h2 { @apply text-head md:text-big; }

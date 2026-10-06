@@ -3,6 +3,7 @@ import { m, Reveal, Stagger, Item, useReducedMotion } from '../lib/motion'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
+import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
 
 const WHY = [
@@ -153,12 +154,7 @@ export default function Home() {
       </section>
 
       {/* 9 Reviews */}
-      <section className="section">
-        <div className="wrap">
-          <Reveal className="mb-8"><h2>What our guests say</h2></Reveal>
-          <div className="grid gap-4 md:grid-cols-3">{[1, 2, 3].map(i => <Placeholder key={i} label="ADD VERIFIED REVIEW (platform, customer name and date required)" />)}</div>
-        </div>
-      </section>
+      <Reviews />
 
       {/* 10 Location */}
       <section className="section pt-0">

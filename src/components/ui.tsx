@@ -174,11 +174,13 @@ export function Headline({ children, as: Tag = 'h2', className = '' }: { childre
   if (reduce) return <Tag className={className}>{children}</Tag>
   return (
     <Tag className={className} aria-label={children}>
-      {children.split(' ').map((w, i) => (
-        <span key={i} aria-hidden="true" className="inline-block overflow-hidden align-bottom">
-          <m.span className="inline-block" initial={{ y: '100%' }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ duration: 0.3, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}>{w}&nbsp;</m.span>
-        </span>
-      ))}
+      <m.span aria-hidden="true" className="inline" initial="off" whileInView="on" viewport={{ once: true }} transition={{ staggerChildren: 0.04 }}>
+        {children.split(" ").map((w, i) => (
+          <span key={i} className="inline-block overflow-hidden align-bottom">
+            <m.span className="inline-block" variants={{ off: { y: "110%" }, on: { y: 0, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } } }}>{w}&nbsp;</m.span>
+          </span>
+        ))}
+      </m.span>
     </Tag>
   )
 }
