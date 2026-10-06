@@ -106,3 +106,8 @@
 .kb { animation: kb 40s ease-in-out infinite alternate; will-change: transform; }
 [data-paused='true'] .kb { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .kb { animation: none !important; } }
+
+/* Typing caret for the review cards: blinks only while text is being typed. */
+@keyframes blink { 50% { opacity: 0; } }
+.caret { animation: blink 0.9s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .caret { animation: none !important; } }
