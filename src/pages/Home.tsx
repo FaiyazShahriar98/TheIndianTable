@@ -117,7 +117,7 @@ export default function Home() {
             <ul className="dash mt-6 space-y-2">
               {['Two Signature Table feasts', 'Two Little Table feasts', 'One family fruit-cooler pitcher'].map(p => <li key={p}>{p}</li>)}
             </ul>
-            <div className="mt-8 flex flex-wrap gap-4"><Link to="/family" className="btn-gold">See Family Options</Link><BookBtn label="Book a Family Table" light from="family-home" /></div>
+            <div className="mt-8 flex flex-wrap gap-4"><Link to="/family" className="btn-gold">See Family Options</Link><BookBtn label="Book a Family Table" table="family" light from="family-home" /></div>
           </Reveal>
           <Reveal delay={0.1}><div className="py-4"><Plate k="spread" w={600} dir="ccw" alt="Creamy butter chicken served for the table" /></div></Reveal>
         </div>

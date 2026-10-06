@@ -54,6 +54,8 @@ begin
     || email_row('Phone', '<a href="tel:' || tel || '" style="color:#12382E;font-weight:bold">' || esc(new.phone) || '</a>')
     || email_row('Email', '<a href="mailto:' || esc(new.email) || '" style="color:#12382E">' || esc(new.email) || '</a>')
     || email_row('Highchairs', new.highchairs::text)
+    || email_row('Interested in', case coalesce(new.table_pref, '') when 'classic' then 'Classic Table' when 'signature' then 'Signature Table' when 'grand' then 'Grand Table' when 'family' then 'Family Table' when 'alacarte' then 'À la carte' else 'Not sure yet' end)
+    || email_row('Children (11 and under)', new.children::text)
     || email_row('Occasion', coalesce(nullif(esc(new.occasion), ''), '-'))
     || email_row('Allergies / dietary', coalesce(nullif(esc(new.notes), ''), 'None given'), new.notes is not null and new.notes <> '')
     || email_row('Marketing consent', case when new.marketing_consent then 'Yes' else 'No' end)

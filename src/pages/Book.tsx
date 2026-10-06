@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { PRICES, TABLE_CHOICES, type TableChoice } from '../data/menu'
 import { AnimatePresence, m } from '../lib/motion'
 import { SITE, londonNow } from '../config'
 import { useSEO } from '../lib/seo'
@@ -22,11 +23,13 @@ function slotsFor(iso: string) {
 }
 
 type Errors = Partial<Record<'name' | 'phone' | 'email' | 'date' | 'time', string>>
-const blank = { party_size: 2, date: '', time: '', name: '', phone: '', email: '', highchairs: 0, occasion: '', notes: '', marketing_consent: false, website: '' }
+const blank = { party_size: 2, date: '', time: '', name: '', phone: '', email: '', highchairs: 0, occasion: '', notes: '', marketing_consent: false, website: '', table: '' as TableChoice, children: 0 }
 
 export default function Book() {
   useSEO('Book a Table', 'Book a table at The Indian Table in Higher Walton, Preston. Choose your date, time and party size. No account needed.')
-  const [f, setF] = useState(blank)
+  const [params] = useSearchParams()
+  const fromUrl = TABLE_CHOICES.find(c => c.id && c.id === params.get('table'))?.id ?? ''
+  const [f, setF] = useState({ ...blank, table: fromUrl as TableChoice })
   const [errors, setErrors] = useState<Errors>({})
   const [step, setStep] = useState<'form' | 'review' | 'sending' | 'done'>('form')
   const [serverErr, setServerErr] = useState('')
@@ -34,11 +37,18 @@ export default function Book() {
   const started = useRef(false)
   const today = useMemo(() => londonNow().iso, [])
   const maxDate = useMemo(() => { const d = new Date(); d.setDate(d.getDate() + 90); return toISO(d) }, [])
+  const tableLabel = TABLE_CHOICES.find(c => c.id === f.table)?.label ?? 'Not sure yet'
+  const perAdult = f.table === 'classic' || f.table === 'signature' || f.table === 'grand' ? PRICES[f.table] : null
+  const estimate = perAdult ? (f.party_size - f.children) * perAdult + f.children * PRICES.little : null
   const slots = useMemo(() => slotsFor(f.date), [f.date])
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => {
     if (!started.current) { started.current = true; track('book_start', { from: 'form' }) }
-    setF(p => ({ ...p, [k]: v, ...(k === 'date' ? { time: '' } : {}) }))
+    setF(p => {
+      const n = { ...p, [k]: v, ...(k === 'date' ? { time: '' } : {}) }
+      n.children = Math.min(n.children, Math.max(0, n.party_size - 1)) // at least one adult
+      return n
+    })
     setErrors(e => ({ ...e, [k]: undefined }))
   }
 
@@ -62,6 +72,7 @@ export default function Book() {
 
   const confirm = async () => {
     setStep('sending'); setServerErr('')
+    // PAYMENT (later): create the booking as 'pending_payment' here, then redirect to the gateway checkout and confirm on return.
     const res = await submitBooking(f as BookingInput)
     if (res.ok) { setDemo(!!res.demo); setStep('done'); track('book_complete', { party: f.party_size }); window.scrollTo({ top: 0 }) }
     else { setServerErr(res.error || 'Something went wrong.'); setStep('review') }
@@ -92,6 +103,41 @@ export default function Book() {
           <AnimatePresence mode="wait" initial={false}>
             {step === 'form' && (
               <m.form key="form" onSubmit={onReview} noValidate initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="card space-y-6">
+                <fieldset>
+                  <legend className="label">What would you like to enjoy? <span className="font-normal">(optional)</span></legend>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {TABLE_CHOICES.map(c => {
+                      const on = f.table === c.id
+                      return (
+                        <button type="button" key={c.id || 'none'} aria-pressed={on} onClick={() => set('table', c.id)}
+                          className={`flex min-h-14 flex-col justify-center rounded-btn border px-4 py-2 text-left transition-colors duration-200 active:scale-[0.98] ${on ? 'border-brand bg-brand text-page' : 'border-line-strong bg-white hover:border-gold'}`}>
+                          <span className="text-small font-bold">{c.label}</span>
+                          <span className={`text-micro ${on ? 'text-page/80' : 'text-ink/70'}`}>{c.sub}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <p className="mt-2 text-micro">This helps us prepare. It is not a commitment: every guest still chooses their dishes at the table.</p>
+                  {perAdult !== null && (
+                    <div className="mt-4 grid items-end gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className="label" htmlFor="kids">Children aged 11 and under <span className="font-normal">(Little Table £{PRICES.little.toFixed(2)})</span></label>
+                        <select id="kids" className="field" value={f.children} onChange={e => set('children', +e.target.value)}>
+                          {Array.from({ length: Math.max(1, f.party_size) }, (_, i) => i).map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                      </div>
+                      <p role="status" className="rounded-btn bg-sunken p-4 text-small">
+                        <strong>Estimate: £{estimate!.toFixed(2)}</strong> for {f.party_size - f.children} {f.party_size - f.children === 1 ? 'adult' : 'adults'}{f.children > 0 ? ` and ${f.children} ${f.children === 1 ? 'child' : 'children'}` : ''}. Drinks and extras are not included.
+                      </p>
+                    </div>
+                  )}
+                  {f.table === 'family' && (
+                    <p role="status" className="mt-4 rounded-btn bg-sunken p-4 text-small">
+                      <strong>Family Table £{PRICES.family.toFixed(2)}:</strong> two Signature feasts, two Little Table feasts and a family fruit-cooler pitcher.{f.party_size !== 4 ? ' It is set for 2 adults and 2 children, so for a different party size please pick another Table above or call us.' : ''}
+                    </p>
+                  )}
+                </fieldset>
+
                 <div className="grid gap-6 sm:grid-cols-3">
                   <div>
                     <label className="label" htmlFor="party">Party size</label>
@@ -171,7 +217,7 @@ export default function Book() {
               <m.div key="review" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="card">
                 <h2 className="!text-head">Check your booking</h2>
                 <dl className="mt-6 divide-y divide-line">
-                  {([['Guests', `${f.party_size}`], ['Date', prettyDate], ['Time', f.time], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email], ['Highchairs', `${f.highchairs}`], ['Occasion', f.occasion || '-'], ['Allergies / dietary', f.notes || 'None given']] as const).map(([k, v]) => (
+                  {([['Guests', `${f.party_size}`], ['Date', prettyDate], ['Time', f.time], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email], ['Highchairs', `${f.highchairs}`], ['Interested in', tableLabel], ['Children (11 and under)', `${f.children}`], ['Occasion', f.occasion || '-'], ['Allergies / dietary', f.notes || 'None given']] as const).map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-6 py-4"><dt className="font-bold text-brand">{k}</dt><dd className="text-right">{v}</dd></div>
                   ))}
                 </dl>

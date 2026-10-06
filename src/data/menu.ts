@@ -58,3 +58,15 @@ export const ORDER_DISHES: Dish[] = [
   ...GRAND.map(d => ({ ...d, cat: 'Tandoor' })),
   ...COOLERS.map((n, i) => ({ id: `c${i}`, name: n, cat: 'Drinks', price: 4.95, img: 'drink' as const })),
 ]
+
+export const PRICES = { classic: 14.95, signature: 18.95, grand: 25.95, little: 9.95, family: 59.95 } as const
+export type TableChoice = '' | 'classic' | 'signature' | 'grand' | 'family' | 'alacarte'
+const gbp = (n: number) => `£${n.toFixed(2)}`
+export const TABLE_CHOICES: { id: TableChoice; label: string; sub: string }[] = [
+  { id: '', label: 'Not sure yet', sub: 'Decide at the restaurant' },
+  { id: 'classic', label: 'Classic Table', sub: `${gbp(PRICES.classic)} per person` },
+  { id: 'signature', label: 'Signature Table', sub: `${gbp(PRICES.signature)} per person` },
+  { id: 'grand', label: 'Grand Table', sub: `${gbp(PRICES.grand)} per person` },
+  { id: 'family', label: 'Family Table', sub: `${gbp(PRICES.family)} for 2 adults and 2 children` },
+  { id: 'alacarte', label: 'À la carte', sub: 'Order from the full menu' },
+]

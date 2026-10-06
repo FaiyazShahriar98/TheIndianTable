@@ -84,7 +84,7 @@ export function Family() {
   return (
     <>
       <PageHero bg="dining" eyebrow="Family dining" title="Everyone has a place at our table" copy="Familiar choices for children, broader choices for adults and one relaxed table for the whole family.">
-        <BookBtn light label="Book a Family Table" from="family" />
+        <BookBtn light label="Book a Family Table" table="family" from="family" />
       </PageHero>
       <section className="section">
         <div className="wrap grid gap-6 lg:grid-cols-2">
@@ -112,7 +112,7 @@ export function Family() {
           <Reveal delay={0.1}>
             <h2>Highchairs, allergies and booking notes</h2>
             <p className="mt-4">Tell us how many highchairs you need and any allergies or dietary requirements when you book. For urgent allergy questions, please call us.</p>
-            <div className="mt-6 flex flex-wrap gap-4"><BookBtn label="Book a Family Table" from="family-mid" /><Link to="/allergens" className="btn-outline">Ask About Allergies</Link></div>
+            <div className="mt-6 flex flex-wrap gap-4"><BookBtn label="Book a Family Table" table="family" from="family-mid" /><Link to="/allergens" className="btn-outline">Ask About Allergies</Link></div>
           </Reveal>
         </div>
       </section>

@@ -53,8 +53,8 @@ export function PageHero({ eyebrow, title, copy, children, dark = true, bg }: { 
   )
 }
 
-export const BookBtn = ({ label = 'Book Your Table', from = 'page', light = false }: { label?: string; from?: string; light?: boolean }) => (
-  <Link to="/book" onClick={() => track('book_start', { from })} className={light ? 'btn-gold' : 'btn-primary'}>{label}</Link>
+export const BookBtn = ({ label = 'Book Your Table', from = 'page', light = false, table }: { label?: string; from?: string; light?: boolean; table?: string }) => (
+  <Link to={table ? `/book?table=${table}` : '/book'} onClick={() => track('book_start', { from })} className={light ? 'btn-gold' : 'btn-primary'}>{label}</Link>
 )
 export const OrderBtn = ({ label = 'Order Takeaway', from = 'page', light = false }: { label?: string; from?: string; light?: boolean }) => (
   <Link to="/order" onClick={() => track('order_start', { from })} className={light ? 'btn-outline-light' : 'btn-outline'}>{label}</Link>
@@ -201,7 +201,7 @@ export function TableCards() {
             <ul className="dash mt-6 space-y-2 text-small">
               {t.points.map(p => <li key={p}>{p}</li>)}
             </ul>
-            <Link to="/book" onClick={() => { track('book_start', { from: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</Link>
+            <Link to={`/book?table=${t.id}`} onClick={() => { track('book_start', { from: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</Link>
           </article>
         </Item>
       ))}
