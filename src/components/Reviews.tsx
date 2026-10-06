@@ -5,7 +5,6 @@ import { BgPhoto, Headline, spotMove } from './ui'
 
 const ease = [0.22, 1, 0.36, 1] as const
 const STAR = 'M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z'
-const SLIDE_MS = 9000 // long enough to type, light the stars and read the review
 
 function useIsMobile() {
   const [mob, setMob] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
@@ -112,15 +111,12 @@ function Card({ r, i, mobile, active }: { r: Review; i: number; mobile: boolean;
 export default function Reviews() {
   const reviews = REVIEWS.slice(0, 3)
   const anySample = reviews.some(r => !r.verified)
-  const reduce = !!useReducedMotion()
   const mobile = useIsMobile()
   const section = useRef<HTMLElement>(null)
   const track = useRef<HTMLDivElement>(null)
-  const hold = useRef(0) // timestamp until which autoplay stays paused after a touch
   const visible = useInView(section, { margin: '-20% 0px -20% 0px' })
   const [index, setIndex] = useState(0)
-  const [auto, setAuto] = useState(true)
-  const [tick, setTick] = useState(0)
+  const reduce = !!useReducedMotion()
 
   const go = (i: number) => {
     const root = track.current
@@ -128,7 +124,7 @@ export default function Reviews() {
     if (root && card) root.scrollTo({ left: card.offsetLeft - (root.clientWidth - card.clientWidth) / 2, behavior: reduce ? 'auto' : 'smooth' })
   }
 
-  // Which slide is centred? (mobile slider)
+  // Which slide is centred? (phone slider; the visitor swipes, nothing moves on its own)
   useEffect(() => {
     const root = track.current
     if (!root || !mobile) return
@@ -136,17 +132,6 @@ export default function Reviews() {
     root.querySelectorAll('[data-i]').forEach(el => io.observe(el))
     return () => io.disconnect()
   }, [mobile])
-
-  // Gentle autoplay: only on phones, only while on screen, never for reduced-motion, pauses after a touch.
-  useEffect(() => {
-    if (!mobile || !auto || !visible || reduce) return
-    const t = window.setTimeout(() => {
-      if (Date.now() < hold.current) { setTick(x => x + 1); return }
-      go((index + 1) % reviews.length)
-    }, SLIDE_MS)
-    return () => window.clearTimeout(t)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mobile, auto, visible, reduce, index, tick])
 
   return (
     <section ref={section} className="on-dark grain section relative isolate">
@@ -161,31 +146,18 @@ export default function Reviews() {
         <div
           ref={track}
           role="group" aria-roledescription="carousel" aria-label="Guest reviews"
-          onTouchStart={() => { hold.current = Date.now() + 12000 }}
-          onFocus={() => { hold.current = Date.now() + 12000 }}
           className="relative -mx-5 flex snap-x snap-mandatory items-stretch gap-4 overflow-x-auto px-5 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
         >
           {reviews.map((r, i) => <Card key={i} r={r} i={i} mobile={mobile} active={visible && index === i} />)}
         </div>
 
-        {/* Slider controls: phones only */}
-        <div className="mt-6 flex items-center justify-center gap-4 md:hidden">
-          {!reduce && (
-            <button type="button" aria-pressed={!auto} aria-label={auto ? 'Pause automatic sliding' : 'Resume automatic sliding'} onClick={() => setAuto(a => !a)}
-              className="grid h-12 w-12 place-items-center rounded-full border border-gold/60 text-gold transition-colors duration-200 hover:bg-gold hover:text-brand-deep">
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden="true">
-                {auto ? <><rect x="7" y="5" width="3.5" height="14" rx="1" /><rect x="13.5" y="5" width="3.5" height="14" rx="1" /></> : <path d="M8 5.5v13l11-6.5z" />}
-              </svg>
+        {/* Phones: swipe, or tap a dot. Nothing advances automatically. */}
+        <div className="mt-6 flex items-center justify-center md:hidden">
+          {reviews.map((_, i) => (
+            <button key={i} type="button" aria-label={`Show review ${i + 1} of ${reviews.length}`} aria-current={index === i} onClick={() => go(i)} className="grid h-12 w-8 place-items-center">
+              <span className={`block h-2 rounded-full transition-all duration-200 ${index === i ? 'w-6 bg-gold' : 'w-2 bg-page/40'}`} />
             </button>
-          )}
-          <div className="flex items-center">
-            {reviews.map((_, i) => (
-              <button key={i} type="button" aria-label={`Show review ${i + 1} of ${reviews.length}`} aria-current={index === i} onClick={() => { hold.current = Date.now() + 12000; go(i) }}
-                className="grid h-12 w-8 place-items-center">
-                <span className={`block h-2 rounded-full transition-all duration-200 ${index === i ? 'w-6 bg-gold' : 'w-2 bg-page/40'}`} />
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </section>
