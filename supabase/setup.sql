@@ -131,17 +131,7 @@ create table if not exists public.enquiries (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   name text not null check (char_length(name) between 1 and 100),
-  email text not null check (char_length(email) between 5 and 200 and email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+ on public.bookings;
-create trigger booking_notify after insert on public.bookings for each row execute function public.notify_booking();
-
--- ===== EDIT THESE TWO VALUES, THEN RUN =====
-insert into public.app_secrets (key, value) values
-  ('resend_api_key', 're_PASTE_YOUR_RESEND_KEY'),
-  ('owner_email',    'owner@example.com')
-on conflict (key) do update set value = excluded.value;
--- Optional once a domain is verified in Resend:
--- insert into public.app_secrets values ('from_email', 'The Indian Table <bookings@yourdomain.co.uk>') on conflict (key) do update set value = excluded.value;
-),
+  email text not null check (char_length(email) between 5 and 200 and email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
   message text not null check (char_length(message) between 1 and 2000)
 );
 alter table public.enquiries enable row level security;
@@ -151,7 +141,7 @@ revoke all on public.enquiries from anon, authenticated;
 grant insert on public.enquiries to anon, authenticated;
 
 create or replace function public.notify_enquiry() returns trigger
-language plpgsql security definer set search_path = public, extensions, net as $
+language plpgsql security definer set search_path = public, extensions, net as $$
 declare
   k text := (select value from app_secrets where key = 'resend_api_key');
   owner text := (select value from app_secrets where key = 'owner_email');
@@ -174,7 +164,7 @@ begin
   return new;
 exception when others then
   return new; -- never block an enquiry because email failed
-end $;
+end $$;
 
 drop trigger if exists enquiry_notify on public.enquiries;
 create trigger enquiry_notify after insert on public.enquiries for each row execute function public.notify_enquiry();
