@@ -64,6 +64,7 @@ function Header() {
           <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</Link>
         </div>
         <div className="flex shrink-0 items-center gap-2 xl:hidden">
+          <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-gold min-h-12 px-4">Order</Link>
           <button
             className="grid h-12 w-12 place-items-center rounded-btn border border-line-strong text-brand"
             aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}
