@@ -107,7 +107,7 @@ export default function Home() {
       {/* 5 Why */}
       <section className="section">
         <div className="wrap grid items-center gap-12 lg:grid-cols-2">
-          <Reveal><div className="overflow-hidden rounded-card"><Photo k="room" w={760} ratio="4/3" alt="Warm, welcoming restaurant dining room" /></div></Reveal>
+          <Reveal><div className="overflow-hidden rounded-card"><img src="/familyrestaurant.jpeg" width={760} height={570} loading="lazy" decoding="async" alt="Warm, welcoming restaurant dining room" className="h-full w-full object-cover" style={{ aspectRatio: '4 / 3' }} /></div></Reveal>
           <div>
             <Reveal><p className="eyebrow mb-4">Our Table, Your Table</p><Headline>Why families choose The Indian Table</Headline></Reveal>
             <Stagger className="mt-8 divide-y divide-line border-y border-line">
