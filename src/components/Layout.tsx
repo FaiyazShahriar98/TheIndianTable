@@ -7,12 +7,14 @@ import { track } from '../lib/analytics'
 import CookieBanner, { openCookiePrefs } from './CookieBanner'
 
 // Exact uploaded bowl-and-table icon (public/Justlogo.jpg), not redrawn, paired with a live-set wordmark
-// in the brand display face. Per spec: mobile shows the icon alone, desktop shows icon + wordmark --
-// below 480px there isn't room for both next to the Order button and menu toggle without overflowing.
+// in the brand display face. The wordmark steps down to a smaller size on phones (still next to the
+// Order button and menu toggle) rather than disappearing, so first-time mobile visitors still see the
+// name -- full icon-only would hide the brand entirely until they scroll. Below 360px there just isn't
+// room for any size of it alongside both buttons, so it hides there only.
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-3">
     <img src="/Justlogo.jpg" alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-full object-cover" />
-    <span className={`hidden whitespace-nowrap font-display text-body font-semibold uppercase leading-none tracking-wide min-[480px]:inline min-[480px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
+    <span className={`hidden whitespace-nowrap font-display text-small font-semibold uppercase leading-none tracking-wide min-[360px]:inline min-[480px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>
