@@ -151,7 +151,7 @@ export function OurStory() {
       <section className="section">
         <div className="wrap grid gap-12 lg:grid-cols-2">
           <Stagger className="space-y-8">{blocks.map(([t, c]) => <Item key={t}><h2 className="!text-head">{t}</h2><p className="mt-2">{c}</p></Item>)}</Stagger>
-          <div className="space-y-6"><Photo k="room" w={700} ratio="4/3" alt="Restaurant interior" className="rounded-card" /><Placeholder label="REAL TEAM PHOTOGRAPHS AND BIOGRAPHIES TO BE SUPPLIED BY THE OWNER" /></div>
+          <div className="overflow-hidden rounded-card"><img src="/familyrestaurant.jpeg" width={700} height={525} loading="lazy" decoding="async" alt="Restaurant interior" className="h-full w-full object-cover" style={{ aspectRatio: '4 / 3' }} /></div>
         </div>
       </section>
       <SplitCTA />
