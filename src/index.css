@@ -19,7 +19,11 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  /* overflow-x:clip on both html and body: a fixed-position element's containing block is the root
+     viewport, which some browsers expand to fit unclipped root-level overflow (e.g. a horizontally
+     scrolling carousel elsewhere on the page) if only body clips it -- that stretches fixed bars
+     (the mobile Book/Order bar, cookie banner) wider than the real screen and shifts them off-screen. */
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
   body { @apply bg-page font-sans text-body text-ink antialiased md:text-bodylg; overflow-x: clip; }
   h1, h2, h3 { @apply font-display font-semibold tracking-tight text-brand; }
   h1 { @apply text-big uppercase md:text-hero; }

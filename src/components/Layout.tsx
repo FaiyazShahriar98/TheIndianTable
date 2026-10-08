@@ -7,11 +7,12 @@ import { track } from '../lib/analytics'
 import CookieBanner, { openCookiePrefs } from './CookieBanner'
 
 // Exact uploaded bowl-and-table icon (public/Justlogo.jpg), not redrawn, paired with a live-set wordmark
-// in the brand display face so it stays legible at header height on every screen size.
+// in the brand display face. Per spec: mobile shows the icon alone, desktop shows icon + wordmark --
+// below 480px there isn't room for both next to the Order button and menu toggle without overflowing.
 export const Logo = ({ light = false }: { light?: boolean }) => (
   <Link to="/" aria-label="The Indian Table home" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-3">
     <img src="/Justlogo.jpg" alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-full object-cover" />
-    <span className={`whitespace-nowrap font-display text-body font-semibold uppercase leading-none tracking-wide min-[360px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
+    <span className={`hidden whitespace-nowrap font-display text-body font-semibold uppercase leading-none tracking-wide min-[480px]:inline min-[480px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>
