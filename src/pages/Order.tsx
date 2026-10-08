@@ -127,9 +127,9 @@ export default function Order() {
           <div className="space-y-12">
             <div className="on-dark overflow-hidden rounded-card bg-brand text-page md:grid md:grid-cols-5">
               <div className="p-8 md:col-span-3 md:p-10">
-                <p className="eyebrow mb-2">Direct-order exclusive · Designed for 3 to 4</p>
-                <h2>Family Feast Box</h2>
-                <p className="price mt-2 font-display text-price text-gold">£29.95</p>
+                <p className="eyebrow mb-2">Direct order exclusives · Designed for 1 to 4 people</p>
+                <h2>Complete Meal Choices</h2>
+                <p className="price mt-2 font-display text-price text-gold">£9.95</p>
                 <button className="btn-gold mt-6" onClick={() => add('ffb', 1)}>Add to Order</button>
               </div>
               <div className="md:col-span-2"><Photo k="spread" w={560} ratio="4/3" alt="Family feast box" /></div>

@@ -52,7 +52,7 @@ export const COOLERS = ['Classic Mint Cooler', 'Strawberry Breeze', 'Passion Fru
 export const DRINK_GROUPS = ['Cooler Pitchers', 'Lassi and Any Lassi Jug', 'Milkshakes', '0.0% Lagers', 'Hot Drinks', 'Bottled Soft Drinks']
 
 export const ORDER_DISHES: Dish[] = [
-  { id: 'ffb', name: 'Family Feast Box', cat: 'Complete Meals and Boxes', price: 29.95, img: 'paneer', badge: 'Direct-order exclusive' },
+  { id: 'ffb', name: 'Complete Meal Choices', cat: 'Complete Meals and Boxes', price: 9.95, img: 'paneer', badge: 'Direct-order exclusive' },
   { id: 'lt', name: 'Little Table', cat: 'Little Table and English Favourites', price: 9.95, img: 'tikka' },
   ...SIGNATURES.map(d => ({ ...d })),
   ...GRAND.map(d => ({ ...d, cat: 'Tandoor' })),

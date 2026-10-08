@@ -139,9 +139,9 @@ export default function Home() {
         <div className="wrap grid items-center gap-12 lg:grid-cols-2">
           <Reveal className="lg:order-2">
             <p className="eyebrow mb-4">Curry night at home</p>
-            <h2>Family Feast Box</h2>
-            <p className="mt-2 text-small font-bold uppercase tracking-wider text-gold-text">Direct-order exclusive · Designed for 3 to 4</p>
-            <p className="price mt-4 font-display text-price">£29.95</p>
+            <h2>Complete Meal Choices</h2>
+            <p className="mt-2 text-small font-bold uppercase tracking-wider text-gold-text">Direct order exclusives · Designed for 1 to 4 people</p>
+            <p className="price mt-4 font-display text-price">£9.95</p>
             <p className="mt-4">Choose collection, local delivery or Bring to Car, then build the meal your family actually wants.</p>
             <div className="mt-6 flex flex-wrap gap-2">{['Collection', 'Delivery', 'Bring to Car'].map(x => <span key={x} className="rounded-full border border-line-strong px-4 py-2 text-small font-bold text-brand">{x}</span>)}</div>
             <div className="mt-8"><OrderBtn label="Order Takeaway" from="home-box" /></div>
