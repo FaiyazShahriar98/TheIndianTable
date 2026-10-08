@@ -53,14 +53,12 @@ function Header() {
         <nav aria-label="Main" className="hidden items-center xl:flex">
           <NavLink to="/" className={navCls}>Home</NavLink>
           <NavLink to="/our-story" className={navCls}>Our Story</NavLink>
-          <NavLink to="/book" className={navCls}>Book Now</NavLink>
           <div className="group relative">
             <button className="whitespace-nowrap rounded-lg px-4 py-2 text-small font-semibold text-brand hover:text-gold-text" aria-haspopup="true">Menus ▾</button>
             <div className="invisible absolute left-0 top-full w-52 translate-y-1 rounded-card border border-line bg-page p-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
               {menus.map(m => <a key={m.href} href={m.href} target="_blank" rel="noopener" className={`block ${plainNavCls}`}>{m.label}</a>)}
             </div>
           </div>
-          <a href={SITE.ORDER_URL} className={plainNavCls}>Order Takeaway</a>
           <NavLink to="/contact" className={navCls}>Find Us</NavLink>
         </nav>
         <div className="hidden items-center gap-2 xl:flex">
@@ -92,7 +90,7 @@ function Header() {
               <Link to="/book" onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</Link>
               <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</a>
             </div>
-            {[['/', 'Home'], ['/our-story', 'Our Story'], ['/book', 'Book Now']].map(([to, label]) => (
+            {[['/', 'Home'], ['/our-story', 'Our Story']].map(([to, label]) => (
               <NavLink key={to} to={to} className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
                 {label}
               </NavLink>
@@ -103,7 +101,6 @@ function Header() {
                 {m.label}
               </a>
             ))}
-            <a href={SITE.ORDER_URL} className="block border-b border-line py-4 font-display text-title font-semibold text-brand">Order Takeaway</a>
             <NavLink to="/contact" className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
               Find Us
             </NavLink>
