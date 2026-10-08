@@ -26,13 +26,13 @@ export default function Home() {
         <BgPhoto k="interior" side="full" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-52 top-2/3 h-[560px] w-[560px] rounded-full border border-gold/15" />
         <div className="wrap relative grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12">
-          <div className="text-center lg:col-span-7 lg:text-left">
-            <p className="eyebrow mb-6">Family-led Indian dining in Higher Walton</p>
+          <div className="lg:col-span-7">
+            <p className="eyebrow mb-6 text-center lg:text-left">Family-led Indian dining in Higher Walton</p>
             <h1 className="!text-page">A complete Indian feast. <span className="text-gold">One clear price.</span></h1>
-            <p className="mt-6 max-w-xl text-lead text-page/85 lg:mx-0 mx-auto">
+            <p className="mt-6 max-w-xl text-lead text-page/85">
               Freshly cooked and served to your table. Choose Classic, Signature or Grand - or order your favourites for collection, local delivery or Bring to Car.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4 lg:justify-start">
+            <div className="mt-8 flex flex-wrap gap-4">
               <BookBtn light from="hero" />
               <OrderBtn light label="Order Takeaway" from="hero" />
             </div>
