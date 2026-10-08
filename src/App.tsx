@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import { Motion } from './lib/motion'
 import Home from './pages/Home'
+import ComingSoon from './pages/ComingSoon'
 
 // Route-level code splitting keeps the first load small.
 const Book = lazy(() => import('./pages/Book'))
@@ -29,12 +30,14 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="fixed-price-menu" element={<FixedPrice />} />
-            <Route path="a-la-carte" element={<ALaCarte />} />
-            <Route path="drinks" element={<Drinks />} />
-            <Route path="order" element={<Order />} />
-            <Route path="bring-to-car" element={<BringToCar />} />
-            <Route path="family" element={<Family />} />
+            {/* Packages/menus hidden at the client's request until pricing is finalised — routes point
+                at ComingSoon instead of being deleted, so re-enabling is just swapping the element back. */}
+            <Route path="fixed-price-menu" element={<ComingSoon />} />
+            <Route path="a-la-carte" element={<ComingSoon />} />
+            <Route path="drinks" element={<ComingSoon />} />
+            <Route path="order" element={<ComingSoon />} />
+            <Route path="bring-to-car" element={<ComingSoon />} />
+            <Route path="family" element={<ComingSoon />} />
             <Route path="book" element={<Book />} />
             <Route path="our-story" element={<OurStory />} />
             <Route path="contact" element={<Contact />} />

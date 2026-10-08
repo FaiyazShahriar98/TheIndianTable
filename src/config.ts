@@ -5,7 +5,7 @@ export const SITE = {
   phoneHref: 'tel:+441772381429',
   website: 'www.theindiantablepreston.co.uk',
   // Replace when the live providers / verified accounts are confirmed.
-  ORDER_URL: '',
+  ORDER_URL: 'https://theindiantablepreston.com/',
   MAP_URL: 'https://www.google.com/maps/search/?api=1&query=350+Higher+Walton+Road+Preston+PR5+4HU',
   INSTAGRAM_URL: '',
   hours: [

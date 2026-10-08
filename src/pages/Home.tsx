@@ -51,19 +51,28 @@ export default function Home() {
         <Stagger className="wrap grid gap-4 md:grid-cols-3">
           {[
             ['/book', 'Dine In', 'Table service, one clear price.', 'dining'],
-            ['/order', 'Order Takeaway', 'Collection or local delivery.', 'tikka'],
+            [SITE.ORDER_URL, 'Order Takeaway', 'Collection or local delivery.', 'tikka'],
             ['/bring-to-car', 'Bring to Car', 'Order online. We bring it out.', 'naan'],
-          ].map(([to, t, c, p]) => (
-            <Item key={to}>
-              <Link to={to} onPointerMove={spotMove} className="spot group block overflow-hidden rounded-card border border-line bg-white/40 transition-colors duration-200 hover:border-gold">
+          ].map(([to, t, c, p]) => {
+            const external = to.startsWith('http')
+            const inner = (
+              <>
                 <div className="aspect-[16/9] overflow-hidden"><Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" /></div>
                 <div className="flex items-center justify-between p-6">
                   <div><h3>{t}</h3><p className="text-small">{c}</p></div>
                   <span aria-hidden="true" className="text-title text-gold transition-transform group-hover:translate-x-1">→</span>
                 </div>
-              </Link>
-            </Item>
-          ))}
+              </>
+            )
+            const cls = "spot group block overflow-hidden rounded-card border border-line bg-white/40 transition-colors duration-200 hover:border-gold"
+            return (
+              <Item key={to}>
+                {external
+                  ? <a href={to} onPointerMove={spotMove} className={cls}>{inner}</a>
+                  : <Link to={to} onPointerMove={spotMove} className={cls}>{inner}</Link>}
+              </Item>
+            )
+          })}
         </Stagger>
       </section>
 

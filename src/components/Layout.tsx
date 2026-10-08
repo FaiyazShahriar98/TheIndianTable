@@ -6,24 +6,21 @@ import { SITE, openStatus } from '../config'
 import { track } from '../lib/analytics'
 import CookieBanner, { openCookiePrefs } from './CookieBanner'
 
-// Neutral text wordmark. EXACT LOGO ASSET REQUIRED: replace with the supplied logo/icon files (do not redraw).
+// Exact uploaded bowl-and-table icon (public/Justlogo.jpg), not redrawn, paired with a live-set wordmark
+// in the brand display face so it stays legible at header height on every screen size.
 export const Logo = ({ light = false }: { light?: boolean }) => (
-  <Link to="/" aria-label="The Indian Table home" className="flex items-center gap-2">
+  <Link to="/" aria-label="The Indian Table home" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-3">
+    <img src="/Justlogo.jpg" alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-full object-cover" />
     <span className={`whitespace-nowrap font-display text-body font-semibold uppercase leading-none tracking-wide min-[360px]:text-lead ${light ? 'text-page' : 'text-brand'}`}>
       The Indian Table
     </span>
   </Link>
 )
 
-const dining = [
-  { to: '/fixed-price-menu', label: 'Fixed Price' },
-  { to: '/a-la-carte', label: 'À La Carte' },
-  { to: '/drinks', label: 'Drinks' },
-]
+// Fixed Price / À La Carte / Drinks / Takeaway / Family Dining are hidden from navigation for now
+// (client request — packages/pricing not finalised). Their routes still exist, see App.tsx.
 const links = [
   { to: '/', label: 'Home' },
-  { to: '/order', label: 'Takeaway' },
-  { to: '/family', label: 'Family Dining' },
   { to: '/our-story', label: 'Our Story' },
   { to: '/contact', label: 'Find Us' },
 ]
@@ -50,21 +47,14 @@ function Header() {
       <div className="wrap flex h-16 items-center justify-between gap-4">
         <Logo />
         <nav aria-label="Main" className="hidden items-center xl:flex">
-          {links.slice(0, 1).map(l => <NavLink key={l.to} to={l.to} className={navCls}>{l.label}</NavLink>)}
-          <div className="group relative">
-            <button className="whitespace-nowrap rounded-lg px-4 py-2 text-small font-semibold text-brand hover:text-gold-text" aria-haspopup="true">Dining Menus ▾</button>
-            <div className="invisible absolute left-0 top-full w-48 translate-y-1 rounded-card border border-line bg-page p-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-              {dining.map(d => <NavLink key={d.to} to={d.to} className={(s) => `block ${navCls(s)}`}>{d.label}</NavLink>)}
-            </div>
-          </div>
-          {links.slice(1).map(l => <NavLink key={l.to} to={l.to} className={navCls}>{l.label}</NavLink>)}
+          {links.map(l => <NavLink key={l.to} to={l.to} className={navCls}>{l.label}</NavLink>)}
         </nav>
         <div className="hidden items-center gap-2 xl:flex">
           <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary whitespace-nowrap">Book a Table</Link>
-          <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</Link>
+          <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</a>
         </div>
         <div className="flex shrink-0 items-center gap-2 xl:hidden">
-          <Link to="/order" onClick={() => track('order_start', { from: 'header' })} className="btn-gold min-h-12 px-4">Order</Link>
+          <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'header' })} className="btn-gold min-h-12 px-4">Order</a>
           <button
             className="grid h-12 w-12 place-items-center rounded-btn border border-line-strong text-brand"
             aria-expanded={open} aria-controls="mobile-menu" aria-label={open ? 'Close menu' : 'Open menu'}
@@ -86,9 +76,9 @@ function Header() {
           >
             <div className="grid gap-4 pb-4">
               <Link to="/book" onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</Link>
-              <Link to="/order" onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</Link>
+              <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</a>
             </div>
-            {[...links.slice(0, 1), ...dining, ...links.slice(1)].map(l => (
+            {links.map(l => (
               <NavLink key={l.to} to={l.to} className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
                 {l.label}
               </NavLink>
@@ -107,7 +97,11 @@ function Footer() {
     <footer className="on-dark bg-brand pb-28 pt-16 text-page lg:pb-10">
       <div className="wrap grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Logo light />
+          {/* Full square lockup (icon + wordmark + tagline): the footer's emerald background is the exact
+              colour baked into the image, so it sits flush with no visible edge and has room to stay legible. */}
+          <Link to="/" aria-label="The Indian Table home">
+            <img src="/logo.jpg" alt="" width={160} height={160} className="h-40 w-40" />
+          </Link>
           <p className="mt-4 text-page/80">{SITE.address}</p>
           <p className="mt-2"><a href={SITE.phoneHref} className="font-bold underline-offset-4 hover:underline" onClick={() => track('phone_click')}>{SITE.phone}</a></p>
           <p className="mt-2 text-page/80">{SITE.website}</p>
@@ -122,8 +116,8 @@ function Footer() {
         <div>
           <h3 className="mb-4 !text-lead !text-gold">Eat with us</h3>
           <ul className="space-y-2">
-            {[['/book', 'Book a Table'], ['/order', 'Order Takeaway'], ['/fixed-price-menu', 'Fixed-Price Menu'], ['/a-la-carte', 'À La Carte Menu'], ['/drinks', 'Drinks'], ['/family', 'Family Dining']].map(([to, l]) =>
-              <li key={to}><Link className="hover:text-gold" to={to}>{l}</Link></li>)}
+            <li><Link className="hover:text-gold" to="/book">Book a Table</Link></li>
+            <li><a className="hover:text-gold" href={SITE.ORDER_URL}>Order Takeaway</a></li>
           </ul>
         </div>
         <div>
@@ -145,11 +139,11 @@ function Footer() {
 /** Persistent two-button bar on mobile. Hidden on form and checkout pages so it never covers controls. */
 function MobileBar() {
   const { pathname } = useLocation()
-  if (['/book', '/order', '/bring-to-car'].includes(pathname)) return null
+  if (pathname === '/book') return null
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-line bg-page p-4 lg:hidden" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
       <Link to="/book" onClick={() => track('book_start', { from: 'bar' })} className="btn-primary">BOOK</Link>
-      <Link to="/order" onClick={() => track('order_start', { from: 'bar' })} className="btn-outline">ORDER</Link>
+      <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'bar' })} className="btn-outline">ORDER</a>
     </div>
   )
 }

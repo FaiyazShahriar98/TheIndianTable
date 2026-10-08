@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { img, PHOTOS } from '../config'
+import { img, PHOTOS, SITE } from '../config'
 import { JOURNEY, TIERS } from '../data/menu'
 import { Item, Reveal, Stagger, m, useReducedMotion } from '../lib/motion'
 import { track } from '../lib/analytics'
@@ -56,8 +56,9 @@ export function PageHero({ eyebrow, title, copy, children, dark = true, bg }: { 
 export const BookBtn = ({ label = 'Book Your Table', from = 'page', light = false, table }: { label?: string; from?: string; light?: boolean; table?: string }) => (
   <Link to={table ? `/book?table=${table}` : '/book'} onClick={() => track('book_start', { from })} className={light ? 'btn-gold' : 'btn-primary'}>{label}</Link>
 )
+// Takeaway ordering is handled by an external provider for now (see SITE.ORDER_URL) — not the in-app /order flow.
 export const OrderBtn = ({ label = 'Order Takeaway', from = 'page', light = false }: { label?: string; from?: string; light?: boolean }) => (
-  <Link to="/order" onClick={() => track('order_start', { from })} className={light ? 'btn-outline-light' : 'btn-outline'}>{label}</Link>
+  <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from })} className={light ? 'btn-outline-light' : 'btn-outline'}>{label}</a>
 )
 
 /** Five-part feast as one connected path, not five boxed cards. */

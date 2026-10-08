@@ -210,7 +210,7 @@ export function Contact() {
               <p className="mt-2"><a href={SITE.phoneHref} className="font-bold underline">{SITE.phone}</a></p>
               <ul className="mt-4 space-y-2 text-small">{SITE.hours.map(h => <li key={h.days}><strong>{h.days}:</strong> {h.open} to {h.close}</li>)}</ul>
             </div>
-            <div className="card text-small"><p>Dining, collection, local delivery and Bring to Car are all available. <Link to="/order" className="font-bold underline">Order Takeaway</Link></p><div className="mt-4"><Placeholder label="ACCESS AND PARKING: CONFIRM BEFORE LAUNCH" /></div></div>
+            <div className="card text-small"><p>Dining and takeaway are both available. <a href={SITE.ORDER_URL} className="font-bold underline">Order Takeaway</a></p><div className="mt-4"><Placeholder label="ACCESS AND PARKING: CONFIRM BEFORE LAUNCH" /></div></div>
           </Reveal>
           <Reveal delay={0.1}>
             <iframe title="Map of The Indian Table" loading="lazy" className="h-80 w-full rounded-card border border-line" src="https://www.google.com/maps?q=350+Higher+Walton+Road+Preston+PR5+4HU&output=embed" />
