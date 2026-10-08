@@ -62,7 +62,7 @@ export default function Home() {
               <>
                 <div className="aspect-[16/9] overflow-hidden">
                   {t === 'Dine In'
-                    ? <img src="/familyrestaurant.jpeg" alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />
+                    ? <img src="/familyrestaurant2.png" alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />
                     : <Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />}
                 </div>
                 <div className="flex items-center justify-between p-6">
