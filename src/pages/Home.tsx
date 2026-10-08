@@ -60,7 +60,11 @@ export default function Home() {
             const external = to.startsWith('http')
             const inner = (
               <>
-                <div className="aspect-[16/9] overflow-hidden"><Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" /></div>
+                <div className="aspect-[16/9] overflow-hidden">
+                  {t === 'Dine In'
+                    ? <img src="/familyrestaurant.jpeg" alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />
+                    : <Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />}
+                </div>
                 <div className="flex items-center justify-between p-6">
                   <div><h3>{t}</h3><p className="text-small">{c}</p></div>
                   <span aria-hidden="true" className="text-title text-gold transition-transform group-hover:translate-x-1">→</span>
