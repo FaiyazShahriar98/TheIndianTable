@@ -3,7 +3,8 @@ import { m, Reveal, Stagger, Item, useReducedMotion } from '../lib/motion'
 import { SITE, openStatus } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
-import Reviews from '../components/Reviews'
+// Hidden for now -- client will supply real reviews later. Uncomment to restore.
+// import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
 
 const WHY = [
@@ -162,8 +163,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9 Reviews */}
-      <Reviews />
+      {/* 9 Reviews -- hidden for now, client will supply real reviews later. Uncomment to restore. */}
+      {/* <Reviews /> */}
 
       {/* 10 Location */}
       <section className="section pt-0">
