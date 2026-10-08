@@ -36,10 +36,12 @@ export default function Home() {
               <BookBtn light from="hero" />
               <OrderBtn light label="Order Takeaway" from="hero" />
             </div>
-            <p className="mt-8 text-small font-semibold text-page/80 price">
-              Classic £14.95 <span className="mx-2 text-gold">|</span> Signature £18.95 <span className="mx-2 text-gold">|</span> Grand £25.95 <span className="mx-2 text-gold">|</span> Little Table £9.95
+            <p className="mt-8 text-small font-semibold text-page/80">
+              {['Classic Table', 'Signature Table', 'Grand Table', 'Family Table', 'Little Table'].map((t, i) => (
+                <span key={t}>{i > 0 && <span className="mx-2 text-gold">|</span>}{t}</span>
+              ))}
             </p>
-            <p className="mt-2 text-small text-page/70">Alcohol-free drinks · Family Table £59.95 · 350 Higher Walton Road, Preston</p>
+            <p className="mt-2 text-small text-page/70">Alcohol-free drinks</p>
           </div>
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Plate k="curry" w={640} dir="cw" steam priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
@@ -53,7 +55,7 @@ export default function Home() {
           {[
             ['/book', 'Dine In', 'Table service, one clear price.', 'dining'],
             [SITE.ORDER_URL, 'Order Takeaway', 'Collection or local delivery.', 'tikka'],
-            ['/bring-to-car', 'Bring to Car', 'Order online. We bring it out.', 'naan'],
+            [SITE.ORDER_URL, 'Bring to Car', 'Order online. We bring it out.', 'naan'],
           ].map(([to, t, c, p]) => {
             const external = to.startsWith('http')
             const inner = (
@@ -67,7 +69,7 @@ export default function Home() {
             )
             const cls = "spot group block overflow-hidden rounded-card border border-line bg-white/40 transition-colors duration-200 hover:border-gold"
             return (
-              <Item key={to}>
+              <Item key={t}>
                 {external
                   ? <a href={to} onPointerMove={spotMove} className={cls}>{inner}</a>
                   : <Link to={to} onPointerMove={spotMove} className={cls}>{inner}</Link>}
@@ -87,7 +89,7 @@ export default function Home() {
             <p className="mt-4">Every adult Table begins with one Poppadom and our Chutney Selection. Then choose one item from each part of your five-part feast.</p>
           </Reveal>
           <TableCards />
-          <p className="mt-8 text-center"><Link to="/fixed-price-menu" className="btn-outline">View the Fixed-Price Menu</Link></p>
+          <p className="mt-8 text-center"><a href="/menu/fixed-price-menu.pdf" target="_blank" rel="noopener" className="btn-outline">View the Fixed-Price Menu</a></p>
         </div>
       </section>
 
@@ -128,7 +130,7 @@ export default function Home() {
             <ul className="dash mt-6 space-y-2">
               {['Two Signature Table feasts', 'Two Little Table feasts', 'One family fruit-cooler pitcher'].map(p => <li key={p}>{p}</li>)}
             </ul>
-            <div className="mt-8 flex flex-wrap gap-4"><Link to="/family" className="btn-gold">See Family Options</Link><BookBtn label="Book a Family Table" table="family" light from="family-home" /></div>
+            <div className="mt-8 flex flex-wrap gap-4"><a href="/menu/fixed-price-menu.pdf" target="_blank" rel="noopener" className="btn-gold">See Family Options</a><BookBtn label="Book a Family Table" table="family" light from="family-home" /></div>
           </Reveal>
           <Reveal delay={0.1}><div className="py-4"><Plate k="spread" w={600} dir="ccw" alt="Creamy butter chicken served for the table" /></div></Reveal>
         </div>
@@ -159,7 +161,7 @@ export default function Home() {
               <Item key={k} className={i % 2 ? 'md:mt-10' : ''}><div className="overflow-hidden rounded-card"><Photo k={k} w={520} ratio="3/4" alt="Signature dish" className="transition-transform duration-200 hover:scale-105" /></div></Item>
             ))}
           </Stagger>
-          <p className="mt-8"><Link to="/a-la-carte" className="btn-outline">Dine Your Way</Link></p>
+          <p className="mt-8"><a href="/menu/a-la-carte-menu.pdf" target="_blank" rel="noopener" className="btn-outline">Dine Your Way</a></p>
         </div>
       </section>
 

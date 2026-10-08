@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
 import { AnimatePresence, m } from '../lib/motion'
 import { SITE, londonNow } from '../config'
 import { useSEO } from '../lib/seo'
@@ -184,7 +183,7 @@ export default function Book() {
                 <p className="mt-6 text-small">{SITE.address}<br />Need to change something? Call <a className="font-bold underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-4">
                   <a href={SITE.MAP_URL} target="_blank" rel="noopener" className="btn-primary" onClick={() => track('directions_click')}>Get Directions</a>
-                  <Link to="/fixed-price-menu" className="btn-outline">Preview the Menu</Link>
+                  <a href="/menu/fixed-price-menu.pdf" target="_blank" rel="noopener" className="btn-outline">Preview the Menu</a>
                 </div>
               </m.div>
             )}

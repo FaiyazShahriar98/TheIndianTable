@@ -20,15 +20,16 @@ export const Logo = ({ light = false }: { light?: boolean }) => (
   </Link>
 )
 
-// Fixed Price / À La Carte / Drinks / Takeaway / Family Dining are hidden from navigation for now
-// (client request — packages/pricing not finalised). Their routes still exist, see App.tsx.
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/our-story', label: 'Our Story' },
-  { to: '/contact', label: 'Find Us' },
+// Real menu PDFs supplied by the client (public/menu) -- link straight to these rather than the
+// in-app menu pages, which are still full of "approved items to be added" placeholders.
+const menus = [
+  { href: '/menu/fixed-price-menu.pdf', label: 'Fixed Price Menu' },
+  { href: '/menu/a-la-carte-menu.pdf', label: 'À La Carte Menu' },
+  { href: '/menu/takeaway-menu.pdf', label: 'Takeaway Menu' },
 ]
 const navCls = ({ isActive }: { isActive: boolean }) =>
   `navlink whitespace-nowrap rounded-lg px-4 py-2 text-body font-semibold transition-colors duration-200 hover:text-gold-text ${isActive ? 'text-gold-text' : 'text-brand'}`
+const plainNavCls = 'navlink whitespace-nowrap rounded-lg px-4 py-2 text-body font-semibold text-brand transition-colors duration-200 hover:text-gold-text'
 
 function Header() {
   const [open, setOpen] = useState(false)
@@ -50,7 +51,17 @@ function Header() {
       <div className="wrap flex h-16 items-center justify-between gap-4">
         <Logo />
         <nav aria-label="Main" className="hidden items-center xl:flex">
-          {links.map(l => <NavLink key={l.to} to={l.to} className={navCls}>{l.label}</NavLink>)}
+          <NavLink to="/" className={navCls}>Home</NavLink>
+          <NavLink to="/our-story" className={navCls}>Our Story</NavLink>
+          <NavLink to="/book" className={navCls}>Book Now</NavLink>
+          <div className="group relative">
+            <button className="whitespace-nowrap rounded-lg px-4 py-2 text-small font-semibold text-brand hover:text-gold-text" aria-haspopup="true">Menus ▾</button>
+            <div className="invisible absolute left-0 top-full w-52 translate-y-1 rounded-card border border-line bg-page p-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              {menus.map(m => <a key={m.href} href={m.href} target="_blank" rel="noopener" className={`block ${plainNavCls}`}>{m.label}</a>)}
+            </div>
+          </div>
+          <a href={SITE.ORDER_URL} className={plainNavCls}>Order Takeaway</a>
+          <NavLink to="/contact" className={navCls}>Find Us</NavLink>
         </nav>
         <div className="hidden items-center gap-2 xl:flex">
           <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary whitespace-nowrap">Book a Table</Link>
@@ -81,11 +92,21 @@ function Header() {
               <Link to="/book" onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</Link>
               <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</a>
             </div>
-            {links.map(l => (
-              <NavLink key={l.to} to={l.to} className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
-                {l.label}
+            {[['/', 'Home'], ['/our-story', 'Our Story'], ['/book', 'Book Now']].map(([to, label]) => (
+              <NavLink key={to} to={to} className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
+                {label}
               </NavLink>
             ))}
+            <p className="border-b border-line pb-2 pt-4 text-micro font-bold uppercase tracking-wider text-gold-text">Menus</p>
+            {menus.map(m => (
+              <a key={m.href} href={m.href} target="_blank" rel="noopener" className="block border-b border-line py-4 font-display text-title font-semibold text-brand">
+                {m.label}
+              </a>
+            ))}
+            <a href={SITE.ORDER_URL} className="block border-b border-line py-4 font-display text-title font-semibold text-brand">Order Takeaway</a>
+            <NavLink to="/contact" className={({ isActive }) => `block border-b border-line py-4 font-display text-title font-semibold ${isActive ? 'text-gold-text' : 'text-brand'}`}>
+              Find Us
+            </NavLink>
             <a href={SITE.phoneHref} className="btn-outline mt-6 w-full" onClick={() => track('phone_click')}>Call {SITE.phone}</a>
           </m.nav>
         )}
@@ -121,6 +142,7 @@ function Footer() {
           <ul className="space-y-2">
             <li><Link className="hover:text-gold" to="/book">Book a Table</Link></li>
             <li><a className="hover:text-gold" href={SITE.ORDER_URL}>Order Takeaway</a></li>
+            {menus.map(m => <li key={m.href}><a className="hover:text-gold" href={m.href} target="_blank" rel="noopener">{m.label}</a></li>)}
           </ul>
         </div>
         <div>
