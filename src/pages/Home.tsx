@@ -44,7 +44,7 @@ export default function Home() {
             <p className="mt-2 text-small text-page/70">Alcohol-free drinks</p>
           </div>
           <div className="mt-16 lg:col-span-5 lg:mt-0">
-            <Plate k="curry" w={640} dir="cw" priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
+            <Plate src="/feast-spread.webp" w={640} dir="cw" priority alt="Round sharing table of curries, naan, rice, salad and raita" />
           </div>
         </div>
       </section>

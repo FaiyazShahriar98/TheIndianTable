@@ -8,25 +8,24 @@ import { track } from '../lib/analytics'
 
 type PhotoKey = keyof typeof PHOTOS
 
-/** Responsive Unsplash placeholder with explicit dimensions (no layout shift) and lazy loading. */
-export function Photo({ k, w = 900, ratio = '4/3', alt, className = '', priority = false }: {
-  k: PhotoKey; w?: number; ratio?: string; alt: string; className?: string; priority?: boolean
+/** Responsive Unsplash placeholder with explicit dimensions (no layout shift) and lazy loading.
+ *  Pass `src` instead of `k` for a real local photo (public/) -- skips the Unsplash srcSet. */
+export function Photo({ k, src: localSrc, w = 900, ratio = '4/3', alt, className = '', priority = false }: {
+  k?: PhotoKey; src?: string; w?: number; ratio?: string; alt: string; className?: string; priority?: boolean
 }) {
   const [a, b] = ratio.split('/').map(Number)
   const h = Math.round((w * b) / a)
-  const src = (x: number) => `${img(PHOTOS[k], x).replace(/&w=\d+/, `&w=${x}`)}&h=${Math.round((x * b) / a)}`
-  return (
-    <img
-      src={src(w)}
-      srcSet={`${src(Math.round(w / 2))} ${Math.round(w / 2)}w, ${src(w)} ${w}w, ${src(w * 2)} ${w * 2}w`}
-      sizes={`(min-width:1024px) ${Math.round(w / 1.4)}px, 100vw`}
-      width={w} height={h} alt={alt}
-      loading={priority ? 'eager' : 'lazy'} decoding="async"
-      {...(priority ? ({ fetchpriority: 'high' } as Record<string, string>) : {})}
-      className={`h-full w-full object-cover ${className}`}
-      style={{ aspectRatio: ratio.replace('/', ' / ') }}
-    />
-  )
+  const src = (x: number) => `${img(PHOTOS[k!], x).replace(/&w=\d+/, `&w=${x}`)}&h=${Math.round((x * b) / a)}`
+  const common = {
+    width: w, height: h, alt,
+    loading: (priority ? 'eager' : 'lazy') as 'eager' | 'lazy', decoding: 'async' as const,
+    ...(priority ? ({ fetchpriority: 'high' } as Record<string, string>) : {}),
+    className: `h-full w-full object-cover ${className}`,
+    style: { aspectRatio: ratio.replace('/', ' / ') },
+  }
+  return localSrc
+    ? <img src={localSrc} {...common} />
+    : <img src={src(w)} srcSet={`${src(Math.round(w / 2))} ${Math.round(w / 2)}w, ${src(w)} ${w}w, ${src(w * 2)} ${w * 2}w`} sizes={`(min-width:1024px) ${Math.round(w / 1.4)}px, 100vw`} {...common} />
 }
 
 export const Diamond = ({ className = '' }: { className?: string }) => (
@@ -126,8 +125,8 @@ export function Steam() {
 }
 
 /** Circular "plate" photo that rocks a few degrees clockwise then back, like a wok being worked. */
-export function Plate({ k, alt, w = 600, dir = 'cw', steam = false, priority = false, className = '' }: {
-  k: PhotoKey; alt: string; w?: number; dir?: 'cw' | 'ccw'; steam?: boolean; priority?: boolean; className?: string
+export function Plate({ k, src, alt, w = 600, dir = 'cw', steam = false, priority = false, className = '' }: {
+  k?: PhotoKey; src?: string; alt: string; w?: number; dir?: 'cw' | 'ccw'; steam?: boolean; priority?: boolean; className?: string
 }) {
   const ref = usePauseOffscreen<HTMLDivElement>()
   return (
@@ -136,7 +135,7 @@ export function Plate({ k, alt, w = 600, dir = 'cw', steam = false, priority = f
       <span aria-hidden="true" className="absolute -inset-2 rounded-full border border-gold/60" />
       <div className="relative h-full w-full overflow-hidden rounded-full bg-sunken">
         <div className={`h-full w-full ${dir === 'cw' ? 'rock' : 'rock rock-rev'}`}>
-          <Photo k={k} w={w} ratio="1/1" alt={alt} priority={priority} />
+          <Photo k={k} src={src} w={w} ratio="1/1" alt={alt} priority={priority} />
         </div>
       </div>
       {steam && <Steam />}
