@@ -23,7 +23,7 @@ export default function Home() {
     <>
       {/* 1 Hero */}
       <section className="on-dark grain relative isolate overflow-hidden">
-        <BgPhoto k="interior" side="full" />
+        <BgPhoto src="/storefront.webp" side="full" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-52 top-2/3 h-[560px] w-[560px] rounded-full border border-gold/15" />
         <div className="wrap relative grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12">
           <div className="lg:col-span-7">
@@ -44,7 +44,7 @@ export default function Home() {
             <p className="mt-2 text-small text-page/70">Alcohol-free drinks</p>
           </div>
           <div className="mt-16 lg:col-span-5 lg:mt-0">
-            <Plate k="curry" w={640} dir="cw" steam priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
+            <Plate k="curry" w={640} dir="cw" priority alt="Aerial view of a kadai of curry finished with fresh coriander" />
           </div>
         </div>
       </section>

@@ -98,15 +98,17 @@ function usePauseOffscreen<T extends HTMLElement>() {
  * Photograph that melts into a section: ghosted, faded toward the text side, tinted by the brand colours.
  * Parent section must be `relative isolate`. Lazy, responsive, decorative (hidden from assistive tech).
  */
-export function BgPhoto({ k, tone = 'dark', side = 'right' }: { k: PhotoKey; tone?: 'dark' | 'light'; side?: 'left' | 'right' | 'full' }) {
+export function BgPhoto({ k, src: localSrc, tone = 'dark', side = 'right' }: { k?: PhotoKey; src?: string; tone?: 'dark' | 'light'; side?: 'left' | 'right' | 'full' }) {
   const ref = usePauseOffscreen<HTMLDivElement>()
   const dark = tone === 'dark'
   const fade = side === 'full' ? 'bg-brand/70' : side === 'right' ? 'bg-gradient-to-r from-brand via-brand/85 to-brand/20' : 'bg-gradient-to-l from-brand via-brand/85 to-brand/20'
-  const src = (w: number) => img(PHOTOS[k], w, 55)
+  const src = (w: number) => img(PHOTOS[k!], w, 55)
   return (
     <div ref={ref} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <img src={src(1280)} srcSet={`${src(640)} 640w, ${src(1280)} 1280w`} sizes="100vw" width={1280} height={720} alt="" loading="lazy" decoding="async"
-        className={`kb h-full w-full object-cover ${dark ? 'opacity-30 grayscale' : 'opacity-[0.12] sepia'}`} />
+      {localSrc
+        ? <img src={localSrc} width={1280} height={720} alt="" loading="lazy" decoding="async" className={`kb h-full w-full object-cover ${dark ? 'opacity-30 grayscale' : 'opacity-[0.12] sepia'}`} />
+        : <img src={src(1280)} srcSet={`${src(640)} 640w, ${src(1280)} 1280w`} sizes="100vw" width={1280} height={720} alt="" loading="lazy" decoding="async"
+            className={`kb h-full w-full object-cover ${dark ? 'opacity-30 grayscale' : 'opacity-[0.12] sepia'}`} />}
       <div className={`absolute inset-0 ${dark ? fade : 'bg-gradient-to-b from-page via-page/40 to-page'}`} />
     </div>
   )
