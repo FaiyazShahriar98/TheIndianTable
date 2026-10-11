@@ -53,17 +53,15 @@ export default function Home() {
       <section className="section pb-0 md:pb-0">
         <Stagger className="wrap grid gap-4 md:grid-cols-3">
           {[
-            ['/book', 'Dine In', 'Table service, one clear price.', 'dining'],
-            [SITE.ORDER_URL, 'Order Takeaway', 'Collection or local delivery.', 'tikka'],
-            [SITE.ORDER_URL, 'Bring to Car', 'Order online. We bring it out.', 'naan'],
-          ].map(([to, t, c, p]) => {
+            ['/book', 'Dine In', 'Table service, one clear price.', '/familyrestaurant2.png'],
+            [SITE.ORDER_URL, 'Order Takeaway', 'Collection or local delivery.', '/order-takeaway.webp'],
+            [SITE.ORDER_URL, 'Bring to Car', 'Order online. We bring it out.', '/bring-to-car.webp'],
+          ].map(([to, t, c, photo]) => {
             const external = to.startsWith('http')
             const inner = (
               <>
                 <div className="aspect-[16/9] overflow-hidden">
-                  {t === 'Dine In'
-                    ? <img src="/familyrestaurant2.png" alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />
-                    : <Photo k={p as 'dining'} w={640} ratio="16/9" alt="" className="transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />}
+                  <img src={photo} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-200 group-hover:rotate-1 group-hover:scale-105" />
                 </div>
                 <div className="flex items-center justify-between p-6">
                   <div><h3>{t}</h3><p className="text-small">{c}</p></div>

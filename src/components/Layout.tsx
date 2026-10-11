@@ -26,6 +26,7 @@ const menus = [
   { href: '/menu/fixed-price-menu.pdf', label: 'Fixed Price Menu' },
   { href: '/menu/a-la-carte-menu.pdf', label: 'À La Carte Menu' },
   { href: '/menu/takeaway-menu.pdf', label: 'Takeaway Menu' },
+  { href: '/menu/drinks-dessert-menu.pdf', label: 'Drinks & Dessert Menu' },
 ]
 const navCls = ({ isActive }: { isActive: boolean }) =>
   `navlink whitespace-nowrap rounded-lg px-4 py-2 text-body font-semibold transition-colors duration-200 hover:text-gold-text ${isActive ? 'text-gold-text' : 'text-brand'}`
