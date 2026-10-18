@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { img, PHOTOS, SITE } from '../config'
@@ -52,8 +51,9 @@ export function PageHero({ eyebrow, title, copy, children, dark = true, bg }: { 
   )
 }
 
+// Booking is handled by an external provider now (see SITE.BOOKING_URL) -- not the in-app /book flow.
 export const BookBtn = ({ label = 'Book Your Table', from = 'page', light = false, table }: { label?: string; from?: string; light?: boolean; table?: string }) => (
-  <Link to={table ? `/book?table=${table}` : '/book'} onClick={() => track('book_start', { from })} className={light ? 'btn-gold' : 'btn-primary'}>{label}</Link>
+  <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from, table })} className={light ? 'btn-gold' : 'btn-primary'}>{label}</a>
 )
 // Takeaway ordering is handled by an external provider for now (see SITE.ORDER_URL) — not the in-app /order flow.
 export const OrderBtn = ({ label = 'Order Takeaway', from = 'page', light = false }: { label?: string; from?: string; light?: boolean }) => (
@@ -205,7 +205,7 @@ export function TableCards() {
             <ul className="dash mt-6 space-y-2 text-small">
               {t.points.map(p => <li key={p}>{p}</li>)}
             </ul>
-            <Link to={`/book?table=${t.id}`} onClick={() => { track('book_start', { from: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</Link>
+            <a href={SITE.BOOKING_URL} onClick={() => { track('book_start', { from: t.id, table: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</a>
           </article>
         </Item>
       ))}

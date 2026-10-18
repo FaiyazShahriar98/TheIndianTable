@@ -38,7 +38,8 @@ export default function App() {
             <Route path="order" element={<ComingSoon />} />
             <Route path="bring-to-car" element={<ComingSoon />} />
             <Route path="family" element={<ComingSoon />} />
-            <Route path="book" element={<Book />} />
+            {/* Booking now goes through the external provider too (SITE.BOOKING_URL) -- same reasoning. */}
+            <Route path="book" element={<ComingSoon />} />
             <Route path="our-story" element={<OurStory />} />
             <Route path="contact" element={<Contact />} />
             <Route path="allergens" element={<Allergens />} />

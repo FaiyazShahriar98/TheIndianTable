@@ -6,6 +6,7 @@ export const SITE = {
   website: 'www.theindiantablepreston.co.uk',
   // Replace when the live providers / verified accounts are confirmed.
   ORDER_URL: 'https://theindiantablepreston.com/',
+  BOOKING_URL: 'https://theindiantablepreston.com/book-table',
   MAP_URL: 'https://www.google.com/maps/search/?api=1&query=350+Higher+Walton+Road+Preston+PR5+4HU',
   INSTAGRAM_URL: '',
   hours: [

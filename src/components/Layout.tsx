@@ -63,7 +63,7 @@ function Header() {
           <NavLink to="/contact" className={navCls}>Find Us</NavLink>
         </nav>
         <div className="hidden items-center gap-2 xl:flex">
-          <Link to="/book" onClick={() => track('book_start', { from: 'header' })} className="btn-primary whitespace-nowrap">Book a Table</Link>
+          <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from: 'header' })} className="btn-primary whitespace-nowrap">Book a Table</a>
           <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'header' })} className="btn-outline whitespace-nowrap">Order Takeaway</a>
         </div>
         <div className="flex shrink-0 items-center gap-2 xl:hidden">
@@ -88,7 +88,7 @@ function Header() {
             className="absolute inset-x-0 top-full h-[calc(100dvh-64px)] overflow-y-auto bg-page px-5 pb-24 pt-4 xl:hidden"
           >
             <div className="grid gap-4 pb-4">
-              <Link to="/book" onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</Link>
+              <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from: 'menu' })} className="btn-primary">Book a Table</a>
               <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'menu' })} className="btn-outline">Order Takeaway</a>
             </div>
             {[['/', 'Home'], ['/our-story', 'Our Story']].map(([to, label]) => (
@@ -138,7 +138,7 @@ function Footer() {
         <div>
           <h3 className="mb-4 !text-lead !text-gold">Eat with us</h3>
           <ul className="space-y-2">
-            <li><Link className="hover:text-gold" to="/book">Book a Table</Link></li>
+            <li><a className="hover:text-gold" href={SITE.BOOKING_URL}>Book a Table</a></li>
             <li><a className="hover:text-gold" href={SITE.ORDER_URL}>Order Takeaway</a></li>
             {menus.map(m => <li key={m.href}><a className="hover:text-gold" href={m.href} target="_blank" rel="noopener">{m.label}</a></li>)}
           </ul>
@@ -159,13 +159,12 @@ function Footer() {
   )
 }
 
-/** Persistent two-button bar on mobile. Hidden on form and checkout pages so it never covers controls. */
+/** Persistent two-button bar on mobile. Both Book and Order go to external providers now, so there's
+ *  no in-app form left for it to cover -- shows on every page. */
 function MobileBar() {
-  const { pathname } = useLocation()
-  if (pathname === '/book') return null
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-line bg-page p-4 lg:hidden" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-      <Link to="/book" onClick={() => track('book_start', { from: 'bar' })} className="btn-primary">BOOK</Link>
+      <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from: 'bar' })} className="btn-primary">BOOK</a>
       <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'bar' })} className="btn-outline">ORDER</a>
     </div>
   )
