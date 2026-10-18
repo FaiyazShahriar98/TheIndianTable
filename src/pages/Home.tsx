@@ -41,7 +41,6 @@ export default function Home() {
                 <span key={t}>{i > 0 && <span className="mx-2 text-gold">|</span>}{t}</span>
               ))}
             </p>
-            <p className="mt-2 text-small text-page/70">Alcohol-free drinks</p>
           </div>
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Plate src="/feast-spread.webp" w={640} dir="cw" priority alt="Round sharing table of curries, naan, rice, salad and raita" />
