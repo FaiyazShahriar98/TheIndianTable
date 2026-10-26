@@ -9,15 +9,15 @@ export type Tier = {
 export const TIERS: Tier[] = [
   {
     id: 'classic', name: 'Classic Table', price: '£14.95', tag: 'The Familiar Favourites',
-    points: ['Classic Starter and Classic Curry', 'Chicken or Mixed Vegetables', 'Boiled Basmati Rice, Pilau Rice, Chips, Plain Naan or Chapati', 'Classic Dessert'],
+    points: ['Poppadoms & Chutney', 'Classic Starter and Classic Curry', 'Chicken or Mixed Vegetables', 'Boiled Basmati Rice, Pilau Rice, Chips, Plain Naan or Chapati', 'Classic Dessert'],
   },
   {
     id: 'signature', name: 'Signature Table', price: '£18.95', tag: 'More Choice. More Distinctive Flavour.', featured: true,
-    points: ['Classic or Signature Starter', 'Classic or Signature Main, including Biryani and Chicken Shashlik', 'Chicken, Chicken Tikka, Lamb, Paneer or Mixed Vegetables', 'Any Signature Rice or Chips, Signature Bread', 'Any Dessert'],
+    points: ['Poppadoms & Chutney', 'Classic or Signature Starter', 'Classic or Signature Main, including Biryani and Chicken Shashlik', 'Chicken, Chicken Tikka, Lamb, Paneer or Mixed Vegetables', 'Any Signature Rice or Chips, Signature Bread and any Dessert'],
   },
   {
     id: 'grand', name: 'Grand Table', price: '£25.95', tag: 'Premium Grills and Seafood',
-    points: ['Everything in Signature, plus Grand selections', 'Premium Grills, Biryani, King Prawn dishes, Lamb Chops and Mixed Tandoori selections', 'Any Rice or Chips, any Bread', 'Any Dessert'],
+    points: ['Poppadoms & Chutney', 'Everything in Signature, plus Grand selections', 'Premium Grills, Biryani, King Prawn dishes, Lamb Chops and Mixed Tandoori selections', 'Any Rice or Chips, any Bread and any Dessert'],
   },
 ]
 
