@@ -203,7 +203,11 @@ export function TableCards() {
             <p className="mt-2 flex items-baseline gap-2"><span className={`price font-display text-price ${t.featured ? 'text-gold' : 'text-brand'}`}>{t.price}</span><span className="text-small opacity-80">per person</span></p>
             <p className={`mt-2 text-small font-semibold ${t.featured ? 'text-page/90' : 'text-gold-text'}`}>{t.tag}</p>
             <ul className="dash mt-6 space-y-2 text-small">
-              {t.points.map(p => <li key={p}>{p}</li>)}
+              {t.points.map((p, i) => (
+                <li key={i}>
+                  {typeof p === 'string' ? p : <>{p.main}<br /><span className={`font-semibold ${t.featured ? 'text-gold' : 'text-gold-text'}`}>{p.sub}</span></>}
+                </li>
+              ))}
             </ul>
             <a href={SITE.BOOKING_URL} onClick={() => { track('book_start', { from: t.id, table: t.id }) }} className={`mt-8 w-full ${t.featured ? 'btn-gold' : 'btn-outline'}`}>Choose {t.name.split(' ')[0]}</a>
           </article>
