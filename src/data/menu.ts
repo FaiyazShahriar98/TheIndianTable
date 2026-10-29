@@ -16,7 +16,7 @@ export const TIERS: Tier[] = [
   },
   {
     id: 'signature', name: 'Signature Table', price: '£18.95', tag: 'More Choice. More Distinctive Flavour.', featured: true,
-    points: ['Poppadoms & Chutney', 'Classic or Signature Starter', { main: 'Classic or Signature Main, including Biryani and Chicken Shashlik', sub: 'Chicken, Chicken Tikka, Lamb, Paneer or Mixed Vegetables' }, 'Choose 1 from Any Signature Rice, Chips or Signature Bread and any Dessert'],
+    points: ['Poppadoms & Chutney', 'Classic or Signature Starter', { main: 'Classic or Signature Main, including Biryani and Chicken Shashlik', sub: 'Chicken, Chicken Tikka, Lamb, Paneer or Mixed Vegetables' }, 'Any Signature or Classic Rice, Chips or Bread', 'Any Signature Dessert'],
   },
   {
     id: 'grand', name: 'Grand Table', price: '£25.95', tag: 'Premium Grills and Seafood',
