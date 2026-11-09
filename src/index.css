@@ -155,3 +155,10 @@
 @keyframes twinkle { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
 .fairylights span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; animation: twinkle 1.8s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .fairylights span { animation: none; opacity: .75; } }
+
+/* Hanging baubles: each <g> pivots around its own string attachment point (set per-element via
+   --origin-x/--origin-y, in the SVG's own user units), like a pendulum -- not the element's centre. */
+@keyframes bauble-swing { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+.bauble { transform-origin: var(--origin-x, 50%) var(--origin-y, 0%); animation: bauble-swing var(--swing-dur, 3.2s) ease-in-out var(--swing-delay, 0s) infinite alternate; will-change: transform; }
+[data-paused='true'] .bauble { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .bauble { animation: none !important; } }

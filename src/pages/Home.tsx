@@ -6,7 +6,7 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
-import { Snowfall, FairyLights } from '../components/Christmas'
+import { Snowfall, FairyLights, Ornaments } from '../components/Christmas'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -53,16 +53,17 @@ export default function Home() {
       <section className="xmas on-dark grain relative isolate overflow-hidden">
         <Snowfall />
         <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full border border-gold/15" />
-        <div className="wrap relative py-14 text-center md:py-20">
-          <Reveal>
+        <div className="wrap relative grid items-center gap-10 py-14 md:py-20 lg:grid-cols-12">
+          <Reveal className="text-center lg:col-span-7 lg:text-left">
             <FairyLights />
             <p className="eyebrow mb-4 mt-6">This Christmas</p>
             <Headline>Book Your Table for Christmas</Headline>
-            <p className="mx-auto mt-4 max-w-xl text-page/85">Gather the family for a festive feast, served the way you like it. Choose the Christmas Table, our Indian Table, or the Little Table for the children.</p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <p className="mx-auto mt-4 max-w-xl text-page/85 lg:mx-0">Gather the family for a festive feast, served the way you like it. Choose the Christmas Table, our Indian Table, or the Little Table for the children.</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4 lg:justify-start">
               <Link to="/christmas" onClick={() => track('book_start', { from: 'home-christmas' })} className="btn-primary">Book for Christmas</Link>
             </div>
           </Reveal>
+          <div className="lg:col-span-5"><Ornaments /></div>
         </div>
       </section>
 

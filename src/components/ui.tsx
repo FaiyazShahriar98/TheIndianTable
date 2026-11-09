@@ -81,7 +81,7 @@ export function Journey({ dark = false }: { dark?: boolean }) {
 }
 
 /** Pauses any ambient CSS animation inside while the element is off-screen. */
-function usePauseOffscreen<T extends HTMLElement>() {
+export function usePauseOffscreen<T extends HTMLElement>() {
   const ref = useRef<T>(null)
   useEffect(() => {
     const el = ref.current

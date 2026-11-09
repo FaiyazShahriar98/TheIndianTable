@@ -4,7 +4,7 @@ import { SITE, londonNow } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
-import { Snowfall, FairyLights, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
+import { Snowfall, Ornaments, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
@@ -73,8 +73,8 @@ export default function BookChristmas() {
       <section className="on-dark grain relative isolate overflow-hidden">
         <Snowfall />
         <div className="wrap relative py-10 md:py-14">
-          <FairyLights />
-          <p className="eyebrow mb-4 mt-6 text-center">'Tis the season</p>
+          <Ornaments className="max-w-[160px] md:max-w-[200px]" />
+          <p className="eyebrow mb-4 mt-2 text-center">'Tis the season</p>
           <h1 className="!text-big text-center md:!text-price">Book Your Table for Christmas</h1>
           <p className="mx-auto mt-4 max-w-xl text-center text-page/85">Choose your table, your time, and leave the rest to us.</p>
           <ol className="mx-auto mt-6 flex max-w-md gap-2 text-micro font-bold uppercase tracking-wider" aria-label="Progress">
