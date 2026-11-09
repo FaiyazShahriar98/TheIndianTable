@@ -1,7 +1,32 @@
 -- Christmas booking: widen table_pref to the three Christmas options, allow a 0 party size, add a
 -- table_selections column for the multi-table "cart" (e.g. "Christmas Table x4, Little Table x2"),
--- and relabel/surface all of this in the owner email.
+-- surface all of this in the owner email, and give BOTH the owner notification and the guest
+-- acknowledgement a Christmas-themed look (deep green + red, snowflake accents) whenever the booking's
+-- occasion is 'Christmas' -- regular bookings keep the normal brand-green template, unchanged.
 -- Paste into Supabase > SQL Editor > Run (safe to re-run). Requires update-booking-table.sql to have been run already.
+
+-- Christmas-themed shell: same structure as email_shell, deep green header/footer, red keyline and
+-- accent band, snowflake motif instead of the plain diamond divider.
+create or replace function public.email_shell_xmas(preheader text, inner_html text) returns text language sql immutable as $f$
+  select '<!doctype html><html><body style="margin:0;padding:0;background:#F6F1E6">'
+  || '<div style="display:none;max-height:0;overflow:hidden;opacity:0">' || preheader || '</div>'
+  || '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6F1E6"><tr><td align="center" style="padding:24px 12px">'
+  || '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border:1px solid #C8102E;border-radius:18px;overflow:hidden;background:#ffffff">'
+  || '<tr><td style="background:#0B2E22;padding:30px 32px 26px;text-align:center">'
+  || '<div style="font-family:Georgia,''Times New Roman'',serif;font-size:26px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#F6F1E6">The Indian Table</div>'
+  || '<div style="margin-top:10px;color:#D6AF5C;font-size:12px;letter-spacing:4px">&#10052; MERRY CHRISTMAS &#10052;</div></td></tr>'
+  || '<tr><td style="background:#C8102E;height:6px;font-size:0;line-height:0">&nbsp;</td></tr>'
+  || '<tr><td style="padding:34px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;color:#202421">' || inner_html || '</td></tr>'
+  || '<tr><td style="background:#0B2E22;padding:22px 32px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.7;color:#F6F1E6">'
+  || '350 Higher Walton Road, Preston, PR5 4HU &nbsp;&#9670;&nbsp; 01772 381 429<br><span style="color:#D6AF5C">Wishing you a very Merry Christmas from all of us.</span></td></tr>'
+  || '</table></td></tr></table></body></html>'
+$f$;
+
+-- Christmas-themed button: same shape as email_button, red instead of brand green.
+create or replace function public.email_button_xmas(href text, label text, solid boolean) returns text language sql immutable as $f$
+  select '<a href="' || href || '" style="display:inline-block;margin:0 8px 8px 0;padding:14px 24px;border-radius:12px;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;'
+  || case when solid then 'background:#C8102E;color:#ffffff;border:1px solid #C8102E' else 'background:#ffffff;color:#C8102E;border:1px solid #C8102E' end || '">' || label || '</a>'
+$f$;
 
 alter table public.bookings drop constraint if exists bookings_table_pref_check;
 alter table public.bookings add constraint bookings_table_pref_check
@@ -21,21 +46,24 @@ declare
   owner text := (select value from app_secrets where key = 'owner_email');
   sender text := coalesce((select value from app_secrets where key = 'from_email'), 'The Indian Table <onboarding@resend.dev>');
   hdr jsonb;
+  xmas boolean := (new.occasion = 'Christmas');
   pretty text := to_char(new.booking_date, 'FMDay, FMDD FMMonth YYYY');
   tel text := regexp_replace(new.phone, '[^0-9+]', '', 'g');
-  summary text := '<div style="background:#F6F1E6;border:1px solid #C7A24A;border-radius:14px;padding:20px 22px;margin:18px 0 22px;text-align:center">'
+  summary text := '<div style="background:#F6F1E6;border:1px solid ' || (case when xmas then '#C8102E' else '#C7A24A' end) || ';border-radius:14px;padding:20px 22px;margin:18px 0 22px;text-align:center">'
       || '<div style="font-family:Georgia,''Times New Roman'',serif;font-size:30px;font-weight:bold;color:#12382E;line-height:1.1">'
       || new.party_size || case when new.party_size = 1 then ' guest' else ' guests' end || '</div>'
-      || '<div style="margin-top:8px;font-family:Arial,sans-serif;font-size:16px;color:#202421">' || esc(pretty) || ' &nbsp;&#9670;&nbsp; <b>' || esc(new.booking_time) || '</b></div></div>';
+      || '<div style="margin-top:8px;font-family:Arial,sans-serif;font-size:16px;color:#202421">' || esc(pretty) || ' &nbsp;&#9670;&nbsp; <b style="' || (case when xmas then 'color:#C8102E' else '' end) || '">' || esc(new.booking_time) || '</b></div></div>';
+  owner_body text;
+  guest_body text;
   owner_html text;
   guest_html text;
 begin
   if k is null or owner is null then return new; end if;
   hdr := jsonb_build_object('Authorization', 'Bearer ' || k, 'Content-Type', 'application/json');
 
-  owner_html := email_shell(new.name || ' for ' || new.party_size || ' on ' || pretty || ' at ' || new.booking_time,
-    '<div style="font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a6d22">'
-    || case when new.occasion = 'Christmas' then 'New Christmas booking' else 'New table booking' end || '</div>'
+  owner_body :=
+    '<div style="font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:' || (case when xmas then '#C8102E' else '#8a6d22' end) || '">'
+    || (case when xmas then '&#10052; New Christmas booking &#10052;' else 'New table booking' end) || '</div>'
     || '<div style="font-family:Georgia,''Times New Roman'',serif;font-size:28px;font-weight:bold;color:#12382E;margin-top:6px">' || esc(new.name) || '</div>'
     || summary
     || '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">'
@@ -55,27 +83,40 @@ begin
     || email_row('Allergies / dietary', coalesce(nullif(esc(new.notes), ''), 'None given'), new.notes is not null and new.notes <> '')
     || email_row('Marketing consent', case when new.marketing_consent then 'Yes' else 'No' end)
     || '</table>'
-    || '<div style="margin-top:26px">' || email_button('tel:' || tel, 'Call guest', true) || email_button('mailto:' || esc(new.email) || '?subject=Your%20table%20at%20The%20Indian%20Table', 'Reply by email', false) || '</div>'
-    || '<div style="margin-top:18px;font-size:12px;color:#8a8a8a">Booking ref ' || new.id || '</div>');
+    || '<div style="margin-top:26px">'
+    || (case when xmas then email_button_xmas('tel:' || tel, 'Call guest', true) else email_button('tel:' || tel, 'Call guest', true) end)
+    || (case when xmas then email_button_xmas('mailto:' || esc(new.email) || '?subject=Your%20table%20at%20The%20Indian%20Table', 'Reply by email', false) else email_button('mailto:' || esc(new.email) || '?subject=Your%20table%20at%20The%20Indian%20Table', 'Reply by email', false) end)
+    || '</div>'
+    || '<div style="margin-top:18px;font-size:12px;color:#8a8a8a">Booking ref ' || new.id || '</div>';
+
+  owner_html := case when xmas then email_shell_xmas(new.name || ' for ' || new.party_size || ' on ' || pretty || ' at ' || new.booking_time, owner_body)
+                      else email_shell(new.name || ' for ' || new.party_size || ' on ' || pretty || ' at ' || new.booking_time, owner_body) end;
 
   perform net.http_post('https://api.resend.com/emails',
     jsonb_build_object('from', sender, 'to', jsonb_build_array(owner), 'reply_to', new.email,
-      'subject', case when new.occasion = 'Christmas' then 'New Christmas booking: ' else 'New booking: ' end || new.name || ', ' || new.party_size || ' on ' || to_char(new.booking_date, 'FMDD FMMon') || ' at ' || new.booking_time,
+      'subject', (case when xmas then '🎄 New Christmas booking: ' else 'New booking: ' end) || new.name || ', ' || new.party_size || ' on ' || to_char(new.booking_date, 'FMDD FMMon') || ' at ' || new.booking_time,
       'html', owner_html),
     headers := hdr);
 
-  guest_html := email_shell('We have received your table request',
-    '<div style="font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#8a6d22">Booking request received</div>'
+  guest_body :=
+    '<div style="font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:' || (case when xmas then '#C8102E' else '#8a6d22' end) || '">'
+    || (case when xmas then '&#10052; Your Christmas booking request &#10052;' else 'Booking request received' end) || '</div>'
     || '<div style="font-family:Georgia,''Times New Roman'',serif;font-size:28px;font-weight:bold;color:#12382E;margin-top:6px">Thank you, ' || esc(split_part(new.name, ' ', 1)) || '</div>'
-    || '<p style="margin:14px 0 0">We have your request for a table with us. Our team will confirm it with you shortly.</p>'
+    || '<p style="margin:14px 0 0">' || (case when xmas then 'We have your request for Christmas Day with us -- and we can''t wait to celebrate with you. Our team will confirm it with you shortly.' else 'We have your request for a table with us. Our team will confirm it with you shortly.' end) || '</p>'
     || summary
+    || (case when new.table_selections is not null and new.table_selections <> ''
+         then '<table role="presentation" width="100%" cellpadding="0" cellspacing="0">' || email_row('Your tables', esc(new.table_selections)) || '</table>'
+         else '' end)
     || '<p style="margin:0 0 6px">Need to change something, or have an allergy to tell us about? Please call us and we will be happy to help.</p>'
-    || '<div style="margin-top:20px">' || email_button('tel:+441772381429', 'Call 01772 381 429', true) || '</div>');
+    || '<div style="margin-top:20px">' || (case when xmas then email_button_xmas('tel:+441772381429', 'Call 01772 381 429', true) else email_button('tel:+441772381429', 'Call 01772 381 429', true) end) || '</div>';
+
+  guest_html := case when xmas then email_shell_xmas('We have received your Christmas booking', guest_body)
+                      else email_shell('We have received your table request', guest_body) end;
 
   -- Guest acknowledgement (only delivers once a sending domain is verified in Resend).
   perform net.http_post('https://api.resend.com/emails',
     jsonb_build_object('from', sender, 'to', jsonb_build_array(new.email), 'reply_to', owner,
-      'subject', 'We have received your table request | The Indian Table', 'html', guest_html),
+      'subject', (case when xmas then '🎄 We have received your Christmas booking' else 'We have received your table request' end) || ' | The Indian Table', 'html', guest_html),
     headers := hdr);
   return new;
 exception when others then
