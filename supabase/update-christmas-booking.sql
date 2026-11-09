@@ -1,5 +1,6 @@
--- Christmas booking: widen table_pref to the three Christmas options, allow a 0 party size, and relabel
--- the Christmas options in the owner email.
+-- Christmas booking: widen table_pref to the three Christmas options, allow a 0 party size, add a
+-- table_selections column for the multi-table "cart" (e.g. "Christmas Table x4, Little Table x2"),
+-- and relabel/surface all of this in the owner email.
 -- Paste into Supabase > SQL Editor > Run (safe to re-run). Requires update-booking-table.sql to have been run already.
 
 alter table public.bookings drop constraint if exists bookings_table_pref_check;
@@ -8,6 +9,10 @@ alter table public.bookings add constraint bookings_table_pref_check
 
 alter table public.bookings drop constraint if exists bookings_party_size_check;
 alter table public.bookings add constraint bookings_party_size_check check (party_size between 0 and 30);
+
+alter table public.bookings add column if not exists table_selections text;
+alter table public.bookings drop constraint if exists bookings_table_selections_check;
+alter table public.bookings add constraint bookings_table_selections_check check (table_selections is null or char_length(table_selections) <= 300);
 
 create or replace function public.notify_booking() returns trigger
 language plpgsql security definer set search_path = public, extensions, net as $$
@@ -37,11 +42,14 @@ begin
     || email_row('Phone', '<a href="tel:' || tel || '" style="color:#12382E;font-weight:bold">' || esc(new.phone) || '</a>')
     || email_row('Email', '<a href="mailto:' || esc(new.email) || '" style="color:#12382E">' || esc(new.email) || '</a>')
     || email_row('Highchairs', new.highchairs::text)
-    || email_row('Interested in', case coalesce(new.table_pref, '')
-         when 'classic' then 'Classic Table' when 'signature' then 'Signature Table' when 'grand' then 'Grand Table'
-         when 'family' then 'Family Table' when 'alacarte' then 'À la carte'
-         when 'christmas' then 'Christmas Table' when 'indian' then 'Indian Table (à la carte)' when 'little' then 'Little Table (children''s menu)'
-         else 'Not sure yet' end)
+    || case when new.table_selections is not null and new.table_selections <> ''
+         then email_row('Tables', esc(new.table_selections))
+         else email_row('Interested in', case coalesce(new.table_pref, '')
+           when 'classic' then 'Classic Table' when 'signature' then 'Signature Table' when 'grand' then 'Grand Table'
+           when 'family' then 'Family Table' when 'alacarte' then 'À la carte'
+           when 'christmas' then 'Christmas Table' when 'indian' then 'Indian Table (à la carte)' when 'little' then 'Little Table (children''s menu)'
+           else 'Not sure yet' end)
+       end
     || email_row('Children (11 and under)', new.children::text)
     || email_row('Occasion', coalesce(nullif(esc(new.occasion), ''), '-'))
     || email_row('Allergies / dietary', coalesce(nullif(esc(new.notes), ''), 'None given'), new.notes is not null and new.notes <> '')

@@ -9,11 +9,15 @@ import { Snowfall, Ornaments, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../compo
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 
-type Errors = Partial<Record<'name' | 'phone' | 'email' | 'date' | 'time' | 'table', string>>
-const blank = { party_size: 2, date: '', time: '', table: '', name: '', phone: '', email: '', notes: '', website: '' }
+type TableId = typeof CHRISTMAS_TABLES[number]['id']
+type CartItem = { key: string; table: TableId | ''; people: number }
+const newItem = (): CartItem => ({ key: Math.random().toString(36).slice(2), table: '', people: 2 })
+
+type Errors = Partial<Record<'name' | 'phone' | 'email' | 'date' | 'time' | 'cart', string>>
+const blank = { date: '', time: '', name: '', phone: '', email: '', notes: '', website: '', cart: [newItem()] as CartItem[] }
 
 export default function BookChristmas() {
-  useSEO('Book for Christmas', 'Book your table for Christmas at The Indian Table in Higher Walton, Preston. Choose the Christmas Table, Indian Table or Little Table.')
+  useSEO('Book for Christmas', 'Book your table for Christmas at The Indian Table in Higher Walton, Preston. Add the Christmas Table, Indian Table and Little Table, each with their own number of guests.')
   const [f, setF] = useState(blank)
   const [errors, setErrors] = useState<Errors>({})
   const [step, setStep] = useState<'form' | 'review' | 'sending' | 'done'>('form')
@@ -31,6 +35,24 @@ export default function BookChristmas() {
     setErrors(e => ({ ...e, [k]: undefined }))
   }
 
+  const addRow = () => { setF(p => ({ ...p, cart: [...p.cart, newItem()] })); setErrors(e => ({ ...e, cart: undefined })) }
+  const removeRow = (key: string) => setF(p => ({ ...p, cart: p.cart.filter(c => c.key !== key) }))
+  const updateRow = (key: string, patch: Partial<CartItem>) => {
+    setF(p => ({ ...p, cart: p.cart.map(c => c.key === key ? { ...c, ...patch } : c) }))
+    setErrors(e => ({ ...e, cart: undefined }))
+  }
+  // Reads the previous count from inside the state updater (not from a render closure), so rapid
+  // clicks each apply on top of the one before instead of all computing from the same stale value.
+  const bumpRow = (key: string, delta: number) => {
+    setF(p => ({ ...p, cart: p.cart.map(c => c.key === key ? { ...c, people: Math.max(0, c.people + delta) } : c) }))
+    setErrors(e => ({ ...e, cart: undefined }))
+  }
+
+  // Only rows with a table chosen and at least one guest actually count toward the booking.
+  const validCart = f.cart.filter((c): c is CartItem & { table: TableId } => !!c.table && c.people > 0)
+  const totalGuests = validCart.reduce((s, c) => s + c.people, 0)
+  const tableName = (id: TableId) => CHRISTMAS_TABLES.find(t => t.id === id)!.label
+
   const validate = (): boolean => {
     const e: Errors = {}
     if (!f.name.trim()) e.name = 'Please enter your name.'
@@ -39,7 +61,7 @@ export default function BookChristmas() {
     if (!f.date) e.date = 'Please choose a date.'
     else if (f.date < today || f.date > maxDate) e.date = 'Please choose a date within the Christmas season.'
     if (!f.time) e.time = 'Please choose a time.'
-    if (!f.table) e.table = 'Please choose a table.'
+    if (!validCart.length) e.cart = 'Please add at least one table with a number of guests.'
     setErrors(e)
     if (Object.keys(e).length) {
       setTimeout(() => (document.querySelector('[aria-invalid="true"]') as HTMLElement | null)?.focus(), 0)
@@ -52,18 +74,19 @@ export default function BookChristmas() {
 
   const confirm = async () => {
     setStep('sending'); setServerErr('')
+    const table_selections = validCart.map(c => `${tableName(c.table)} × ${c.people}`).join(', ')
     const input: BookingInput = {
-      name: f.name, phone: f.phone, email: f.email, party_size: f.party_size, date: f.date, time: f.time,
-      highchairs: 0, occasion: 'Christmas', notes: f.notes, marketing_consent: false, table: f.table, children: 0, website: f.website,
+      name: f.name, phone: f.phone, email: f.email, party_size: totalGuests, date: f.date, time: f.time,
+      highchairs: 0, occasion: 'Christmas', notes: f.notes, marketing_consent: false,
+      table: validCart[0]?.table ?? '', table_selections, children: 0, website: f.website,
     }
     const res = await submitBooking(input)
-    if (res.ok) { setDemo(!!res.demo); setStep('done'); track('book_complete', { party: f.party_size, table: f.table, occasion: 'christmas' }); window.scrollTo({ top: 0 }) }
+    if (res.ok) { setDemo(!!res.demo); setStep('done'); track('book_complete', { party: totalGuests, tables: validCart.length, occasion: 'christmas' }); window.scrollTo({ top: 0 }) }
     else { setServerErr(res.error || 'Something went wrong.'); setStep('review') }
   }
 
   const prettyDate = f.date ? new Date(`${f.date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) : ''
   const timeLabel = CHRISTMAS_TIMES.find(t => t.value === f.time)?.label ?? ''
-  const tableLabel = CHRISTMAS_TABLES.find(t => t.id === f.table)?.label ?? ''
   const err = (k: keyof Errors) => errors[k] && <p id={`${k}-e`} className="err" role="alert">{errors[k]}</p>
   const aria = (k: keyof Errors) => ({ 'aria-invalid': !!errors[k], 'aria-describedby': errors[k] ? `${k}-e` : undefined })
   const stepNo = step === 'form' ? 1 : step === 'done' ? 3 : 2
@@ -76,12 +99,15 @@ export default function BookChristmas() {
           <Ornaments className="max-w-[160px] md:max-w-[200px]" />
           <p className="eyebrow mb-4 mt-2 text-center">'Tis the season</p>
           <h1 className="!text-big text-center md:!text-price">Book Your Table for Christmas</h1>
-          <p className="mx-auto mt-4 max-w-xl text-center text-page/85">Choose your table, your time, and leave the rest to us.</p>
+          <p className="mx-auto mt-4 max-w-xl text-center text-page/85">Choose your tables, your time, and leave the rest to us.</p>
           <ol className="mx-auto mt-6 flex max-w-md gap-2 text-micro font-bold uppercase tracking-wider" aria-label="Progress">
             {['Details', 'Review', 'Confirmed'].map((s, i) => (
               <li key={s} className="flex-1 border-t-2 pt-2 text-center" style={{ borderColor: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.25)', color: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.5)' }}>{i + 1}. {s}</li>
             ))}
           </ol>
+          <p className="mx-auto mt-6 max-w-md rounded-btn border p-3 text-center text-small" style={{ borderColor: 'rgb(var(--xgold) / 0.35)', background: 'rgb(255 255 255 / 0.06)' }}>
+            Not a Christmas booking? <a href={SITE.BOOKING_URL} className="font-bold underline" onClick={() => track('book_start', { from: 'christmas-escape-hatch' })}>Book a regular table instead</a>
+          </p>
         </div>
       </section>
 
@@ -109,23 +135,15 @@ export default function BookChristmas() {
                   </div>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-3">
-                  <div>
-                    <label className="label" htmlFor="party">Number of Persons</label>
-                    <select id="party" className="field" value={f.party_size} onChange={e => set('party_size', +e.target.value)}>
-                      {Array.from({ length: 21 }, (_, i) => i).map(n => <option key={n} value={n}>{n} {n === 1 ? 'guest' : 'guests'}</option>)}
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="label" htmlFor="date">Date</label>
-                    <input id="date" type="date" className="field" min={today} max={maxDate} value={f.date} onChange={e => set('date', e.target.value)} {...aria('date')} />
-                    {err('date')}
-                  </div>
+                <div>
+                  <label className="label" htmlFor="date">Date</label>
+                  <input id="date" type="date" className="field sm:max-w-xs" min={today} max={maxDate} value={f.date} onChange={e => set('date', e.target.value)} {...aria('date')} />
+                  {err('date')}
                 </div>
 
                 <fieldset>
                   <legend className="label">Time</legend>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 sm:max-w-sm">
                     {CHRISTMAS_TIMES.map(t => (
                       <label key={t.value} className="xmas-choice text-center font-bold">
                         <input type="radio" name="time" value={t.value} checked={f.time === t.value} onChange={() => set('time', t.value)} {...aria('time')} />
@@ -137,17 +155,36 @@ export default function BookChristmas() {
                 </fieldset>
 
                 <fieldset>
-                  <legend className="label">Select your table</legend>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {CHRISTMAS_TABLES.map(t => (
-                      <label key={t.id} className="xmas-choice">
-                        <input type="radio" name="table" value={t.id} checked={f.table === t.id} onChange={() => set('table', t.id)} {...aria('table')} />
-                        <span className="block font-bold">{t.label}</span>
-                        <span className="mt-1 block text-small text-page/70">{t.sub}</span>
-                      </label>
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <legend className="label !mb-0">Your tables</legend>
+                    <span className="text-small font-bold text-page/80">{totalGuests} {totalGuests === 1 ? 'guest' : 'guests'} total</span>
+                  </div>
+                  <div className="space-y-3">
+                    {f.cart.map((item, i) => (
+                      <div key={item.key} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
+                        <select
+                          className="field min-w-[180px] flex-1"
+                          aria-label={`Table choice, row ${i + 1}`}
+                          value={item.table}
+                          onChange={e => updateRow(item.key, { table: e.target.value as TableId })}
+                          {...(i === 0 ? aria('cart') : {})}
+                        >
+                          <option value="">Choose a table…</option>
+                          {CHRISTMAS_TABLES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                        </select>
+                        <div className="flex items-center gap-2">
+                          <button type="button" aria-label="Fewer people" onClick={() => bumpRow(item.key, -1)} className="btn-outline !min-h-10 !w-10 !px-0">−</button>
+                          <span className="w-6 text-center font-bold text-page">{item.people}</span>
+                          <button type="button" aria-label="More people" onClick={() => bumpRow(item.key, 1)} className="btn-outline !min-h-10 !w-10 !px-0">+</button>
+                        </div>
+                        {f.cart.length > 1 && (
+                          <button type="button" aria-label="Remove this table" onClick={() => removeRow(item.key)} className="ml-auto text-page/60 hover:text-page">✕</button>
+                        )}
+                      </div>
                     ))}
                   </div>
-                  {err('table')}
+                  <button type="button" onClick={addRow} className="btn-outline mt-3">+ Add another table</button>
+                  {err('cart')}
                 </fieldset>
 
                 <div>
@@ -169,7 +206,13 @@ export default function BookChristmas() {
               <m.div key="review" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="card">
                 <h2 className="!text-head">Check your booking</h2>
                 <dl className="mt-6 divide-y" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}>
-                  {([['Guests', `${f.party_size}`], ['Date', prettyDate], ['Time', timeLabel], ['Table', tableLabel], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email]] as const).map(([k, v]) => (
+                  {[['Date', prettyDate], ['Time', timeLabel]].map(([k, v]) => (
+                    <div key={k} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{k}</dt><dd className="text-right text-page/85">{v}</dd></div>
+                  ))}
+                  {validCart.map(c => (
+                    <div key={c.key} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{tableName(c.table)}</dt><dd className="text-right text-page/85">{c.people} {c.people === 1 ? 'guest' : 'guests'}</dd></div>
+                  ))}
+                  {[['Guests (total)', `${totalGuests}`], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email]].map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{k}</dt><dd className="text-right text-page/85">{v}</dd></div>
                   ))}
                 </dl>
@@ -191,7 +234,10 @@ export default function BookChristmas() {
                   <circle cx="32" cy="32" r="30" fill="rgb(var(--xred))" /><path d="M19 33l9 9 17-19" fill="none" stroke="rgb(var(--xgold))" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
                 </m.svg>
                 <h2 className="mt-6 !text-head">Thank you, {f.name.split(' ')[0]}</h2>
-                <p className="mx-auto mt-4 max-w-md text-page/85">We have received your Christmas booking for <strong className="text-page">{f.party_size}</strong> on <strong className="text-page">{prettyDate}</strong> at <strong className="text-page">{timeLabel}</strong> on the <strong className="text-page">{tableLabel}</strong>. The restaurant will confirm with you shortly.</p>
+                <p className="mx-auto mt-4 max-w-md text-page/85">
+                  We have received your Christmas booking for <strong className="text-page">{totalGuests}</strong> on <strong className="text-page">{prettyDate}</strong> at <strong className="text-page">{timeLabel}</strong>:
+                  {' '}{validCart.map(c => `${tableName(c.table)} × ${c.people}`).join(', ')}. The restaurant will confirm with you shortly.
+                </p>
                 {demo && <p className="mx-auto mt-4 max-w-md rounded-btn border border-dashed p-4 text-small font-semibold" style={{ borderColor: 'rgb(var(--xgold) / 0.6)', color: 'rgb(var(--xgold))' }}>Demo mode: Supabase is not connected yet, so no email was sent.</p>}
                 <p className="mt-6 text-small text-page/85">{SITE.address}<br />Need to change something? Call <a className="font-bold underline" href={SITE.phoneHref}>{SITE.phone}</a>.</p>
                 <div className="mt-6 flex flex-wrap justify-center gap-4">

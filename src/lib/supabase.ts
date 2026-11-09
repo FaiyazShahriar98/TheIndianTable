@@ -8,7 +8,8 @@ export type BookingInput = {
   party_size: number; date: string; time: string
   highchairs: number; occasion: string; notes: string
   marketing_consent: boolean
-  table: string // classic | signature | grand | family | alacarte | "" (not sure yet)
+  table: string // classic | signature | grand | family | alacarte | christmas | indian | little | "" (not sure yet)
+  table_selections?: string // human-readable multi-table breakdown, e.g. "Christmas Table × 4, Little Table × 2"
   children: number
   website?: string // honeypot, must stay empty
 }
@@ -34,10 +35,10 @@ export async function submitBooking(b: BookingInput): Promise<{ ok: boolean; dem
     marketing_consent: b.marketing_consent,
   }
   try {
-    let res = await post('bookings', { ...base, table_pref: b.table || null, children: b.children })
+    let res = await post('bookings', { ...base, table_pref: b.table || null, table_selections: b.table_selections || null, children: b.children })
     if (res.status === 400) {
-      // Database not migrated yet (no table_pref/children columns): keep the booking, carry the choice in the notes.
-      const extra = [b.table && `Interested in: ${b.table}`, b.children > 0 && `children: ${b.children}`].filter(Boolean).join(', ')
+      // Database not migrated yet (no table_pref/table_selections/children columns): keep the booking, carry the choice in the notes.
+      const extra = [b.table_selections, !b.table_selections && b.table && `Interested in: ${b.table}`, b.children > 0 && `children: ${b.children}`].filter(Boolean).join(', ')
       res = await post('bookings', { ...base, notes: [extra && `[${extra}]`, base.notes].filter(Boolean).join(' ') || null })
     }
     if (!res.ok) return { ok: false, error: 'We could not save your booking just now.' }
