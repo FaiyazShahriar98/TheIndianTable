@@ -38,7 +38,7 @@ export default function Home() {
               <OrderBtn light label="Order Takeaway" from="hero" />
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Link to="/christmas" onClick={() => track('book_start', { from: 'hero-christmas' })} className="btn-frost">
+              <Link to="/christmas" onClick={() => track('book_start', { from: 'hero-christmas' })} className="btn-xmas-red">
                 <span aria-hidden="true">❄</span> Book for Christmas
               </Link>
               <span className="text-micro font-semibold uppercase tracking-wider text-page/60">Festive dates only</span>
