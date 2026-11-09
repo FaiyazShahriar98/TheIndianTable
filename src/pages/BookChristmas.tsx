@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { AnimatePresence, m } from '../lib/motion'
-import { SITE, londonNow } from '../config'
+import { SITE } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
@@ -9,25 +9,30 @@ import { Snowfall, Ornaments, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../compo
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 
+// Christmas Day only -- rolls to next year once this Christmas has passed.
+function christmasISO() {
+  const now = new Date()
+  const year = now.getFullYear() + (now.getMonth() === 11 && now.getDate() > 25 ? 1 : 0)
+  return toISO(new Date(year, 11, 25))
+}
+const CHRISTMAS_DATE = christmasISO()
+const CHRISTMAS_DATE_LABEL = new Date(`${CHRISTMAS_DATE}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
 type TableId = typeof CHRISTMAS_TABLES[number]['id']
 type CartItem = { key: string; table: TableId | ''; people: number }
 const newItem = (): CartItem => ({ key: Math.random().toString(36).slice(2), table: '', people: 2 })
 
-type Errors = Partial<Record<'name' | 'phone' | 'email' | 'date' | 'time' | 'cart', string>>
-const blank = { date: '', time: '', name: '', phone: '', email: '', notes: '', website: '', cart: [newItem()] as CartItem[] }
+type Errors = Partial<Record<'name' | 'phone' | 'email' | 'time' | 'cart', string>>
+const blank = { date: CHRISTMAS_DATE, time: '', name: '', phone: '', email: '', notes: '', website: '', cart: [newItem()] as CartItem[] }
 
 export default function BookChristmas() {
-  useSEO('Book for Christmas', 'Book your table for Christmas at The Indian Table in Higher Walton, Preston. Add the Christmas Table, Indian Table and Little Table, each with their own number of guests.')
+  useSEO('Book for Christmas', `Book your table for Christmas Day (${CHRISTMAS_DATE_LABEL}) at The Indian Table in Higher Walton, Preston. Add the Christmas Table, Indian Table and Little Table, each with their own number of guests.`)
   const [f, setF] = useState(blank)
   const [errors, setErrors] = useState<Errors>({})
   const [step, setStep] = useState<'form' | 'review' | 'sending' | 'done'>('form')
   const [serverErr, setServerErr] = useState('')
   const [demo, setDemo] = useState(false)
   const started = useRef(false)
-  const today = useMemo(() => londonNow().iso, [])
-  // Christmas season window: today through the end of December. Adjust here if the restaurant takes
-  // Christmas bookings over a shorter run, or is closed on particular dates (e.g. 25 Dec).
-  const maxDate = useMemo(() => toISO(new Date(new Date().getFullYear(), 11, 31)), [])
 
   const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => {
     if (!started.current) { started.current = true; track('book_start', { from: 'christmas-form' }) }
@@ -58,8 +63,6 @@ export default function BookChristmas() {
     if (!f.name.trim()) e.name = 'Please enter your name.'
     if (f.phone.replace(/\D/g, '').length < 10) e.phone = 'Please enter a valid mobile number.'
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) e.email = 'Please enter a valid email address.'
-    if (!f.date) e.date = 'Please choose a date.'
-    else if (f.date < today || f.date > maxDate) e.date = 'Please choose a date within the Christmas season.'
     if (!f.time) e.time = 'Please choose a time.'
     if (!validCart.length) e.cart = 'Please add at least one table with a number of guests.'
     setErrors(e)
@@ -85,7 +88,6 @@ export default function BookChristmas() {
     else { setServerErr(res.error || 'Something went wrong.'); setStep('review') }
   }
 
-  const prettyDate = f.date ? new Date(`${f.date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) : ''
   const timeLabel = CHRISTMAS_TIMES.find(t => t.value === f.time)?.label ?? ''
   const err = (k: keyof Errors) => errors[k] && <p id={`${k}-e`} className="err" role="alert">{errors[k]}</p>
   const aria = (k: keyof Errors) => ({ 'aria-invalid': !!errors[k], 'aria-describedby': errors[k] ? `${k}-e` : undefined })
@@ -99,7 +101,7 @@ export default function BookChristmas() {
           <Ornaments className="max-w-[160px] md:max-w-[200px]" />
           <p className="eyebrow mb-4 mt-2 text-center">'Tis the season</p>
           <h1 className="!text-big text-center md:!text-price">Book Your Table for Christmas</h1>
-          <p className="mx-auto mt-4 max-w-xl text-center text-page/85">Choose your tables, your time, and leave the rest to us.</p>
+          <p className="mx-auto mt-4 max-w-xl text-center text-page/85">{CHRISTMAS_DATE_LABEL}. Choose your tables and your time, and leave the rest to us.</p>
           <ol className="mx-auto mt-6 flex max-w-md gap-2 text-micro font-bold uppercase tracking-wider" aria-label="Progress">
             {['Details', 'Review', 'Confirmed'].map((s, i) => (
               <li key={s} className="flex-1 border-t-2 pt-2 text-center" style={{ borderColor: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.25)', color: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.5)' }}>{i + 1}. {s}</li>
@@ -136,9 +138,8 @@ export default function BookChristmas() {
                 </div>
 
                 <div>
-                  <label className="label" htmlFor="date">Date</label>
-                  <input id="date" type="date" className="field sm:max-w-xs" min={today} max={maxDate} value={f.date} onChange={e => set('date', e.target.value)} {...aria('date')} />
-                  {err('date')}
+                  <p className="label">Date</p>
+                  <p className="font-bold text-page">{CHRISTMAS_DATE_LABEL} <span className="font-normal text-page/70">(Christmas Day bookings only)</span></p>
                 </div>
 
                 <fieldset>
@@ -206,7 +207,7 @@ export default function BookChristmas() {
               <m.div key="review" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="card">
                 <h2 className="!text-head">Check your booking</h2>
                 <dl className="mt-6 divide-y" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}>
-                  {[['Date', prettyDate], ['Time', timeLabel]].map(([k, v]) => (
+                  {[['Date', CHRISTMAS_DATE_LABEL], ['Time', timeLabel]].map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{k}</dt><dd className="text-right text-page/85">{v}</dd></div>
                   ))}
                   {validCart.map(c => (
@@ -235,7 +236,7 @@ export default function BookChristmas() {
                 </m.svg>
                 <h2 className="mt-6 !text-head">Thank you, {f.name.split(' ')[0]}</h2>
                 <p className="mx-auto mt-4 max-w-md text-page/85">
-                  We have received your Christmas booking for <strong className="text-page">{totalGuests}</strong> on <strong className="text-page">{prettyDate}</strong> at <strong className="text-page">{timeLabel}</strong>:
+                  We have received your Christmas booking for <strong className="text-page">{totalGuests}</strong> on <strong className="text-page">{CHRISTMAS_DATE_LABEL}</strong> at <strong className="text-page">{timeLabel}</strong>:
                   {' '}{validCart.map(c => `${tableName(c.table)} × ${c.people}`).join(', ')}. The restaurant will confirm with you shortly.
                 </p>
                 {demo && <p className="mx-auto mt-4 max-w-md rounded-btn border border-dashed p-4 text-small font-semibold" style={{ borderColor: 'rgb(var(--xgold) / 0.6)', color: 'rgb(var(--xgold))' }}>Demo mode: Supabase is not connected yet, so no email was sent.</p>}
