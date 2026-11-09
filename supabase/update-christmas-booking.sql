@@ -1,9 +1,13 @@
--- Christmas booking: widen table_pref to the three Christmas options and relabel them in the owner email.
+-- Christmas booking: widen table_pref to the three Christmas options, allow a 0 party size, and relabel
+-- the Christmas options in the owner email.
 -- Paste into Supabase > SQL Editor > Run (safe to re-run). Requires update-booking-table.sql to have been run already.
 
 alter table public.bookings drop constraint if exists bookings_table_pref_check;
 alter table public.bookings add constraint bookings_table_pref_check
   check (table_pref is null or table_pref in ('classic','signature','grand','family','alacarte','christmas','indian','little'));
+
+alter table public.bookings drop constraint if exists bookings_party_size_check;
+alter table public.bookings add constraint bookings_party_size_check check (party_size between 0 and 30);
 
 create or replace function public.notify_booking() returns trigger
 language plpgsql security definer set search_path = public, extensions, net as $$

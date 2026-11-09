@@ -113,7 +113,7 @@ export default function BookChristmas() {
                   <div>
                     <label className="label" htmlFor="party">Number of Persons</label>
                     <select id="party" className="field" value={f.party_size} onChange={e => set('party_size', +e.target.value)}>
-                      {Array.from({ length: 20 }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n} {n === 1 ? 'guest' : 'guests'}</option>)}
+                      {Array.from({ length: 21 }, (_, i) => i).map(n => <option key={n} value={n}>{n} {n === 1 ? 'guest' : 'guests'}</option>)}
                     </select>
                   </div>
                   <div className="sm:col-span-2">
