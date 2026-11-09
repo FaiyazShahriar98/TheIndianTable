@@ -19,11 +19,15 @@ const CHRISTMAS_DATE = christmasISO()
 const CHRISTMAS_DATE_LABEL = new Date(`${CHRISTMAS_DATE}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 
 type TableId = typeof CHRISTMAS_TABLES[number]['id']
-type CartItem = { key: string; table: TableId | ''; people: number }
-const newItem = (): CartItem => ({ key: Math.random().toString(36).slice(2), table: '', people: 2 })
+type CartItem = { table: TableId; people: number }
 
-type Errors = Partial<Record<'name' | 'phone' | 'email' | 'time' | 'cart', string>>
-const blank = { date: CHRISTMAS_DATE, time: '', name: '', phone: '', email: '', notes: '', website: '', cart: [newItem()] as CartItem[] }
+type Errors = Partial<Record<'name' | 'phone' | 'email' | 'time' | 'cart' | 'acknowledgeDeposit', string>>
+const blank = {
+  date: CHRISTMAS_DATE, time: '', name: '', phone: '', email: '', notes: '', website: '',
+  acknowledgeDeposit: false,
+  // All three tables always shown, each starting at 0 -- guests add/remove per table rather than picking one.
+  cart: CHRISTMAS_TABLES.map((t): CartItem => ({ table: t.id, people: 0 })),
+}
 
 export default function BookChristmas() {
   useSEO('Book for Christmas', `Book your table for Christmas Day (${CHRISTMAS_DATE_LABEL}) at The Indian Table in Higher Walton, Preston. Add the Christmas Table, Indian Table and Little Table, each with their own number of guests.`)
@@ -40,21 +44,15 @@ export default function BookChristmas() {
     setErrors(e => ({ ...e, [k]: undefined }))
   }
 
-  const addRow = () => { setF(p => ({ ...p, cart: [...p.cart, newItem()] })); setErrors(e => ({ ...e, cart: undefined })) }
-  const removeRow = (key: string) => setF(p => ({ ...p, cart: p.cart.filter(c => c.key !== key) }))
-  const updateRow = (key: string, patch: Partial<CartItem>) => {
-    setF(p => ({ ...p, cart: p.cart.map(c => c.key === key ? { ...c, ...patch } : c) }))
-    setErrors(e => ({ ...e, cart: undefined }))
-  }
   // Reads the previous count from inside the state updater (not from a render closure), so rapid
   // clicks each apply on top of the one before instead of all computing from the same stale value.
-  const bumpRow = (key: string, delta: number) => {
-    setF(p => ({ ...p, cart: p.cart.map(c => c.key === key ? { ...c, people: Math.max(0, c.people + delta) } : c) }))
+  const bumpRow = (table: TableId, delta: number) => {
+    setF(p => ({ ...p, cart: p.cart.map(c => c.table === table ? { ...c, people: Math.max(0, c.people + delta) } : c) }))
     setErrors(e => ({ ...e, cart: undefined }))
   }
 
-  // Only rows with a table chosen and at least one guest actually count toward the booking.
-  const validCart = f.cart.filter((c): c is CartItem & { table: TableId } => !!c.table && c.people > 0)
+  // Only tables with at least one guest actually count toward the booking.
+  const validCart = f.cart.filter(c => c.people > 0)
   const totalGuests = validCart.reduce((s, c) => s + c.people, 0)
   const tableName = (id: TableId) => CHRISTMAS_TABLES.find(t => t.id === id)!.label
 
@@ -64,7 +62,8 @@ export default function BookChristmas() {
     if (f.phone.replace(/\D/g, '').length < 10) e.phone = 'Please enter a valid mobile number.'
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) e.email = 'Please enter a valid email address.'
     if (!f.time) e.time = 'Please choose a time.'
-    if (!validCart.length) e.cart = 'Please add at least one table with a number of guests.'
+    if (!validCart.length) e.cart = "Please add at least one guest -- you can't book with 0 guests."
+    if (!f.acknowledgeDeposit) e.acknowledgeDeposit = 'Please acknowledge the deposit to continue.'
     setErrors(e)
     if (Object.keys(e).length) {
       setTimeout(() => (document.querySelector('[aria-invalid="true"]') as HTMLElement | null)?.focus(), 0)
@@ -161,30 +160,23 @@ export default function BookChristmas() {
                     <span className="text-small font-bold text-page/80">{totalGuests} {totalGuests === 1 ? 'guest' : 'guests'} total</span>
                   </div>
                   <div className="space-y-3">
-                    {f.cart.map((item, i) => (
-                      <div key={item.key} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
-                        <select
-                          className="field min-w-[180px] flex-1"
-                          aria-label={`Table choice, row ${i + 1}`}
-                          value={item.table}
-                          onChange={e => updateRow(item.key, { table: e.target.value as TableId })}
-                          {...(i === 0 ? aria('cart') : {})}
-                        >
-                          <option value="">Choose a table…</option>
-                          {CHRISTMAS_TABLES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
-                        </select>
-                        <div className="flex items-center gap-2">
-                          <button type="button" aria-label="Fewer people" onClick={() => bumpRow(item.key, -1)} className="btn-outline !min-h-10 !w-10 !px-0">−</button>
-                          <span className="w-6 text-center font-bold text-page">{item.people}</span>
-                          <button type="button" aria-label="More people" onClick={() => bumpRow(item.key, 1)} className="btn-outline !min-h-10 !w-10 !px-0">+</button>
+                    {f.cart.map(item => {
+                      const t = CHRISTMAS_TABLES.find(x => x.id === item.table)!
+                      return (
+                        <div key={item.table} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
+                          <div className="min-w-[160px] flex-1">
+                            <span className="block font-bold text-page">{t.label}</span>
+                            <span className="block text-small text-page/70">{t.sub}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button type="button" aria-label={`Fewer guests on ${t.label}`} onClick={() => bumpRow(item.table, -1)} className="btn-outline !min-h-10 !w-10 !px-0">−</button>
+                            <span className="w-6 text-center font-bold text-page">{item.people}</span>
+                            <button type="button" aria-label={`More guests on ${t.label}`} onClick={() => bumpRow(item.table, 1)} className="btn-outline !min-h-10 !w-10 !px-0">+</button>
+                          </div>
                         </div>
-                        {f.cart.length > 1 && (
-                          <button type="button" aria-label="Remove this table" onClick={() => removeRow(item.key)} className="ml-auto text-page/60 hover:text-page">✕</button>
-                        )}
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
-                  <button type="button" onClick={addRow} className="btn-outline mt-3">+ Add another table</button>
                   {err('cart')}
                 </fieldset>
 
@@ -195,6 +187,18 @@ export default function BookChristmas() {
 
                 {/* Honeypot: hidden from people, tempting to bots */}
                 <div aria-hidden="true" className="absolute -left-[9999px]"><label>Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={e => set('website', e.target.value)} /></label></div>
+
+                <div className="rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
+                  <label className="flex items-start gap-3 text-small text-page/90">
+                    <input
+                      type="checkbox" className="mt-0.5 h-4 w-4 shrink-0"
+                      checked={f.acknowledgeDeposit} onChange={e => set('acknowledgeDeposit', e.target.checked)}
+                      {...aria('acknowledgeDeposit')}
+                    />
+                    <span>I acknowledge that a <strong className="text-page">20% deposit</strong> is required to confirm this booking.</span>
+                  </label>
+                  {err('acknowledgeDeposit')}
+                </div>
 
                 <div className="flex flex-wrap items-center gap-4">
                   <button type="submit" className="btn-primary">Review Your Booking</button>
@@ -211,7 +215,7 @@ export default function BookChristmas() {
                     <div key={k} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{k}</dt><dd className="text-right text-page/85">{v}</dd></div>
                   ))}
                   {validCart.map(c => (
-                    <div key={c.key} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{tableName(c.table)}</dt><dd className="text-right text-page/85">{c.people} {c.people === 1 ? 'guest' : 'guests'}</dd></div>
+                    <div key={c.table} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{tableName(c.table)}</dt><dd className="text-right text-page/85">{c.people} {c.people === 1 ? 'guest' : 'guests'}</dd></div>
                   ))}
                   {[['Guests (total)', `${totalGuests}`], ['Name', f.name], ['Mobile', f.phone], ['Email', f.email]].map(([k, v]) => (
                     <div key={k} className="flex justify-between gap-6 py-4" style={{ borderColor: 'rgb(var(--xgold) / 0.25)' }}><dt className="font-bold text-page">{k}</dt><dd className="text-right text-page/85">{v}</dd></div>
