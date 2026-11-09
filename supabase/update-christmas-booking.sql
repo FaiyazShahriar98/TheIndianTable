@@ -1,12 +1,19 @@
 -- Christmas booking: widen table_pref to the three Christmas options, allow a 0 party size, add a
 -- table_selections column for the multi-table "cart" (e.g. "Christmas Table x4, Little Table x2"),
 -- surface all of this in the owner email, and give BOTH the owner notification and the guest
--- acknowledgement a Christmas-themed look (deep green + red, snowflake accents) whenever the booking's
--- occasion is 'Christmas' -- regular bookings keep the normal brand-green template, unchanged.
+-- acknowledgement a Christmas-themed look (deep green + red, illustrated holly banners) whenever the
+-- booking's occasion is 'Christmas' -- regular bookings keep the normal brand-green template, unchanged.
+--
+-- The holly banner images (public/email/holly-top.jpg, holly-bottom.jpg -- Pixabay Content License,
+-- free for commercial use) are referenced by their live production URL, since email clients fetch
+-- images from the recipient's device, not from this repo. They only show up once this has been
+-- pushed and deployed. Some clients (Outlook, Gmail by default) block external images until the
+-- recipient clicks "show images" -- the email still reads fine with the images blocked.
+--
 -- Paste into Supabase > SQL Editor > Run (safe to re-run). Requires update-booking-table.sql to have been run already.
 
 -- Christmas-themed shell: same structure as email_shell, deep green header/footer, red keyline and
--- accent band, snowflake motif instead of the plain diamond divider.
+-- accent band, illustrated holly banners above and below the message body.
 create or replace function public.email_shell_xmas(preheader text, inner_html text) returns text language sql immutable as $f$
   select '<!doctype html><html><body style="margin:0;padding:0;background:#F6F1E6">'
   || '<div style="display:none;max-height:0;overflow:hidden;opacity:0">' || preheader || '</div>'
@@ -16,7 +23,9 @@ create or replace function public.email_shell_xmas(preheader text, inner_html te
   || '<div style="font-family:Georgia,''Times New Roman'',serif;font-size:26px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#F6F1E6">The Indian Table</div>'
   || '<div style="margin-top:10px;color:#D6AF5C;font-size:12px;letter-spacing:4px">&#10052; MERRY CHRISTMAS &#10052;</div></td></tr>'
   || '<tr><td style="background:#C8102E;height:6px;font-size:0;line-height:0">&nbsp;</td></tr>'
+  || '<tr><td style="padding:0;font-size:0;line-height:0;background:#ffffff"><img src="https://www.theindiantablepreston.co.uk/email/holly-top.jpg" width="600" height="150" alt="" style="display:block;width:100%;max-width:600px;height:auto;border:0" /></td></tr>'
   || '<tr><td style="padding:34px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;color:#202421">' || inner_html || '</td></tr>'
+  || '<tr><td style="padding:0;font-size:0;line-height:0;background:#ffffff"><img src="https://www.theindiantablepreston.co.uk/email/holly-bottom.jpg" width="600" height="150" alt="" style="display:block;width:100%;max-width:600px;height:auto;border:0" /></td></tr>'
   || '<tr><td style="background:#0B2E22;padding:22px 32px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.7;color:#F6F1E6">'
   || '350 Higher Walton Road, Preston, PR5 4HU &nbsp;&#9670;&nbsp; 01772 381 429<br><span style="color:#D6AF5C">Wishing you a very Merry Christmas from all of us.</span></td></tr>'
   || '</table></td></tr></table></body></html>'
