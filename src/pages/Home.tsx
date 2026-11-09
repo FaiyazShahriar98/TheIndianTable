@@ -6,7 +6,7 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
-import { Snowfall, FairyLights, Ornaments } from '../components/Christmas'
+import { Snowfall, FairyLights, Ornaments, ChristmasTree } from '../components/Christmas'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -26,6 +26,7 @@ export default function Home() {
       <section className="on-dark grain relative isolate overflow-hidden">
         <BgPhoto src="/storefront.webp" side="full" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-52 top-2/3 h-[560px] w-[560px] rounded-full border border-gold/15" />
+        <ChristmasTree className="pointer-events-none absolute -left-4 bottom-0 hidden h-[220px] w-[160px] opacity-95 md:block lg:-left-2 lg:h-[280px] lg:w-[205px]" />
         <div className="wrap relative grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <p className="eyebrow mb-6 text-center lg:text-left">Family-led Indian dining in Higher Walton</p>

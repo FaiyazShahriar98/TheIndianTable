@@ -89,6 +89,53 @@ export function Ornaments({ className = '' }: { className?: string }) {
   )
 }
 
+const TREE_LIGHTS = [
+  { x: 24, y: 182, c: 'Red' }, { x: 52, y: 184, c: 'Gold' }, { x: 100, y: 183, c: 'Ice' }, { x: 132, y: 180, c: 'Red' },
+  { x: 38, y: 150, c: 'Gold' }, { x: 72, y: 154, c: 'Red' }, { x: 108, y: 148, c: 'Ice' },
+  { x: 50, y: 122, c: 'Ice' }, { x: 92, y: 125, c: 'Gold' },
+  { x: 58, y: 97, c: 'Red' }, { x: 96, y: 95, c: 'Gold' },
+  { x: 65, y: 73, c: 'Ice' }, { x: 90, y: 71, c: 'Red' },
+  { x: 80, y: 48, c: 'Gold' },
+] as const
+
+/**
+ * A hand-built 3D Christmas tree -- gradient-shaded tiers for volume, a gold star, and a garland of
+ * glossy glowing string lights (same radial-gradient "glossy sphere" technique as the Ornaments
+ * baubles) that twinkle out of phase. Pure SVG + CSS, no stock photo or external asset.
+ */
+export function ChristmasTree({ className = '' }: { className?: string }) {
+  const ref = usePauseOffscreen<HTMLDivElement>()
+  return (
+    <div ref={ref} className={className} aria-hidden="true">
+      <svg viewBox="0 0 160 220" className="h-full w-full" aria-hidden="true">
+        <defs>
+          <linearGradient id="treeTier" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#2F6B4F" /><stop offset="55%" stopColor="#1C4A36" /><stop offset="100%" stopColor="#0A2A1E" />
+          </linearGradient>
+          <radialGradient id="lightRed" cx="35%" cy="30%" r="75%"><stop offset="0%" stopColor="#FFC9CC" /><stop offset="60%" stopColor="#D1434F" /><stop offset="100%" stopColor="#7A1C24" /></radialGradient>
+          <radialGradient id="lightGold" cx="35%" cy="30%" r="75%"><stop offset="0%" stopColor="#FFF4D6" /><stop offset="60%" stopColor="#E8C06B" /><stop offset="100%" stopColor="#9C7A35" /></radialGradient>
+          <radialGradient id="lightIce" cx="35%" cy="30%" r="75%"><stop offset="0%" stopColor="#FFFFFF" /><stop offset="60%" stopColor="#BFE3F2" /><stop offset="100%" stopColor="#5D97AE" /></radialGradient>
+        </defs>
+
+        <rect x="70" y="188" width="20" height="26" rx="2" fill="#43290E" />
+        <polygon points="10,190 150,190 80,130" fill="url(#treeTier)" />
+        <polygon points="25,150 135,150 80,92" fill="url(#treeTier)" />
+        <polygon points="42,108 118,108 80,52" fill="url(#treeTier)" />
+
+        <circle cx="80" cy="34" r="15" fill="rgb(var(--xgold))" opacity="0.25" style={{ animation: 'twinkle 2.6s ease-in-out infinite' }} />
+        <path d="M80 20 84 30 95 30 86 37 89 48 80 41 71 48 74 37 65 30 76 30Z" fill="rgb(var(--xgold))" />
+
+        {TREE_LIGHTS.map((l, i) => (
+          <g key={i} style={{ animation: `twinkle ${1.8 + (i % 4) * 0.15}s ease-in-out ${(i % 7) * 0.3}s infinite` }}>
+            <circle cx={l.x} cy={l.y} r="7" fill={`url(#light${l.c})`} opacity="0.3" />
+            <circle cx={l.x} cy={l.y} r="3.2" fill={`url(#light${l.c})`} />
+          </g>
+        ))}
+      </svg>
+    </div>
+  )
+}
+
 /** Three gold bulbs that twinkle out of phase, under an eyebrow line. Decorative only. */
 export function FairyLights() {
   return (
