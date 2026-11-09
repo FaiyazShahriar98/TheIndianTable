@@ -8,6 +8,7 @@ import ComingSoon from './pages/ComingSoon'
 // Route-level code splitting keeps the first load small.
 const Book = lazy(() => import('./pages/Book'))
 const Order = lazy(() => import('./pages/Order'))
+const BookChristmas = lazy(() => import('./pages/BookChristmas'))
 const Menus = () => import('./pages/Menus')
 const Info = () => import('./pages/Info')
 const FixedPrice = lazy(() => Menus().then(m => ({ default: m.FixedPrice })))
@@ -40,6 +41,8 @@ export default function App() {
             <Route path="family" element={<ComingSoon />} />
             {/* Booking now goes through the external provider too (SITE.BOOKING_URL) -- same reasoning. */}
             <Route path="book" element={<ComingSoon />} />
+            {/* Seasonal: in-app Christmas booking form (its own table/time/notes fields per the client's brief). */}
+            <Route path="christmas" element={<BookChristmas />} />
             <Route path="our-story" element={<OurStory />} />
             <Route path="contact" element={<Contact />} />
             <Route path="allergens" element={<Allergens />} />

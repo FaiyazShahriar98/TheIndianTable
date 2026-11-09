@@ -6,6 +6,7 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
+import { Snowfall, FairyLights } from '../components/Christmas'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -45,6 +46,23 @@ export default function Home() {
           <div className="mt-16 lg:col-span-5 lg:mt-0">
             <Plate src="/feast-spread.webp" w={640} dir="cw" priority alt="Round sharing table of curries, naan, rice, salad and raita" />
           </div>
+        </div>
+      </section>
+
+      {/* 1.5 Christmas */}
+      <section className="xmas on-dark grain relative isolate overflow-hidden">
+        <Snowfall />
+        <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full border border-gold/15" />
+        <div className="wrap relative py-14 text-center md:py-20">
+          <Reveal>
+            <FairyLights />
+            <p className="eyebrow mb-4 mt-6">This Christmas</p>
+            <Headline>Book Your Table for Christmas</Headline>
+            <p className="mx-auto mt-4 max-w-xl text-page/85">Gather the family for a festive feast, served the way you like it. Choose the Christmas Table, our Indian Table, or the Little Table for the children.</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <Link to="/christmas" onClick={() => track('book_start', { from: 'home-christmas' })} className="btn-primary">Book for Christmas</Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 

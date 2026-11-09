@@ -115,3 +115,43 @@
 @keyframes blink { 50% { opacity: 0; } }
 .caret { animation: blink 0.9s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .caret { animation: none !important; } }
+
+/* ---- Christmas (seasonal, additive). Scoped to .xmas so the rest of the site keeps its own palette --
+   the shared .card/.field/.label/.eyebrow/.dash/.btn-* primitives just get re-tinted inside it. ---- */
+.xmas { --xred: 122 28 36; --xgreen: 8 38 28; --xgold: 214 175 92; --xgold-hover: 227 193 116; }
+.xmas.on-dark { background: linear-gradient(180deg, rgb(var(--xgreen)), rgb(5 24 18)); }
+.xmas .eyebrow { color: rgb(var(--xgold)); }
+.xmas h1, .xmas h2, .xmas h3 { color: #fff; }
+.xmas .card { border-color: rgb(var(--xgold) / 0.35); background: rgb(255 255 255 / 0.07); }
+.xmas .field { border-color: rgb(var(--xgold) / 0.5); }
+.xmas .label { color: rgb(255 255 255 / 0.92); }
+.xmas .dash li::before { background: rgb(var(--xgold)); }
+.xmas .btn-primary { background: rgb(var(--xred)); color: #fff; }
+.xmas .btn-primary:hover { background: rgb(var(--xred) / 0.85); }
+.xmas .btn-gold { background: rgb(var(--xgold)); color: rgb(var(--xgreen)); }
+.xmas .btn-gold:hover { background: rgb(var(--xgold-hover)); }
+.xmas .btn-outline { border-color: rgb(var(--xgold) / 0.7); color: #fff; }
+.xmas .btn-outline:hover { background: rgb(var(--xgold)); color: rgb(var(--xgreen)); }
+.xmas .btn-outline-light { border-color: rgb(255 255 255 / 0.5); color: #fff; }
+.xmas .btn-outline-light:hover { background: #fff; color: rgb(var(--xgreen)); }
+
+/* Selectable "card" radios (time slot / table choice): native input, styled via the label that wraps it. */
+.xmas-choice { position: relative; display: block; cursor: pointer; border-radius: 12px; border: 1px solid rgb(var(--xgold) / 0.4); padding: 14px 16px; transition: border-color 150ms, background-color 150ms; }
+.xmas-choice input { position: absolute; opacity: 0; pointer-events: none; }
+.xmas-choice:has(input:checked) { border-color: rgb(var(--xgold)); background: rgb(var(--xgold) / 0.14); }
+.xmas-choice:has(input:focus-visible) { outline: 3px solid rgb(var(--xgold)); outline-offset: 2px; }
+
+/* Soft falling snow, paused off-screen and for reduced motion. Decorative.
+   `top` (not transform: translateY) carries the fall -- percentages on transform resolve against the
+   element's OWN tiny box, not the section, so a transform-only version never actually crosses the section. */
+@keyframes snow-fall { from { top: -10%; transform: translateX(0); } to { top: 110%; transform: translateX(var(--drift, 20px)); } }
+.snowfall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.snowflake { position: absolute; left: var(--x, 50%); opacity: var(--o, .7); font-size: var(--size, 14px); line-height: 1; color: #fff;
+  animation: snow-fall var(--dur, 12s) linear var(--delay, 0s) infinite; }
+[data-paused='true'] .snowflake { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .snowflake { display: none; } }
+
+/* Thin fairy-light strip: small bulbs that fade in and out, out of phase with each other. */
+@keyframes twinkle { 0%, 100% { opacity: .3; } 50% { opacity: 1; } }
+.fairylights span { display: inline-block; width: 7px; height: 7px; border-radius: 50%; animation: twinkle 1.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .fairylights span { animation: none; opacity: .75; } }
