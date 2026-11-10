@@ -148,9 +148,9 @@ export function FairyLights() {
 /** White snow cap sitting along the top edge of a button. Tapered so it stays inside rounded corners. Decorative only. */
 export function SnowCap({ className = '' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"
-      className={`pointer-events-none absolute -top-[7px] left-0 h-4 w-full ${className}`} style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))' }}>
-      <path d="M12 16 C16 4 26 2 36 8 C44 13 52 13 60 7 C68 1 80 1 90 8 C98 14 108 14 116 7 C124 1 136 1 146 8 C154 13 162 13 170 7 C178 2 186 5 188 16 Z" fill="#fff" />
+    <svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"
+      className={`pointer-events-none absolute -top-[3px] left-0 h-2.5 w-full ${className}`} style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.2))' }}>
+      <path d="M10 10 C13 5 22 3 32 6 C41 8.5 50 8.5 59 5.5 C68 2.5 79 2.5 89 5.5 C97 8.5 107 8.5 115 5.5 C124 2.5 135 2.5 145 5.5 C153 8.5 162 8.5 170 5.5 C178 2.5 187 4 190 10 Z" fill="#fff" />
     </svg>
   )
 }
