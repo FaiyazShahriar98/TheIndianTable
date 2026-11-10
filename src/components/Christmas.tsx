@@ -145,13 +145,33 @@ export function FairyLights() {
   )
 }
 
+/** White snow cap sitting along the top edge of a button. Tapered so it stays inside rounded corners. Decorative only. */
+export function SnowCap({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true"
+      className={`pointer-events-none absolute -top-[7px] left-0 h-4 w-full ${className}`} style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))' }}>
+      <path d="M12 16 C16 4 26 2 36 8 C44 13 52 13 60 7 C68 1 80 1 90 8 C98 14 108 14 116 7 C124 1 136 1 146 8 C154 13 162 13 170 7 C178 2 186 5 188 16 Z" fill="#fff" />
+    </svg>
+  )
+}
+
+/** Soft snow drift along the bottom edge of a section. Decorative only. */
+export function SnowDrift({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true" className={`pointer-events-none absolute bottom-0 left-0 h-12 w-full ${className}`}>
+      <path d="M0 42 C80 20 160 20 240 38 C320 56 400 56 480 36 C560 16 640 16 720 36 C800 56 880 56 960 38 C1040 20 1120 22 1200 44 L1200 70 L0 70 Z" fill="#fff" opacity="0.96" />
+      <path d="M0 56 C100 40 200 40 300 52 C400 64 500 64 600 50 C700 36 800 36 900 50 C1000 64 1100 62 1200 54 L1200 70 L0 70 Z" fill="#eef4f8" />
+    </svg>
+  )
+}
+
 export const CHRISTMAS_TIMES = [
   { value: '12:30', label: '12.30pm' },
   { value: '15:30', label: '3.30pm' },
 ] as const
 
 export const CHRISTMAS_TABLES = [
-  { id: 'christmas', label: 'Christmas Table', sub: 'Our festive set menu' },
-  { id: 'indian', label: 'Indian Table', sub: 'Full à la carte Indian menu' },
-  { id: 'little', label: 'Little Table', sub: "Children's menu" },
+  { id: 'christmas', label: 'Christmas Table', sub: 'Our festive set menu', icon: '🎅' },
+  { id: 'indian', label: 'Indian Table', sub: 'Full à la carte Indian menu', icon: '🍛' },
+  { id: 'little', label: 'Little Table', sub: "Children's menu", icon: '🧒' },
 ] as const

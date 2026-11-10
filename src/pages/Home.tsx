@@ -6,7 +6,7 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
-import { Snowfall, FairyLights, Ornaments } from '../components/Christmas'
+import { Snowfall, FairyLights, Ornaments, SnowCap } from '../components/Christmas'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -26,6 +26,12 @@ export default function Home() {
       <section className="on-dark grain relative isolate overflow-hidden">
         <BgPhoto src="/storefront.webp" side="full" />
         <div aria-hidden="true" className="pointer-events-none absolute -left-52 top-2/3 h-[560px] w-[560px] rounded-full border border-gold/15" />
+        {/* Seasonal: holly in two corners and a few still snowflakes (client's Christmas mockup). Desktop only. */}
+        <img src="/xmas/holly.png" alt="" aria-hidden="true" width={110} height={100} className="pointer-events-none absolute -right-3 -top-3 hidden w-[150px] md:block" />
+        <img src="/xmas/holly-wide.png" alt="" aria-hidden="true" width={143} height={95} className="pointer-events-none absolute -bottom-4 -left-4 hidden w-[160px] md:block" />
+        {[['6%', '16%', 14], ['93%', '30%', 18], ['74%', '7%', 12], ['40%', '90%', 15], ['58%', '94%', 11]].map(([x, y, s]) => (
+          <span key={`${x}-${y}`} aria-hidden="true" className="pointer-events-none absolute hidden text-white/35 md:block" style={{ left: x, top: y, fontSize: s }}>❄</span>
+        ))}
         <div className="wrap relative grid items-center gap-10 py-12 md:py-20 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <p className="eyebrow mb-6 text-center lg:text-left">Family-led Indian dining in Higher Walton</p>
@@ -37,11 +43,18 @@ export default function Home() {
               <BookBtn light from="hero" />
               <OrderBtn light label="Order Takeaway" from="hero" />
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Link to="/christmas" onClick={() => track('book_start', { from: 'hero-christmas' })} className="btn-xmas-red">
-                <span aria-hidden="true">❄</span> Book for Christmas
-              </Link>
-              <span className="text-micro font-semibold uppercase tracking-wider text-page/60">Festive dates only</span>
+            <div className="mt-6 flex flex-wrap items-center gap-5">
+              <span className="relative inline-flex">
+                <Link to="/christmas" onClick={() => track('book_start', { from: 'hero-christmas' })} className="btn-xmas-red !px-7 font-display !text-lead">
+                  <span aria-hidden="true" className="mr-1 text-body">❄</span> Book for Christmas
+                </Link>
+                <SnowCap />
+                <img src="/xmas/corner-holly.png" alt="" aria-hidden="true" width={115} height={78} className="pointer-events-none absolute -left-3 -top-6 w-14 md:-left-4 md:-top-8 md:w-[72px]" />
+              </span>
+              <span className="flex items-center gap-2 text-micro font-bold uppercase tracking-[0.18em] text-gold">
+                <span aria-hidden="true" className="h-4 w-px bg-gold/60" />
+                <span aria-hidden="true">🎅</span> Festive dates only
+              </span>
             </div>
             <p className="mt-8 text-small font-semibold text-page/80">
               {['Classic Table', 'Signature Table', 'Grand Table', 'Family Table', 'Little Table'].map((t, i) => (

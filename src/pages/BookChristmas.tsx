@@ -4,7 +4,7 @@ import { SITE } from '../config'
 import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
-import { Snowfall, Ornaments, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
+import { Snowfall, SnowCap, SnowDrift, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
@@ -93,12 +93,12 @@ export default function BookChristmas() {
   const stepNo = step === 'form' ? 1 : step === 'done' ? 3 : 2
 
   return (
-    <div className="xmas">
+    <div className="xmas xmas-red">
       <section className="on-dark grain relative isolate overflow-hidden">
         <Snowfall />
         <div className="wrap relative py-10 md:py-14">
-          <Ornaments className="max-w-[160px] md:max-w-[200px]" />
-          <p className="eyebrow mb-4 mt-2 text-center">'Tis the season</p>
+          <img src="/xmas/garland.png" alt="" aria-hidden="true" width={395} height={100} className="pointer-events-none mx-auto w-[min(100%,440px)]" />
+          <p className="eyebrow mb-4 mt-4 text-center">'Tis the season</p>
           <h1 className="!text-big text-center md:!text-price">Book Your Table for Christmas</h1>
           <p className="mx-auto mt-4 max-w-xl text-center text-page/85">{CHRISTMAS_DATE_LABEL}. Choose your tables and your time, and leave the rest to us.</p>
           <ol className="mx-auto mt-6 flex max-w-md gap-2 text-micro font-bold uppercase tracking-wider" aria-label="Progress">
@@ -106,14 +106,18 @@ export default function BookChristmas() {
               <li key={s} className="flex-1 border-t-2 pt-2 text-center" style={{ borderColor: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.25)', color: i < stepNo ? 'rgb(var(--xgold))' : 'rgb(255 255 255 / 0.5)' }}>{i + 1}. {s}</li>
             ))}
           </ol>
-          <p className="mx-auto mt-6 max-w-md rounded-btn border p-3 text-center text-small" style={{ borderColor: 'rgb(var(--xgold) / 0.35)', background: 'rgb(255 255 255 / 0.06)' }}>
+          <p className="mx-auto mt-6 max-w-md rounded-btn border p-3 text-center text-small" style={{ borderColor: 'rgb(var(--xgold) / 0.6)', background: 'rgb(0 0 0 / 0.18)' }}>
             Not a Christmas booking? <a href={SITE.BOOKING_URL} className="font-bold underline" onClick={() => track('book_start', { from: 'christmas-escape-hatch' })}>Book a regular table instead</a>
           </p>
         </div>
       </section>
 
-      <section className="on-dark relative isolate overflow-hidden py-10 md:py-14">
+      <section id="christmas-form" className="on-dark relative isolate overflow-hidden pb-28 pt-20 md:pb-32 md:pt-24">
+        <div className="xmas-lights" aria-hidden="true" />
         <Snowfall count={14} />
+        <SnowDrift />
+        <img src="/xmas/gifts-tall.png" alt="" aria-hidden="true" width={135} height={96} className="pointer-events-none absolute bottom-3 left-2 w-[120px] md:left-6 md:w-[160px]" />
+        <img src="/xmas/corner-holly.png" alt="" aria-hidden="true" width={115} height={78} className="pointer-events-none absolute bottom-6 right-2 w-[90px] md:right-6 md:w-[120px]" />
         <div className="wrap relative grid gap-10 lg:grid-cols-[1fr_340px]">
           <AnimatePresence mode="wait" initial={false}>
             {step === 'form' && (
@@ -157,14 +161,15 @@ export default function BookChristmas() {
                 <fieldset>
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <legend className="label !mb-0">Your tables</legend>
-                    <span className="text-small font-bold text-page/80">{totalGuests} {totalGuests === 1 ? 'guest' : 'guests'} total</span>
+                    <span className="text-small font-bold" style={{ color: 'rgb(var(--xgold))' }}>{totalGuests} {totalGuests === 1 ? 'guest' : 'guests'} total</span>
                   </div>
                   <div className="space-y-3">
                     {f.cart.map(item => {
                       const t = CHRISTMAS_TABLES.find(x => x.id === item.table)!
                       return (
-                        <div key={item.table} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
-                          <div className="min-w-[160px] flex-1">
+                        <div key={item.table} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.75)', background: 'rgb(0 0 0 / 0.14)' }}>
+                          <span aria-hidden="true" className="w-9 shrink-0 text-center text-[26px] leading-none">{t.icon}</span>
+                          <div className="min-w-[140px] flex-1">
                             <span className="block font-bold text-page">{t.label}</span>
                             <span className="block text-small text-page/70">{t.sub}</span>
                           </div>
@@ -188,20 +193,25 @@ export default function BookChristmas() {
                 {/* Honeypot: hidden from people, tempting to bots */}
                 <div aria-hidden="true" className="absolute -left-[9999px]"><label>Website<input tabIndex={-1} autoComplete="off" value={f.website} onChange={e => set('website', e.target.value)} /></label></div>
 
-                <div className="rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.4)' }}>
+                <div className="rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.75)', background: 'rgb(0 0 0 / 0.14)' }}>
                   <label className="flex items-start gap-3 text-small text-page/90">
                     <input
-                      type="checkbox" className="mt-0.5 h-4 w-4 shrink-0"
+                      type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 rounded"
                       checked={f.acknowledgeDeposit} onChange={e => set('acknowledgeDeposit', e.target.checked)}
                       {...aria('acknowledgeDeposit')}
                     />
-                    <span>I acknowledge that a <strong className="text-page">20% deposit</strong> is required to confirm this booking.</span>
+                    <span>I acknowledge that a <strong style={{ color: 'rgb(var(--xgold))' }}>20% deposit</strong> is required to confirm this booking.</span>
                   </label>
                   {err('acknowledgeDeposit')}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  <button type="submit" className="btn-primary">Review Your Booking</button>
+                <div className="flex flex-wrap items-center gap-5 pt-2">
+                  <span className="relative inline-flex">
+                    <button type="submit" className="btn-primary !px-8 font-display !text-lead">Review Your Booking <span aria-hidden="true" className="ml-1">→</span></button>
+                    <SnowCap />
+                    <img src="/xmas/bow.png" alt="" aria-hidden="true" width={130} height={100} className="pointer-events-none absolute -left-7 -top-7 w-16" />
+                    <img src="/xmas/holly.png" alt="" aria-hidden="true" width={110} height={100} className="pointer-events-none absolute -right-6 -top-7 w-14" />
+                  </span>
                   <a href={SITE.phoneHref} className="btn-outline" onClick={() => track('phone_click', { from: 'book-christmas' })}>Call to Book</a>
                 </div>
               </m.form>

@@ -162,10 +162,15 @@ function Footer() {
 /** Persistent two-button bar on mobile. Both Book and Order go to external providers now, so there's
  *  no in-app form left for it to cover -- shows on every page. */
 function MobileBar() {
+  // On /christmas the bar matches the page's red/gold theme, and BOOK jumps to the Christmas form on
+  // the page itself rather than sending people off to the regular external booking.
+  const xmas = useLocation().pathname === '/christmas'
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-line bg-page p-4 lg:hidden" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-      <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from: 'bar' })} className="btn-primary">BOOK</a>
-      <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'bar' })} className="btn-outline">ORDER</a>
+    <div className={`fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t p-4 lg:hidden ${xmas ? 'border-[#E2BF6A]/40 bg-[#4D0810]' : 'border-line bg-page'}`} style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+      {xmas
+        ? <a href="#christmas-form" onClick={() => track('book_start', { from: 'bar-christmas' })} className="btn border border-[#E2BF6A]/70 bg-[#C8102E] text-white">BOOK</a>
+        : <a href={SITE.BOOKING_URL} onClick={() => track('book_start', { from: 'bar' })} className="btn-primary">BOOK</a>}
+      <a href={SITE.ORDER_URL} onClick={() => track('order_start', { from: 'bar' })} className={xmas ? 'btn border border-[#E2BF6A] text-[#F3D68F]' : 'btn-outline'}>ORDER</a>
     </div>
   )
 }
