@@ -145,6 +145,23 @@ export function FairyLights() {
   )
 }
 
+/**
+ * Circular dish photo rocking gently inside a still wreath border -- the same idea as the hero's plate.
+ * The photo is sized/centred to the wreath's irregular opening (measured from the artwork) and sits
+ * underneath it, so the photo's edge is always hidden by the ring.
+ */
+export function WreathPlate({ className = '' }: { className?: string }) {
+  const ref = usePauseOffscreen<HTMLDivElement>()
+  return (
+    <div ref={ref} className={`relative mx-auto aspect-square w-full max-w-lg ${className}`}>
+      <div className="absolute" style={{ left: '6.17%', top: '4.64%', width: '87.4%', height: '87.4%' }}>
+        <img src="/christmas-plate.webp" width={900} height={900} loading="lazy" decoding="async" alt="A Christmas Day spread: roast potatoes and vegetables, curries, naan, rice, samosas and salad" className="rock-flat h-full w-full" />
+      </div>
+      <img src="/christmas-wreath.webp" alt="" aria-hidden="true" width={1000} height={1000} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full" />
+    </div>
+  )
+}
+
 /** White snow cap sitting along the top edge of a button. Tapered so it stays inside rounded corners. Decorative only. */
 export function SnowCap({ className = '' }: { className?: string }) {
   return (

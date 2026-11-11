@@ -6,7 +6,7 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
-import { Snowfall, SnowCap } from '../components/Christmas'
+import { Snowfall, SnowCap, WreathPlate } from '../components/Christmas'
 import { XMAS } from '../data/christmas'
 
 const WHY = [
@@ -88,9 +88,7 @@ export default function Home() {
             </div>
           </Reveal>
           <Reveal delay={0.1} className="lg:col-span-6">
-            <div className="overflow-hidden rounded-card border border-gold/70 shadow-lg">
-              <img src="/christmas-dishes.webp" width={1000} height={447} loading="lazy" decoding="async" alt="Butter chicken, curries, chips and rice served for Christmas Day" className="h-full w-full object-cover" />
-            </div>
+            <WreathPlate />
           </Reveal>
         </div>
       </section>

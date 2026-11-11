@@ -165,6 +165,12 @@
 @keyframes bauble-swing { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
 .bauble { transform-origin: var(--origin-x, 50%) var(--origin-y, 0%); animation: bauble-swing var(--swing-dur, 3.2s) ease-in-out var(--swing-delay, 0s) infinite alternate; will-change: transform; }
 [data-paused='true'] .bauble { animation-play-state: paused; }
+
+/* Gentle rocking for a circular image inside a still frame (the hero's .rock without its zoom, so a round photo keeps its edge). */
+@keyframes rock-flat { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+.rock-flat { animation: rock-flat 9s ease-in-out infinite alternate; will-change: transform; }
+[data-paused='true'] .rock-flat { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .rock-flat { animation: none !important; } }
 @media (prefers-reduced-motion: reduce) { .bauble { animation: none !important; } }
 
 /* Red variant for the /christmas booking page (the client's mockup): one crimson ground across the whole
