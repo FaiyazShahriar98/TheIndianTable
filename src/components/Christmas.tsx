@@ -171,7 +171,7 @@ export const CHRISTMAS_TIMES = [
 ] as const
 
 export const CHRISTMAS_TABLES = [
-  { id: 'christmas', label: 'Christmas Table', sub: 'Our festive set menu', icon: '🎅' },
-  { id: 'indian', label: 'Indian Table', sub: 'Full à la carte Indian menu', icon: '🍛' },
-  { id: 'little', label: 'Little Table', sub: "Children's menu", icon: '🧒' },
+  { id: 'christmas', label: 'Traditional Christmas Table', sub: 'Roast turkey with all the trimmings', price: '£32.95 per adult', icon: '🎅' },
+  { id: 'indian', label: 'Indian Christmas Table', sub: 'Starter, curry, rice or chips, naan and dessert', price: '£32.95 per adult', icon: '🍛' },
+  { id: 'little', label: 'Little Christmas Table', sub: "Children's menu, ages 4–9", price: '£19.95 per child', icon: '🧒' },
 ] as const

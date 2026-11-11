@@ -86,7 +86,7 @@ begin
          else email_row('Interested in', case coalesce(new.table_pref, '')
            when 'classic' then 'Classic Table' when 'signature' then 'Signature Table' when 'grand' then 'Grand Table'
            when 'family' then 'Family Table' when 'alacarte' then 'À la carte'
-           when 'christmas' then 'Christmas Table' when 'indian' then 'Indian Table (à la carte)' when 'little' then 'Little Table (children''s menu)'
+           when 'christmas' then 'Traditional Christmas Table' when 'indian' then 'Indian Christmas Table' when 'little' then 'Little Christmas Table (ages 4-9)'
            else 'Not sure yet' end)
        end
     || email_row('Children (11 and under)', new.children::text)

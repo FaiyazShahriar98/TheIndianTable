@@ -176,8 +176,17 @@ function MobileBar() {
 }
 
 export default function Layout() {
-  const { pathname } = useLocation()
-  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  const { pathname, hash } = useLocation()
+  useEffect(() => {
+    if (!hash) { window.scrollTo(0, 0); return }
+    // Anchor links (e.g. /christmas#christmas-menus): the page is lazy-loaded, so wait for the target to exist.
+    let tries = 0
+    const t = window.setInterval(() => {
+      const el = document.getElementById(decodeURIComponent(hash.slice(1)))
+      if (el || ++tries > 40) { window.clearInterval(t); el?.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' }) }
+    }, 50)
+    return () => window.clearInterval(t)
+  }, [pathname, hash])
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-btn focus:bg-gold focus:px-4 focus:py-4 focus:font-bold">Skip to content</a>

@@ -5,6 +5,7 @@ import { useSEO } from '../lib/seo'
 import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
 import { Snowfall, SnowCap, SnowDrift, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
+import ChristmasMenus from '../components/ChristmasMenus'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
@@ -49,6 +50,19 @@ export default function BookChristmas() {
   const bumpRow = (table: TableId, delta: number) => {
     setF(p => ({ ...p, cart: p.cart.map(c => c.table === table ? { ...c, people: Math.max(0, c.people + delta) } : c) }))
     setErrors(e => ({ ...e, cart: undefined }))
+  }
+
+  // "Book this table" on a menu: add one of that table, bring the form back if they were on the review
+  // step, scroll down to it, and briefly highlight the row that changed.
+  const [flash, setFlash] = useState<TableId | null>(null)
+  const [menuTab, setMenuTab] = useState<TableId>('christmas')
+  const addTable = (table: TableId) => {
+    bumpRow(table, 1)
+    if (step === 'review') setStep('form')
+    setFlash(table)
+    window.setTimeout(() => setFlash(null), 2200)
+    // If the form has to remount first (we were on the review step), wait for it before scrolling.
+    window.setTimeout(() => document.getElementById('christmas-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), step === 'review' ? 350 : 0)
   }
 
   // Only tables with at least one guest actually count toward the booking.
@@ -112,7 +126,15 @@ export default function BookChristmas() {
         </div>
       </section>
 
-      <section id="christmas-form" className="on-dark relative isolate overflow-hidden pb-28 pt-20 md:pb-32 md:pt-24">
+      <section id="christmas-menus" className="scroll-mt-20 on-dark relative isolate overflow-hidden pb-16 pt-24 md:pb-20">
+        <div className="xmas-lights" aria-hidden="true" />
+        <Snowfall count={12} />
+        <img src="/xmas/holly-wide.png" alt="" aria-hidden="true" width={141} height={82} loading="lazy" className="pointer-events-none absolute -left-6 top-1/3 hidden w-36 opacity-90 lg:block" />
+        <img src="/xmas/holly-wide.png" alt="" aria-hidden="true" width={141} height={82} loading="lazy" className="pointer-events-none absolute -right-6 top-2/3 hidden w-36 scale-x-[-1] opacity-90 lg:block" />
+        <ChristmasMenus onBook={addTable} canBook={step !== 'done'} active={menuTab} onActiveChange={setMenuTab} />
+      </section>
+
+      <section id="christmas-form" className="scroll-mt-20 on-dark relative isolate overflow-hidden pb-28 pt-20 md:pb-32 md:pt-24">
         <div className="xmas-lights" aria-hidden="true" />
         <Snowfall count={14} />
         <SnowDrift />
@@ -167,11 +189,28 @@ export default function BookChristmas() {
                     {f.cart.map(item => {
                       const t = CHRISTMAS_TABLES.find(x => x.id === item.table)!
                       return (
-                        <div key={item.table} className="flex flex-wrap items-center gap-3 rounded-btn border p-3" style={{ borderColor: 'rgb(var(--xgold) / 0.75)', background: 'rgb(0 0 0 / 0.14)' }}>
+                        <div
+                          key={item.table}
+                          className="flex flex-wrap items-center gap-3 rounded-btn border p-3 transition-shadow duration-300"
+                          style={{ borderColor: 'rgb(var(--xgold) / 0.75)', background: 'rgb(0 0 0 / 0.14)', boxShadow: flash === item.table ? '0 0 0 3px rgb(var(--xgold)), 0 0 22px rgb(var(--xgold) / 0.55)' : 'none' }}
+                        >
                           <span aria-hidden="true" className="w-9 shrink-0 text-center text-[26px] leading-none">{t.icon}</span>
                           <div className="min-w-[140px] flex-1">
                             <span className="block font-bold text-page">{t.label}</span>
-                            <span className="block text-small text-page/70">{t.sub}</span>
+                            <span className="block text-small text-page/70">
+                              {t.sub}{' '}
+                              <a
+                                href="#christmas-menu-tabs"
+                                onClick={e => {
+                                  e.preventDefault()
+                                  setMenuTab(item.table)
+                                  track('christmas_menu_view', { from: 'form-link', menu: item.table })
+                                  document.getElementById('christmas-menu-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                }}
+                                className="whitespace-nowrap font-bold underline underline-offset-2" style={{ color: 'rgb(var(--xgold))' }}
+                              >View full menu ↑</a>
+                            </span>
+                            <span className="block text-small font-bold" style={{ color: 'rgb(var(--xgold))' }}>{t.price}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button type="button" aria-label={`Fewer guests on ${t.label}`} onClick={() => bumpRow(item.table, -1)} className="btn-outline !min-h-10 !w-10 !px-0">−</button>
@@ -182,6 +221,7 @@ export default function BookChristmas() {
                       )
                     })}
                   </div>
+                  <p className="mt-2 text-small text-page/70">Ages 3 and under eat free - no need to add them. <a href="#christmas-menus" className="font-bold underline">See the menus</a></p>
                   {err('cart')}
                 </fieldset>
 
