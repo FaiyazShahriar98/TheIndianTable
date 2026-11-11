@@ -43,10 +43,10 @@ export const XMAS_MENUS: XmasMenu[] = [
     price: XMAS.adult,
     priceNote: 'per adult',
     courses: [
-      { label: 'To begin', note: 'Choose one starter', items: ['Festive Vegetable Soup with Warm Bread', 'Chicken Tikka', 'Vegetable Samosa'] },
+      { label: 'To begin', note: 'Choose one starter', items: ['Festive Vegetable Soup with Warm Bread', 'Chicken Tikka', 'Vegetable Samosa'], cols: true },
       {
         label: 'The main event', title: 'Traditional Roast Turkey', intro: 'Succulent roast turkey served with:',
-        items: ['Crispy Roast Potatoes', 'Sage & Onion Stuffing', 'Glazed Carrots and Seasonal Vegetables', 'Cranberry Sauce', 'Rich Roast Gravy'],
+        items: ['Crispy Roast Potatoes', 'Sage & Onion Stuffing', 'Glazed Carrots and Seasonal Vegetables', 'Cranberry Sauce', 'Rich Roast Gravy'], cols: true,
         footnote: 'Optional mild Indian Masala Gravy for an Indian twist.',
       },
       { label: 'A sweet finish', title: 'Christmas Pudding', feature: true },

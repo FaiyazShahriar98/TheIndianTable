@@ -130,7 +130,7 @@ export default function BookChristmas() {
         </div>
       </section>
 
-      <section id="christmas-menus" className="scroll-mt-20 on-dark relative isolate overflow-hidden pb-16 pt-24 md:pb-20">
+      <section id="christmas-menus" className="scroll-mt-20 on-dark relative isolate overflow-clip pb-16 pt-24 md:pb-20">
         <div className="xmas-lights" aria-hidden="true" />
         <Snowfall count={12} />
         <img src="/xmas/holly-wide.png" alt="" aria-hidden="true" width={141} height={82} loading="lazy" className="pointer-events-none absolute -left-6 top-1/3 hidden w-36 opacity-90 lg:block" />
