@@ -86,7 +86,11 @@ export default function BookChristmas() {
     return true
   }
 
-  const onReview = (ev: FormEvent) => { ev.preventDefault(); if (validate()) { setStep('review'); window.scrollTo({ top: 0, behavior: 'smooth' }) } }
+  // Keep the guest on the booking card when the step changes (the page is long now, so scrolling to the
+  // very top would throw them out of the section).
+  const toBooking = (smooth = true) => document.getElementById('christmas-booking')?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' })
+
+  const onReview = (ev: FormEvent) => { ev.preventDefault(); if (validate()) { setStep('review'); toBooking() } }
 
   const confirm = async () => {
     setStep('sending'); setServerErr('')
@@ -97,7 +101,7 @@ export default function BookChristmas() {
       table: validCart[0]?.table ?? '', table_selections, children: 0, website: f.website,
     }
     const res = await submitBooking(input)
-    if (res.ok) { setDemo(!!res.demo); setStep('done'); track('book_complete', { party: totalGuests, tables: validCart.length, occasion: 'christmas' }); window.scrollTo({ top: 0 }) }
+    if (res.ok) { setDemo(!!res.demo); setStep('done'); track('book_complete', { party: totalGuests, tables: validCart.length, occasion: 'christmas' }); toBooking(false) }
     else { setServerErr(res.error || 'Something went wrong.'); setStep('review') }
   }
 
@@ -140,7 +144,7 @@ export default function BookChristmas() {
         <SnowDrift />
         <img src="/xmas/gifts-tall.png" alt="" aria-hidden="true" width={135} height={96} className="pointer-events-none absolute bottom-3 left-2 w-[120px] md:left-6 md:w-[160px]" />
         <img src="/xmas/corner-holly.png" alt="" aria-hidden="true" width={115} height={78} className="pointer-events-none absolute bottom-6 right-2 w-[90px] md:right-6 md:w-[120px]" />
-        <div className="wrap relative grid gap-10 lg:grid-cols-[1fr_340px]">
+        <div id="christmas-booking" className="wrap relative grid scroll-mt-24 gap-10 lg:grid-cols-[1fr_340px]">
           <AnimatePresence mode="wait" initial={false}>
             {step === 'form' && (
               <m.form key="form" onSubmit={onReview} noValidate initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="card space-y-6">
