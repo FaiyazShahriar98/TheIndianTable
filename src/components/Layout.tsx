@@ -5,6 +5,7 @@ import { useScroll, useSpring } from 'framer-motion'
 import { SITE, openStatus } from '../config'
 import { track } from '../lib/analytics'
 import CookieBanner, { openCookiePrefs } from './CookieBanner'
+import ChristmasPopup from './ChristmasPopup'
 
 // Exact uploaded bowl-and-table icon (public/Justlogo.jpg), not redrawn, paired with a live-set wordmark
 // in the brand display face. The wordmark steps down to a smaller size on phones (still next to the
@@ -195,6 +196,7 @@ export default function Layout() {
       <Footer />
       <MobileBar />
       <CookieBanner />
+      <ChristmasPopup />
     </>
   )
 }
