@@ -155,7 +155,7 @@ export function WreathPlate({ className = '' }: { className?: string }) {
   return (
     <div ref={ref} className={`relative mx-auto aspect-square w-full max-w-lg ${className}`}>
       <div className="absolute" style={{ left: '6.17%', top: '4.64%', width: '87.4%', height: '87.4%' }}>
-        <img src="/christmas-plate.webp" width={900} height={900} loading="lazy" decoding="async" alt="A Christmas Day spread: roast potatoes and vegetables, curries, naan, rice, samosas and salad" className="rock-flat h-full w-full" />
+        <img src="/christmas-spread.webp" width={900} height={900} loading="lazy" decoding="async" alt="A Christmas Day spread: roast turkey with vegetables, curries, naan, rice, samosas and Christmas pudding" className="rock-flat h-full w-full" />
       </div>
       <img src="/christmas-wreath.webp" alt="" aria-hidden="true" width={1000} height={1000} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full" />
     </div>
