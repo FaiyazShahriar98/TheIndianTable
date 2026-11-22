@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import type { CSSProperties } from 'react'
 import { Diamond, usePauseOffscreen } from './ui'
+import { XMAS } from '../data/christmas'
 
 /** Soft falling snow, pure CSS transform/opacity, paused off-screen and for reduced motion. Decorative only. */
 export function Snowfall({ count = 26 }: { count?: number }) {
@@ -182,10 +183,23 @@ export function SnowDrift({ className = '' }: { className?: string }) {
   )
 }
 
-export const CHRISTMAS_TIMES = [
-  { value: '12:30', label: '12.30pm' },
-  { value: '15:30', label: '3.30pm' },
-] as const
+export const CHRISTMAS_TIMES = XMAS.seatings
+
+/** "12.30pm | 3.30pm | 6.30pm" with any full seating struck through (and announced as full to screen readers). */
+export function SeatingTimes({ sep = '|' }: { sep?: string }) {
+  return (
+    <>
+      {XMAS.seatings.map((s, i) => (
+        <Fragment key={s.value}>
+          {i > 0 && <span className="mx-2 text-gold" aria-hidden="true">{sep}</span>}
+          <span className={s.full ? 'opacity-60 line-through decoration-gold decoration-2' : ''}>
+            {s.label}{s.full && <span className="sr-only"> (fully booked)</span>}
+          </span>
+        </Fragment>
+      ))}
+    </>
+  )
+}
 
 export const CHRISTMAS_TABLES = [
   { id: 'christmas', label: 'Traditional Christmas Table', sub: 'Roast turkey with all the trimmings', price: '£32.95 per adult', icon: '🎅' },

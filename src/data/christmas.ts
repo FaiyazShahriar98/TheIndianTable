@@ -2,12 +2,20 @@
 
 export const XMAS = {
   year: 2026,
-  times: ['12.30pm', '3.30pm'],
+  // One place to open or close a seating: flip `full`. The booking form, menus section, landing section and popup all read this.
+  seatings: [
+    { value: '12:30', label: '12.30pm', full: false },
+    { value: '15:30', label: '3.30pm', full: true },
+    { value: '18:30', label: '6.30pm', full: false },
+  ],
   adult: '£32.95',
   child: '£19.95',
   childAges: '4–9',
   freeUnder: 3,
 } as const
+
+export const FULL_SEATINGS = XMAS.seatings.filter(s => s.full)
+export const OPEN_SEATINGS = XMAS.seatings.filter(s => !s.full)
 
 export type MenuCourse = {
   label: string

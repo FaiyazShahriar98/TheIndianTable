@@ -6,8 +6,8 @@ import { track } from '../lib/analytics'
 // Hidden for now -- client will supply real reviews later. Uncomment to restore.
 // import Reviews from '../components/Reviews'
 import { BookBtn, Headline, Journey, OrderBtn, CountUp, BgPhoto, Photo, Placeholder, Plate, SplitCTA, TableCards, spotMove } from '../components/ui'
-import { Snowfall, SnowCap, WreathPlate } from '../components/Christmas'
-import { XMAS } from '../data/christmas'
+import { Snowfall, SnowCap, SeatingTimes, WreathPlate } from '../components/Christmas'
+import { FULL_SEATINGS, XMAS } from '../data/christmas'
 
 const WHY = [
   ['One clear price', 'Know what your complete feast costs before you sit down.'],
@@ -77,10 +77,11 @@ export default function Home() {
           <Reveal className="text-center lg:col-span-6 lg:text-left">
             <p className="eyebrow mb-4">Christmas Day {XMAS.year}</p>
             <Headline>The Christmas Table, your way</Headline>
-            <p className="mx-auto mt-3 max-w-xl text-page/85 lg:mx-0">Traditional turkey roast or Indian favourites, for the whole family. Two seatings on the day, advance bookings only.</p>
+            <p className="mx-auto mt-3 max-w-xl text-page/85 lg:mx-0">Traditional turkey roast or Indian favourites, for the whole family. Three seatings on the day, advance bookings only.</p>
             <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-btn border border-gold/70 bg-brand px-5 py-3 font-display text-title font-bold text-page lg:justify-start">
-              {XMAS.times[0]} <span className="text-gold">|</span> {XMAS.times[1]}
+              <span className="text-lead sm:text-title"><SeatingTimes /></span>
             </div>
+            {FULL_SEATINGS.length > 0 && <p className="mt-3 text-micro font-bold uppercase tracking-[0.16em] text-gold">{FULL_SEATINGS.map(x => x.label).join(', ')} fully booked</p>}
             <p className="mt-4 text-small font-bold text-page">Adults {XMAS.adult} <span className="mx-1 text-gold">•</span> Children {XMAS.childAges} {XMAS.child}</p>
             <p className="mt-1 text-small text-page/75">Ages {XMAS.freeUnder} and under eat free</p>
             <div className="mt-7 flex flex-wrap justify-center gap-4 lg:justify-start">

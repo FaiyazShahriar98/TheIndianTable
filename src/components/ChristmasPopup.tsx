@@ -3,7 +3,7 @@ import type { KeyboardEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { track } from '../lib/analytics'
 import { XMAS } from '../data/christmas'
-import { SnowCap, WreathPlate } from './Christmas'
+import { SeatingTimes, SnowCap, WreathPlate } from './Christmas'
 
 // Pages where a promo popup would be out of place: the Christmas page itself, and the legal pages.
 const QUIET = ['/christmas', '/privacy', '/terms', '/cookies', '/allergens']
@@ -94,7 +94,7 @@ export default function ChristmasPopup() {
         <img src="/xmas/garland.png" alt="" aria-hidden="true" width={386} height={93} className="pointer-events-none mx-auto w-52" />
         <p className="eyebrow mt-3">Celebrate</p>
         <h2 id="xmas-popup-title" className="mt-1 !text-head">Christmas Day at The Indian Table</h2>
-        <p className="mt-1 text-small font-bold tracking-[0.12em]" style={{ color: 'rgb(var(--xgold))' }}>{XMAS.times[0]} | {XMAS.times[1]}</p>
+        <p className="mt-1 text-small font-bold tracking-[0.12em]" style={{ color: 'rgb(var(--xgold))' }}><SeatingTimes /></p>
 
         <div className="mx-auto mt-2 w-44 sm:w-48"><WreathPlate className="!max-w-none" /></div>
 

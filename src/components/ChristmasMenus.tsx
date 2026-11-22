@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { SITE } from '../config'
 import { track } from '../lib/analytics'
-import { XMAS, XMAS_EXTRAS, XMAS_MENUS, type XmasMenu } from '../data/christmas'
-import { SnowCap } from './Christmas'
+import { FULL_SEATINGS, XMAS, XMAS_EXTRAS, XMAS_MENUS, type XmasMenu } from '../data/christmas'
+import { SeatingTimes, SnowCap } from './Christmas'
 
 type Props = {
   /** Called when a guest taps "Book this table": the page adds one of that table and scrolls to the form. */
@@ -120,8 +120,10 @@ export default function ChristmasMenus({ onBook, canBook, active, onActiveChange
       <div className="mx-auto mt-10 grid max-w-3xl gap-3 sm:grid-cols-[1.1fr_1fr]">
         <div className="relative rounded-btn border border-gold bg-brand px-4 py-4 text-center font-display text-title font-bold text-page">
           <SnowCap />
-          {XMAS.times[0]} <span className="mx-2 text-gold">|</span> {XMAS.times[1]}
-          <span className="mt-1 block font-sans text-micro font-bold uppercase tracking-[0.18em] text-gold">Two seatings</span>
+          <span className="text-lead sm:text-title"><SeatingTimes /></span>
+          <span className="mt-1 block font-sans text-micro font-bold uppercase tracking-[0.18em] text-gold">
+            Three seatings{FULL_SEATINGS.length > 0 && ' • ' + FULL_SEATINGS.map(x => x.label).join(', ') + ' fully booked'}
+          </span>
         </div>
         <div className="rounded-btn border border-gold/70 px-4 py-3 text-center text-small font-bold text-page">
           <span className="block">Adults {XMAS.adult} • Children {XMAS.childAges} {XMAS.child}</span>

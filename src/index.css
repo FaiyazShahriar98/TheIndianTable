@@ -143,6 +143,7 @@
 .xmas-choice { position: relative; display: block; cursor: pointer; border-radius: 12px; border: 1px solid rgb(var(--xgold) / 0.4); padding: 14px 16px; transition: border-color 150ms, background-color 150ms; }
 .xmas-choice input { position: absolute; opacity: 0; pointer-events: none; }
 .xmas-choice:has(input:checked) { border-color: rgb(var(--xgold)); background: rgb(var(--xgold) / 0.14); }
+.xmas-choice:has(input:disabled) { cursor: not-allowed; opacity: 0.6; border-style: dashed; background: rgb(0 0 0 / 0.18); }
 .xmas-choice:has(input:focus-visible) { outline: 3px solid rgb(var(--xgold)); outline-offset: 2px; }
 
 /* Soft falling snow, paused off-screen and for reduced motion. Decorative.

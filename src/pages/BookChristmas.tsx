@@ -6,6 +6,7 @@ import { track } from '../lib/analytics'
 import { submitBooking, type BookingInput } from '../lib/supabase'
 import { Snowfall, SnowCap, SnowDrift, CHRISTMAS_TIMES, CHRISTMAS_TABLES } from '../components/Christmas'
 import ChristmasMenus from '../components/ChristmasMenus'
+import { FULL_SEATINGS } from '../data/christmas'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
@@ -76,6 +77,7 @@ export default function BookChristmas() {
     if (f.phone.replace(/\D/g, '').length < 10) e.phone = 'Please enter a valid mobile number.'
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email)) e.email = 'Please enter a valid email address.'
     if (!f.time) e.time = 'Please choose a time.'
+    else if (CHRISTMAS_TIMES.find(t => t.value === f.time)?.full) e.time = 'Sorry, that seating is fully booked. Please choose another time.'
     if (!validCart.length) e.cart = "Please add at least one guest -- you can't book with 0 guests."
     if (!f.acknowledgeDeposit) e.acknowledgeDeposit = 'Please acknowledge the deposit to continue.'
     setErrors(e)
@@ -173,14 +175,21 @@ export default function BookChristmas() {
 
                 <fieldset>
                   <legend className="label">Time</legend>
-                  <div className="grid grid-cols-2 gap-3 sm:max-w-sm">
+                  <div className="grid grid-cols-3 gap-2 sm:max-w-md sm:gap-3">
                     {CHRISTMAS_TIMES.map(t => (
-                      <label key={t.value} className="xmas-choice text-center font-bold">
-                        <input type="radio" name="time" value={t.value} checked={f.time === t.value} onChange={() => set('time', t.value)} {...aria('time')} />
-                        {t.label}
+                      <label key={t.value} className="xmas-choice !px-2 text-center font-bold">
+                        <input type="radio" name="time" value={t.value} checked={f.time === t.value} disabled={t.full} onChange={() => set('time', t.value)} {...aria('time')} />
+                        <span className={t.full ? 'line-through decoration-2' : ''}>{t.label}</span>
+                        {t.full && <span className="mt-0.5 block text-micro font-bold uppercase tracking-wider">Fully booked</span>}
                       </label>
                     ))}
                   </div>
+                  {FULL_SEATINGS.length > 0 && (
+                    <p className="mt-2 text-small text-page/80">
+                      {FULL_SEATINGS.map(s => s.label).join(' and ')} {FULL_SEATINGS.length > 1 ? 'are' : 'is'} fully booked.{' '}
+                      <a href={SITE.phoneHref} className="font-bold underline" onClick={() => track('phone_click', { from: 'christmas-full-slot' })}>Call {SITE.phone}</a> to ask about cancellations.
+                    </p>
+                  )}
                   {err('time')}
                 </fieldset>
 
