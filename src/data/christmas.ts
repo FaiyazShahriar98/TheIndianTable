@@ -5,7 +5,7 @@ export const XMAS = {
   // One place to open or close a seating: flip `full`. The booking form, menus section, landing section and popup all read this.
   seatings: [
     { value: '12:30', label: '12.30pm', full: false },
-    { value: '15:30', label: '3.30pm', full: true },
+    { value: '15:30', label: '3.30pm', full: false },
     { value: '18:30', label: '6.30pm', full: false },
   ],
   adult: '£32.95',
